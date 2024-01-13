@@ -16,12 +16,14 @@
     "@t3-oss/env-core": "^0.7.3",
     "hono": "^3.12.3",
     "mongoose": "^8.0.4",
+    "true-myth": "5",
     "tslog": "^4.9.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "esbuild": "^0.19.11",
-    "tsx": "^4.7.0"
+    "tsx": "^4.7.0",
+    "vitest": "^1.2.0"
   }
 }
