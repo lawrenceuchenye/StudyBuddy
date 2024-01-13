@@ -1,0 +1,13 @@
+.navbar-main-container {
+  background: var(--color-orange-500);
+  padding: var(--padding-desktop);
+  height: 100%;
+  margin: 20px;
+  border-radius: 15px;
+}
+
+.navbar-main-container h1 {
+  font-family: "Raleway";
+  text-transform: uppercase;
+  color: var(--color-white);
+}

@@ -1,0 +1,10 @@
+.main-root-div {
+  display: flex;
+  height: 100%;
+}
+
+@media (max-width: 750px) {
+  .main-root-div {
+    display: block;
+  }
+}
