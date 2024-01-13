@@ -10,10 +10,10 @@
         "./@studybuddy/backend/src/*"
       ]
     },
-    "noEmit": true,
+    "rootDir": ".",
+    "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
     "incremental": true
   }
 }

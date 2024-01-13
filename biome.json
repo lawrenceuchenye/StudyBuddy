@@ -1,0 +1,16 @@
+{
+	"$schema": "./node_modules/biome/configuration_schema.json",
+	"formatter": {
+		"enabled": true
+	},
+	"javascript": {
+		"formatter": {
+			"semicolons": "asNeeded",
+			"trailingComma": "none"
+		}
+	},
+	"organizeImports": {
+		"enabled": true
+	}
+}
+
