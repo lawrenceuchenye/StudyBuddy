@@ -23,7 +23,7 @@ export const env = createEnv({
 	 * from `server` and `client` in your `runtimeEnv`.
 	 */
 	runtimeEnv: {
-		NODE_ENV: process.env.BACKEND_NODE_ENV,
+		NODE_ENV: process.env.NODE_ENV,
 		PORT: process.env.BACKEND_PORT,
 		DATABASE_URL: process.env.BACKEND_DATABASE_URL,
 		ACCESS_TOKEN_SECRET: process.env.BACKEND_ACCESS_TOKEN_SECRET,

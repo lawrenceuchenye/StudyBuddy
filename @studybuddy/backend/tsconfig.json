@@ -12,10 +12,14 @@
     "strictFunctionTypes": true,
     "allowUnreachableCode": false
   },
+  "include": [
+    "./src/**/*.ts",
+    "run.ts"
+  ],
   "references": [
     {
-      "path": "../tsconfig.json"
+      "path": "../../tsconfig.json"
     }
   ],
-  "extends": "../tsconfig.json"
+  "extends": "../../tsconfig.json"
 }
