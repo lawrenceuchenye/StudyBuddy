@@ -1,10 +1,10 @@
 {
-  "name": "@studybudd/backend",
+  "name": "@studybuddy/backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Bacnkend for StudyBuddy",
   "main": "src/app.ts",
   "scripts": {
-    "dev": "dotenv -c tsx --watch run.ts",
+    "dev": "tsx --watch run.ts",
     "build": "esbuild run.ts --bundle --outfile=./build/run.js --platform=node"
   },
   "keywords": [],
@@ -15,12 +15,12 @@
     "@hono/zod-validator": "^0.1.11",
     "@t3-oss/env-core": "^0.7.3",
     "hono": "^3.12.3",
-    "mongoose": "^8.0.4"
+    "mongoose": "^8.0.4",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "esbuild": "^0.19.11",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "tsx": "^4.7.0"
   }
 }

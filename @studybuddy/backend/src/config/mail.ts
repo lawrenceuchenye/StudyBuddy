@@ -1,4 +1,4 @@
-import { env } from "@studybud/backend/env"
+import { env } from "@studybuddy/backend/env"
 
 export default {
 	host: env.MAIL_HOST,

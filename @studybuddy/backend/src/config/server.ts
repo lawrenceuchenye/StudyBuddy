@@ -1,4 +1,4 @@
-import { env } from "@studybud/backend/env";
+import { env } from "@studybuddy/backend/env";
 
 const ServerConfig = {
   port: env.PORT
