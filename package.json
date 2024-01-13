@@ -1,0 +1,22 @@
+{
+  "workspaces": [
+    "@studybuddy/*"
+  ],
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "backend:dev": "dotenv -c -- pnpm --filter @studybuddy/backend dev",
+    "backend:build": "pnpm --filter @studybuddy/backend build",
+    "frontend:dev": "dotenv -c -- pnpm --filter @studybuddy/frontend dev"
+  },
+  "dependencies": {
+    "typescript": "^5.3.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "biome": "^0.3.3",
+    "dotenv-cli": "^7.3.0"
+  }
+}

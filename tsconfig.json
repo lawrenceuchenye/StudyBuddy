@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@studybuddy/frontend/*": [
+        "./@studybuddy/frontend/src/*"
+      ],
+      "@studybuddy/backend/*": [
+        "./@studybuddy/backend/src/*"
+      ]
+    },
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "incremental": true
+  }
+}
