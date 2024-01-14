@@ -1,8 +1,10 @@
-type PaginationOptions = {
+export type PaginationOptions = {
   page: number
   perPage: number
   total: number
 }
+
+export type PaginationQueryOptions = Omit<PaginationOptions, "total">
 
 type PaginatedResponse<T> = {
   data: T
