@@ -187,7 +187,7 @@ namespace ChannelRepository {
   }
 
   export type GetMessagesInChannelPayload = {
-    id: Types.ObjectId
+    channelId: Types.ObjectId
   }
 
   export type ChannelMessageQueryFilters = {
@@ -199,7 +199,7 @@ namespace ChannelRepository {
   export async function getMessagesInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelMessageQueryFilters = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelMessage>>, APIError>> {
     try {
       const query = ChannelMessage.find({
-        _id: payload.id
+        _id: payload.channelId
       })
 
       if (filters.contains) {
@@ -240,12 +240,12 @@ namespace ChannelRepository {
   }
 
   export type UpdateMessageInChannelPayload = Partial<Omit<IChannelMessage, "sentAt" | "deleted" | "senderId">> & {
-    id: Types.ObjectId
+    messageId: Types.ObjectId
   }
 
   export async function updateMessageInChannel(payload: UpdateMessageInChannelPayload): Promise<Result<undefined, APIError>> {
     try {
-      const { id, channelId, ...updatePayload } = payload
+      const { messageId: id, channelId, ...updatePayload } = payload
       const { acknowledged } = await ChannelMessage.updateOne({ _id: id, channelId }, updatePayload)
 
       if (acknowledged) return Result.ok(undefined)
@@ -258,13 +258,13 @@ namespace ChannelRepository {
   }
 
   export type DeleteMessageInChannelPayload = {
-    id: Types.ObjectId
+    messageId: Types.ObjectId
     channelId: Types.ObjectId
   }
 
   export async function deleteMessageInChannel(payload: DeleteMessageInChannelPayload): Promise<Result<undefined, APIError>> {
     try {
-      const { id, channelId } = payload
+      const { messageId: id, channelId } = payload
       const { acknowledged } = await ChannelMessage.updateOne({ _id: id, channelId }, { deleted: true, content: "", mediaIds: [] })
       if (acknowledged) return Result.ok(undefined)
       return Result.err(new APIError("Failed to delete message in channel", { code: StatusCodes.INTERNAL_SERVER_ERROR }))

@@ -186,7 +186,7 @@ export default new Hono()
     } = Pagination.schema.merge(filterSchema).parse(c.req.query())
 
     const messagesResult = await ChannelRepository.getMessagesInChannel({
-      id
+      channelId: id
     }, { page, perPage }, filters)
 
     if (messagesResult.isErr)
@@ -213,7 +213,7 @@ export default new Hono()
       const payload = c.req.valid("json")
       const updateResult = await ChannelRepository.updateMessageInChannel({
         ...payload,
-        id: messageId,
+        messageId: messageId,
         channelId,
       })
 
@@ -232,7 +232,7 @@ export default new Hono()
       channelId: z.string().transform(transformMongoId),
       messageId: z.string().transform(transformMongoId),
     }).parse(c.req.param())
-    const deleteResult = await ChannelRepository.deleteMessageInChannel({ id: messageId, channelId })
+    const deleteResult = await ChannelRepository.deleteMessageInChannel({ messageId: messageId, channelId })
 
     if (deleteResult.isErr)
       return c.json({ message: deleteResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
