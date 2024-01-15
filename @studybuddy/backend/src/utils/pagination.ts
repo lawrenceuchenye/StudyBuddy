@@ -2,8 +2,8 @@ import { z } from "zod"
 
 namespace Pagination {
   export const schema = z.object({
-    page: z.number().int().positive(),
-    perPage: z.number().int().positive(),
+    page: z.coerce.number().int({ message: "Invalid page number" }).positive({ message: "Invalid page number" }),
+    perPage: z.coerce.number().int({ message: "Invalid per page number" }).positive({ message: "Invalid per page number" }),
   })
 
   export type Options = z.infer<typeof schema> & {
