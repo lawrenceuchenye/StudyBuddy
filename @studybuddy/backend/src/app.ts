@@ -1,6 +1,9 @@
 import { Hono } from 'hono'
 import { logger } from 'hono/logger'
 import { Router as channelsRouter } from './routes/channel'
+import Database from './utils/database'
+
+Database.start()
 
 export const app = new Hono()
   .use("*", logger())
