@@ -7,17 +7,13 @@ export type PaginationOptions = {
 export type PaginationQueryOptions = Omit<PaginationOptions, "total">
 
 type PaginatedResponse<T> = {
-  data: T
+  data: T[]
   meta: PaginationOptions
 }
 
-export const createPaginatedResource = <T extends {}>(resource: T, options: PaginationOptions): PaginatedResponse<T> => {
+export const createPaginatedResource = <T>(resource: T[], options: PaginationOptions): PaginatedResponse<T> => {
   return {
     data: resource,
-    meta: {
-      page: options.page,
-      perPage: options.perPage,
-      total: options.total,
-    }
+    meta: options
   }
 }

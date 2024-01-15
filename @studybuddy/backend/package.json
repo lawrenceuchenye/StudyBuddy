@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@casl/ability": "^6.5.0",
     "@hono/node-server": "^1.4.0",
     "@hono/zod-validator": "^0.1.11",
     "@t3-oss/env-core": "^0.7.3",

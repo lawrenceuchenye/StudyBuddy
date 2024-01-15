@@ -2,9 +2,8 @@ import { Schema, Types, model } from 'mongoose';
 
 export interface IChannel {
   name: string
+  subjects: string[]
   creatorId: Types.ObjectId
-  messageIds: Types.ObjectId[]
-  moderatorIds: Types.ObjectId[]
   createdAt: Date
 }
 
@@ -13,6 +12,7 @@ export interface IChannelMessage {
   mediaIds: Types.ObjectId[]
   senderId: Types.ObjectId
   channelId: Types.ObjectId
+  deleted: boolean
   sentAt: Date
 }
 
@@ -22,14 +22,17 @@ export interface IChannelMedia {
   size: number
 }
 
-type ChannelUserRole = "CREATOR" | "MODERATOR" | "MEMBER" | "POSTER" | "READER"
+export type ChannelUserRole = "CREATOR" | "MODERATOR" | "MEMBER" | "POSTER"
+
 export interface IChannelUser {
+  channelId: Types.ObjectId
   userId: Types.ObjectId
   roles: ChannelUserRole[]
   joinedAt: Date
 }
 
 const channelUserSchema = new Schema<IChannelUser>({
+  channelId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   roles: { type: [String], required: true },
   joinedAt: { type: Date, required: true },
@@ -57,9 +60,7 @@ export const ChannelMessage = model<IChannelMessage>('ChannelMessage', channelMe
 
 const channelSchema = new Schema<IChannel>({
   name: { type: String, required: true },
-  messageIds: { type: [Schema.Types.ObjectId], ref: "ChannelMessage", required: true },
   creatorId: { type: Schema.Types.ObjectId, ref: "ChannelUser", required: true },
-  moderatorIds: { type: [Schema.Types.ObjectId], ref: "ChannelUser", required: true },
   createdAt: { type: Date, required: true },
 });
 
