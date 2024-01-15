@@ -1,7 +1,12 @@
+import { z } from "zod"
+
 namespace Pagination {
-  export type Options = {
-    page: number
-    perPage: number
+  export const schema = z.object({
+    page: z.number().int().positive(),
+    perPage: z.number().int().positive(),
+  })
+
+  export type Options = z.infer<typeof schema> & {
     total: number
   }
 
