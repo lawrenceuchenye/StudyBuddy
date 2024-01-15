@@ -23,6 +23,16 @@ namespace Pagination {
       meta: options
     }
   }
+
+  export type SingleResource<T> = {
+    data: T
+  }
+
+  export const createSingleResource = <T>(resource: T): SingleResource<T> => {
+    return {
+      data: resource,
+    }
+  }
 }
 
 export default Pagination

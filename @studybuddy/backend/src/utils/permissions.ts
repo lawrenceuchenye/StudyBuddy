@@ -8,6 +8,13 @@ namespace PermissionsManager {
       can('post', 'ChannelMessage')
     }
 
+    if (user.role === "MODERATOR" || user.role === "CREATOR") {
+      can('delete', "ChannelMessage")
+    }
+    else {
+      can('delete', 'ChannelMessage', { senderId: user._id })
+    }
+
     can('delete', 'Channel', { creatorId: user._id })
   })
 }
