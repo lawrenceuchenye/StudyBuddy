@@ -4,7 +4,6 @@
     "noEmit": true,
     "noImplicitAny": true,
     "allowUnreachableCode": false,
-    "emitDecoratorMetadata": true
   },
   "include": [
     "./src/**/*.ts",
