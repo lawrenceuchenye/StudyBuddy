@@ -204,7 +204,7 @@ describe("Channels unit test", async () => {
 
   test("that a channel can be deleted", async () => {
     const channelDeletionResult = await ChannelRepository.deleteChannel({
-      channelId,
+      id: channelId,
     })
 
     expect(channelDeletionResult.isOk).to.be.true
