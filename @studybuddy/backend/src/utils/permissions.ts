@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose';
 
 namespace PermissionsManager {
   export const ChannelUser = (user: HydratedDocument<IChannelUser>) => defineAbility((can) => {
-    if (user.roles.includes("POSTER") || user.roles.includes("MODERATOR") || user.roles.includes("CREATOR")) {
+    if (user.role === "POSTER" || user.role === "MODERATOR" || user.role === "CREATOR") {
       can('post', 'ChannelMessage')
     }
 

@@ -1,5 +1,5 @@
-import { HydratedDocument, Types } from "mongoose"
-import { Channel, ChannelMessage, ChannelUser, IChannel, IChannelMessage, IChannelUser } from "@studybuddy/backend/models/channel"
+import { HydratedDocument, Query, Types } from "mongoose"
+import { Channel, ChannelMedia, ChannelMessage, ChannelUser, IChannel, IChannelMessage, IChannelUser } from "@studybuddy/backend/models/channel"
 import Pagination from "../utils/pagination"
 import PermissionsManager from "../utils/permissions"
 import { Result } from "true-myth"
@@ -12,7 +12,7 @@ namespace ChannelRepository {
       const creator = await ChannelUser.create({
         userId: payload.creatorId,
         channelId: new Types.ObjectId(),
-        roles: ["CREATOR"],
+        role: "CREATOR",
         joinedAt: new Date(),
       })
 
@@ -53,24 +53,41 @@ namespace ChannelRepository {
     createdAfter?: Date
   }
 
-  export async function getChannels(payload: GetMessagesInChannelPayload, filters: ChannelQueryFilters, paginationOptions: Pagination.QueryOptions): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannel>>, string>> {
+  export async function getChannels(paginationOptions: Pagination.QueryOptions, filters?: ChannelQueryFilters = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannel>>, string>> {
     try {
-      const query = Channel
-        .find({
-          _id: payload.channelId,
+      let query = Channel.find()
+      if (filters.name) {
+        query.merge({
           name: new RegExp(filters.name, "i"),
-          subjects: {
-            $all: filters.subjects ?? []
-          },
-          createdAt: {
-            $lte: filters.createdBefore,
-            $gte: filters.createdAfter
-          },
         })
-        .skip(paginationOptions.perPage * paginationOptions.page - 1)
-        .limit(paginationOptions.perPage)
+      }
+
+      if (filters.subjects) {
+        query.merge({
+          subjects: {
+            $all: filters.subjects
+          }
+        })
+      }
+
+      if (filters.createdBefore) {
+        query.merge({
+          createdAt: {
+            $lte: filters.createdBefore
+          }
+        })
+      }
+
+      if (filters.createdAfter) {
+        query.merge({
+          createdAt: {
+            $gte: filters.createdAfter
+          }
+        })
+      }
 
       const channelMessages = await query
+        .clone()
         .exec()
 
       const total = await query.countDocuments()
@@ -100,17 +117,12 @@ namespace ChannelRepository {
 
   export type DeleteChannelPayload = {
     channelId: Types.ObjectId,
-    userId: Types.ObjectId
   }
 
   export async function deleteChannel(payload: DeleteChannelPayload): Promise<Result<undefined, string>> {
     try {
       const user = await ChannelUser.findOne({ _id: payload.userId })
       const channel = await Channel.findOne({ _id: payload.channelId })
-
-      if (!PermissionsManager.ChannelUser(user).can("delete", channel)) {
-        return Result.err("User doesn't have permission to delete this channel")
-      }
 
       const { acknowledged } = await Channel.deleteOne({ _id: payload.channelId })
       await ChannelUser.deleteMany({ channelId: payload.channelId })
@@ -123,18 +135,35 @@ namespace ChannelRepository {
     }
   }
 
-  export type AddMessageToChannelPayload = Omit<IChannelMessage, "sentAt">
+  export type AddMessageToChannelPayload = Omit<IChannelMessage, "sentAt" | "deleted" | "mediaIds"> & {
+    media: File[]
+  }
 
   export async function addMessageToChannel(payload: AddMessageToChannelPayload): Promise<Result<HydratedDocument<IChannelMessage>, string>> {
     try {
       const sender = await ChannelUser.findOne({ _id: payload.senderId, channelId: payload.channelId })
 
+      console.log(sender)
       if (!PermissionsManager.ChannelUser(sender).can("post", "ChannelMessage")) {
         return Result.err("User doesn't have permission to send messages")
       }
 
+      const mediaIds: Types.ObjectId[] = []
+      for (const medium of payload.media) {
+        const data = new Buffer([await medium.arrayBuffer()]).toString("base64")
+        
+        const media = await ChannelMedia.create({
+          data,
+          type: medium.type,
+          size: medium.size,
+          uploadedAt: new Date(),
+        })
+        mediaIds.push(media._id)
+      }
+
       const message = await ChannelMessage.create({
         ...payload,
+        mediaIds,
         sentAt: new Date(),
       })
 
@@ -155,7 +184,7 @@ namespace ChannelRepository {
     after?: Date
   }
 
-  export async function getMessagesInChannel(payload: GetMessagesInChannelPayload, filters: ChannelMessageQueryFilters, paginationOptions: Pagination.QueryOptions): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelMessage>>, string>> {
+  export async function getMessagesInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelMessageQueryFilters): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelMessage>>, string>> {
     try {
       const query = ChannelMessage
         .find({
@@ -209,13 +238,13 @@ namespace ChannelRepository {
     return acknowledged
   }
 
-  export type AddUserToChannelPayload = Omit<IChannelUser, "roles" | "joinedAt">
+  export type AddUserToChannelPayload = Omit<IChannelUser, "role" | "joinedAt">
 
   export async function addUserToChannel(payload: AddUserToChannelPayload): Promise<Result<HydratedDocument<IChannelUser>, string>> {
     try {
       const user = await ChannelUser.create({
         ...payload,
-        roles: ["MEMBER"],
+        role: "MEMBER",
         joinedAt: new Date()
       })
       return Result.ok(user)
@@ -230,11 +259,11 @@ namespace ChannelRepository {
   export async function updateUserInChannel(payload: UpdateUserInChannelPayload): Promise<Result<undefined, string>> {
     try {
       const { userId, channelId, ...updatePayload } = payload
-      const roles = new Set(updatePayload.roles)
-      roles.delete("CREATOR")
-      roles.delete("MEMBER")
-      roles.add("MEMBER")
-      const { acknowledged } = await ChannelUser.updateOne({ _id: userId, channelId }, { roles })
+
+      if (updatePayload.role === "CREATOR")
+        return Result.err("Cannot promote user to creator")
+
+      const { acknowledged } = await ChannelUser.updateOne({ _id: userId, channelId }, updatePayload)
 
       if (acknowledged) return Result.ok(undefined)
       return Result.err(undefined)
