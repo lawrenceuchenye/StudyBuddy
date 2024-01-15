@@ -108,7 +108,7 @@ namespace ChannelRepository {
     }
   }
 
-  export type UpdateChannelPayload = Omit<IChannel, "creatorId" | "createdAt"> & {
+  export type UpdateChannelPayload = Partial<Omit<IChannel, "creatorId" | "createdAt">> & {
     id: Types.ObjectId
   }
 
@@ -127,13 +127,13 @@ namespace ChannelRepository {
   }
 
   export type DeleteChannelPayload = {
-    channelId: Types.ObjectId,
+    id: Types.ObjectId,
   }
 
   export async function deleteChannel(payload: DeleteChannelPayload): Promise<Result<undefined, APIError>> {
     try {
-      const { acknowledged } = await Channel.deleteOne({ _id: payload.channelId })
-      await ChannelUser.deleteMany({ channelId: payload.channelId })
+      const { acknowledged } = await Channel.deleteOne({ _id: payload.id })
+      await ChannelUser.deleteMany({ channelId: payload.id })
 
       if (acknowledged) return Result.ok(undefined)
       return Result.err(new APIError("Failed to delete channel", { code: StatusCodes.INTERNAL_SERVER_ERROR }))
@@ -187,7 +187,7 @@ namespace ChannelRepository {
   }
 
   export type GetMessagesInChannelPayload = {
-    channelId: Types.ObjectId
+    id: Types.ObjectId
   }
 
   export type ChannelMessageQueryFilters = {
@@ -199,7 +199,7 @@ namespace ChannelRepository {
   export async function getMessagesInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelMessageQueryFilters = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelMessage>>, APIError>> {
     try {
       const query = ChannelMessage.find({
-        _id: payload.channelId
+        _id: payload.id
       })
 
       if (filters.contains) {
@@ -239,9 +239,8 @@ namespace ChannelRepository {
     }
   }
 
-  export type UpdateMessageInChannelPayload = Omit<IChannelMessage, "sentAt" | "channelId" | "senderId"> & {
+  export type UpdateMessageInChannelPayload = Partial<Omit<IChannelMessage, "sentAt" | "deleted" | "senderId">> & {
     id: Types.ObjectId
-    channelId: Types.ObjectId
   }
 
   export async function updateMessageInChannel(payload: UpdateMessageInChannelPayload): Promise<Result<undefined, APIError>> {
@@ -263,10 +262,17 @@ namespace ChannelRepository {
     channelId: Types.ObjectId
   }
 
-  export async function deleteMessageInChannel(payload: DeleteMessageInChannelPayload) {
-    const { id, channelId } = payload
-    const { acknowledged } = await ChannelMessage.updateOne({ _id: id, channelId }, { deleted: true, content: "", mediaIds: [] })
-    return acknowledged
+  export async function deleteMessageInChannel(payload: DeleteMessageInChannelPayload): Promise<Result<undefined, APIError>> {
+    try {
+      const { id, channelId } = payload
+      const { acknowledged } = await ChannelMessage.updateOne({ _id: id, channelId }, { deleted: true, content: "", mediaIds: [] })
+      if (acknowledged) return Result.ok(undefined)
+      return Result.err(new APIError("Failed to delete message in channel", { code: StatusCodes.INTERNAL_SERVER_ERROR }))
+    }
+    catch (err) {
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
+    }
   }
 
   export type AddUserToChannelPayload = Omit<IChannelUser, "role" | "joinedAt">
@@ -286,15 +292,19 @@ namespace ChannelRepository {
     }
   }
 
+  export type GetUsersInChannelPayload = {
+    id: Types.ObjectId
+  }
+
   export type ChannelUserQueryFilter = {
     username?: string
     name?: string
   }
 
-  export async function getUsersInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelUserQueryFilter = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelUser>>, APIError>> {
+  export async function getUsersInChannel(payload: GetUsersInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelUserQueryFilter = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelUser>>, APIError>> {
     try {
       const query = ChannelUser.find({
-        channelId: payload.channelId
+        channelId: payload.id
       })
 
       // TODO: test this out to ensure this query actually works
@@ -323,6 +333,26 @@ namespace ChannelRepository {
 
       const total = await query.countDocuments()
       return Result.ok(Pagination.createPaginatedResource(channelUsers, { ...paginationOptions, total }))
+    }
+    catch (err) {
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
+    }
+  }
+
+  export type GetUserInChannelPayload = {
+    channelId: Types.ObjectId
+    userId: Types.ObjectId
+  }
+
+  export async function getUserInChannel(payload: GetUserInChannelPayload): Promise<Result<Maybe<HydratedDocument<IChannelUser>>, APIError>> {
+    try {
+      const channelUser = await ChannelUser.findOne({
+        _id: payload.userId,
+        channelId: payload.channelId,
+      }).exec()
+
+      return Result.ok(Maybe.of(channelUser))
     }
     catch (err) {
       logger.error(err)
