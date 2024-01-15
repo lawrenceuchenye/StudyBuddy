@@ -6,7 +6,7 @@ export type PaginationOptions = {
 
 export type PaginationQueryOptions = Omit<PaginationOptions, "total">
 
-type PaginatedResponse<T> = {
+export type PaginatedResponse<T> = {
   data: T[]
   meta: PaginationOptions
 }
