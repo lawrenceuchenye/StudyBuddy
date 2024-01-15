@@ -2,8 +2,9 @@
   "compilerOptions": {
     "composite": true,
     "noEmit": true,
-    "strict": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "allowUnreachableCode": false,
+    "emitDecoratorMetadata": true
   },
   "include": [
     "./src/**/*.ts",

@@ -11,8 +11,11 @@
       ]
     },
     "rootDir": ".",
+    "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
     "module": "ES2022",
