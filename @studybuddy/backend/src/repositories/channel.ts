@@ -88,6 +88,8 @@ namespace ChannelRepository {
 
       const channels = await query
         .clone()
+        .limit(paginationOptions.perPage)
+        .skip(paginationOptions.perPage * (paginationOptions.page - 1))
         .exec()
 
       const total = await query.countDocuments()
@@ -210,6 +212,8 @@ namespace ChannelRepository {
 
       const channelMessages = await query
         .clone()
+        .limit(paginationOptions.perPage)
+        .skip(paginationOptions.perPage * (paginationOptions.page - 1))
         .exec()
 
       const total = await query.countDocuments()
@@ -288,6 +292,8 @@ namespace ChannelRepository {
 
       const channelUsers = await query
         .clone()
+        .limit(paginationOptions.perPage)
+        .skip(paginationOptions.perPage * (paginationOptions.page - 1))
         .exec()
 
       const total = await query.countDocuments()

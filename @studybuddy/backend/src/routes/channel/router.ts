@@ -27,9 +27,22 @@ export default new Hono()
       }, StatusCodes.CREATED)
     })
   .get("/",
-    zValidator("query", Pagination.schema.extend({
-
-    })),
     async (c) => {
-      const channels = await ChannelRepository.getChannels({ page: 1, perPage: 10 })
+      const {
+        page,
+        perPage,
+        ...filters
+      } = Pagination.schema.merge(z.object({
+        name: z.string(),
+        subjects: z.array(z.string()),
+        createdBefore: z.date(),
+        createdAfter: z.date(),
+      }).partial()).parse(c.req.query())
+
+      const channelsResult = await ChannelRepository.getChannels({ page, perPage }, filters)
+
+      if (channelsResult.isErr)
+        return c.json({ message: channelsResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
+
+      return c.json(channelsResult.value)
     })
