@@ -111,7 +111,7 @@ describe("Channels unit test", async () => {
 
   test("that members of a channel can be fetched", async () => {
     const channelUsersResult = await ChannelRepository.getUsersInChannel({
-      channelId,
+      id: channelId,
     }, { page: 1, perPage: 10 })
 
     expect(channelUsersResult.isOk).to.be.true
@@ -135,7 +135,7 @@ describe("Channels unit test", async () => {
 
   test("that number of channel members has increased", async () => {
     const channelUsersResult = await ChannelRepository.getUsersInChannel({
-      channelId,
+      id: channelId,
     }, { page: 1, perPage: 10 })
 
     expect(channelUsersResult.isOk).to.be.true
@@ -192,7 +192,7 @@ describe("Channels unit test", async () => {
 
   test("that number of channel members has decreased", async () => {
     const channelUsersResult = await ChannelRepository.getUsersInChannel({
-      channelId,
+      id: channelId
     }, { page: 1, perPage: 10 })
 
     expect(channelUsersResult.isOk).to.be.true
