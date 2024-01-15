@@ -2,6 +2,7 @@ import { Schema, Types, model } from 'mongoose';
 
 export interface IChannel {
   name: string
+  description: string
   subjects: string[]
   creatorId: Types.ObjectId
   createdAt: Date
