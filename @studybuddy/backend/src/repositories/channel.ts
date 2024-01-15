@@ -3,11 +3,16 @@ import { Channel, ChannelMedia, ChannelMessage, ChannelUser, IChannel, IChannelM
 import Pagination from "../utils/pagination"
 import PermissionsManager from "../utils/permissions"
 import { Result, Maybe } from "true-myth"
+import { APIError } from "../utils/error"
+import { StatusCodes } from "http-status-codes"
+import GlobalLogger from "../utils/logger"
 
 namespace ChannelRepository {
+  const logger = GlobalLogger.getSubLogger({ name: "ChannelRepository" })
+
   export type CreateChannelPayload = Omit<IChannel, "createdAt">
 
-  export async function createChannel(payload: CreateChannelPayload): Promise<Result<HydratedDocument<IChannel>, string>> {
+  export async function createChannel(payload: CreateChannelPayload): Promise<Result<HydratedDocument<IChannel>, APIError>> {
     try {
       const creator = await ChannelUser.create({
         userId: payload.creatorId,
@@ -28,7 +33,8 @@ namespace ChannelRepository {
       return Result.ok(channel)
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 
@@ -36,13 +42,14 @@ namespace ChannelRepository {
     id: Types.ObjectId
   }
 
-  export async function getChannel(payload: GetChannelPayload): Promise<Result<Maybe<HydratedDocument<IChannel>>, string>> {
+  export async function getChannel(payload: GetChannelPayload): Promise<Result<Maybe<HydratedDocument<IChannel>>, APIError>> {
     try {
       const channel = await Channel.findById({ _id: payload.id })
       return Result.ok(Maybe.of(channel))
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 
@@ -53,7 +60,7 @@ namespace ChannelRepository {
     createdAfter?: Date
   }
 
-  export async function getChannels(paginationOptions: Pagination.QueryOptions, filters: ChannelQueryFilters = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannel>>, string>> {
+  export async function getChannels(paginationOptions: Pagination.QueryOptions, filters: ChannelQueryFilters = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannel>>, APIError>> {
     try {
       const query = Channel.find()
       if (filters.name) {
@@ -96,7 +103,8 @@ namespace ChannelRepository {
       return Result.ok(Pagination.createPaginatedResource(channels, { ...paginationOptions, total }))
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 
@@ -104,16 +112,17 @@ namespace ChannelRepository {
     id: Types.ObjectId
   }
 
-  export async function updateChannel(payload: UpdateChannelPayload): Promise<Result<undefined, string>> {
+  export async function updateChannel(payload: UpdateChannelPayload): Promise<Result<undefined, APIError>> {
     try {
       const { id, ...updatePayload } = payload
       const { acknowledged } = await Channel.updateOne({ _id: id }, updatePayload)
 
       if (acknowledged) return Result.ok(undefined)
-      return Result.err(undefined)
+      return Result.err(new APIError("Failed to update channel", { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 
@@ -121,16 +130,17 @@ namespace ChannelRepository {
     channelId: Types.ObjectId,
   }
 
-  export async function deleteChannel(payload: DeleteChannelPayload): Promise<Result<undefined, string>> {
+  export async function deleteChannel(payload: DeleteChannelPayload): Promise<Result<undefined, APIError>> {
     try {
       const { acknowledged } = await Channel.deleteOne({ _id: payload.channelId })
       await ChannelUser.deleteMany({ channelId: payload.channelId })
 
       if (acknowledged) return Result.ok(undefined)
-      return Result.err(undefined)
+      return Result.err(new APIError("Failed to delete channel", { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 
@@ -138,12 +148,15 @@ namespace ChannelRepository {
     media: File[]
   }
 
-  export async function addMessageToChannel(payload: AddMessageToChannelPayload): Promise<Result<HydratedDocument<IChannelMessage>, string>> {
+  export async function addMessageToChannel(payload: AddMessageToChannelPayload): Promise<Result<HydratedDocument<IChannelMessage>, APIError>> {
     try {
       const sender = await ChannelUser.findOne({ _id: payload.senderId, channelId: payload.channelId })
 
+      if (!sender)
+        return Result.err(new APIError("User doesn't exist in channel", { code: StatusCodes.NOT_FOUND }))
+
       if (!PermissionsManager.ChannelUser(sender).can("post", "ChannelMessage")) {
-        return Result.err("User doesn't have permission to send messages")
+        return Result.err(new APIError("User doesn't have permission to send messages", { code: StatusCodes.UNAUTHORIZED }))
       }
 
       const mediaIds: Types.ObjectId[] = []
@@ -168,7 +181,8 @@ namespace ChannelRepository {
       return Result.ok(message)
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 
@@ -182,7 +196,7 @@ namespace ChannelRepository {
     sentAfter?: Date
   }
 
-  export async function getMessagesInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelMessageQueryFilters = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelMessage>>, string>> {
+  export async function getMessagesInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelMessageQueryFilters = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelMessage>>, APIError>> {
     try {
       const query = ChannelMessage.find({
         _id: payload.channelId
@@ -220,7 +234,8 @@ namespace ChannelRepository {
       return Result.ok(Pagination.createPaginatedResource(channelMessages, { ...paginationOptions, total }))
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 
@@ -229,16 +244,17 @@ namespace ChannelRepository {
     channelId: Types.ObjectId
   }
 
-  export async function updateMessageInChannel(payload: UpdateMessageInChannelPayload): Promise<Result<undefined, string>> {
+  export async function updateMessageInChannel(payload: UpdateMessageInChannelPayload): Promise<Result<undefined, APIError>> {
     try {
       const { id, channelId, ...updatePayload } = payload
       const { acknowledged } = await ChannelMessage.updateOne({ _id: id, channelId }, updatePayload)
 
       if (acknowledged) return Result.ok(undefined)
-      return Result.err(undefined)
+      return Result.err(new APIError("Failed to update message in channel", { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 
@@ -255,7 +271,7 @@ namespace ChannelRepository {
 
   export type AddUserToChannelPayload = Omit<IChannelUser, "role" | "joinedAt">
 
-  export async function addUserToChannel(payload: AddUserToChannelPayload): Promise<Result<HydratedDocument<IChannelUser>, string>> {
+  export async function addUserToChannel(payload: AddUserToChannelPayload): Promise<Result<HydratedDocument<IChannelUser>, APIError>> {
     try {
       const user = await ChannelUser.create({
         ...payload,
@@ -265,7 +281,8 @@ namespace ChannelRepository {
       return Result.ok(user)
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 
@@ -274,7 +291,7 @@ namespace ChannelRepository {
     name?: string
   }
 
-  export async function getUsersInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelUserQueryFilter = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelUser>>, string>> {
+  export async function getUsersInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelUserQueryFilter = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelUser>>, APIError>> {
     try {
       const query = ChannelUser.find({
         channelId: payload.channelId
@@ -282,11 +299,19 @@ namespace ChannelRepository {
 
       // TODO: test this out to ensure this query actually works
       if (filters.name || filters.username) {
+        const orQuery = []
+        if (filters.name) {
+          orQuery.push({
+            name: new RegExp(filters.name, "i")
+          })
+        }
+        if (filters.username) {
+          orQuery.push({
+            username: new RegExp(filters.username, "i")
+          })
+        }
         query.merge({
-          $or: [
-            { name: new RegExp(filters.name, "i") },
-            { username: new RegExp(filters.username, "i") },
-          ]
+          $or: orQuery
         })
       }
 
@@ -300,26 +325,28 @@ namespace ChannelRepository {
       return Result.ok(Pagination.createPaginatedResource(channelUsers, { ...paginationOptions, total }))
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 
   export type UpdateUserInChannelPayload = Omit<IChannelUser, "joinedAt">
 
-  export async function updateUserInChannel(payload: UpdateUserInChannelPayload): Promise<Result<undefined, string>> {
+  export async function updateUserInChannel(payload: UpdateUserInChannelPayload): Promise<Result<undefined, APIError>> {
     try {
       const { userId, channelId, ...updatePayload } = payload
 
       if (updatePayload.role === "CREATOR")
-        return Result.err("Cannot promote user to creator")
+        return Result.err(new APIError("Cannot promote user to creator", { code: StatusCodes.INTERNAL_SERVER_ERROR }))
 
       const { acknowledged } = await ChannelUser.updateOne({ _id: userId, channelId }, updatePayload)
 
       if (acknowledged) return Result.ok(undefined)
-      return Result.err(undefined)
+      return Result.err(new APIError("Failed to update user in channel", { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 
@@ -328,16 +355,17 @@ namespace ChannelRepository {
     channelId: Types.ObjectId
   }
 
-  export async function removeUserFromChannel(payload: RemoveUserFromChannelPayload): Promise<Result<undefined, string>> {
+  export async function removeUserFromChannel(payload: RemoveUserFromChannelPayload): Promise<Result<undefined, APIError>> {
     try {
       const { userId, channelId } = payload
       const { acknowledged } = await ChannelUser.deleteOne({ _id: userId, channelId })
 
       if (acknowledged) return Result.ok(undefined)
-      return Result.err(undefined)
+      return Result.err(new APIError("Failed to remove user from channel", { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
     catch (err) {
-      return Result.err(err.message)
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
     }
   }
 }
