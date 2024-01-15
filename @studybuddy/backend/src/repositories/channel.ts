@@ -2,7 +2,7 @@ import { HydratedDocument, Query, Types } from "mongoose"
 import { Channel, ChannelMedia, ChannelMessage, ChannelUser, IChannel, IChannelMessage, IChannelUser } from "@studybuddy/backend/models/channel"
 import Pagination from "../utils/pagination"
 import PermissionsManager from "../utils/permissions"
-import { Result } from "true-myth"
+import { Result, Maybe } from "true-myth"
 
 namespace ChannelRepository {
   export type CreateChannelPayload = Omit<IChannel, "createdAt">
@@ -36,10 +36,10 @@ namespace ChannelRepository {
     id: Types.ObjectId
   }
 
-  export async function getChannel(payload: GetChannelPayload): Promise<Result<HydratedDocument<IChannel>, string>> {
+  export async function getChannel(payload: GetChannelPayload): Promise<Result<Maybe<HydratedDocument<IChannel>>, string>> {
     try {
       const channel = await Channel.findById({ _id: payload.id })
-      return Result.ok(channel)
+      return Result.ok(Maybe.of(channel))
     }
     catch (err) {
       return Result.err(err.message)
@@ -53,9 +53,9 @@ namespace ChannelRepository {
     createdAfter?: Date
   }
 
-  export async function getChannels(paginationOptions: Pagination.QueryOptions, filters?: ChannelQueryFilters = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannel>>, string>> {
+  export async function getChannels(paginationOptions: Pagination.QueryOptions, filters: ChannelQueryFilters = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannel>>, string>> {
     try {
-      let query = Channel.find()
+      const query = Channel.find()
       if (filters.name) {
         query.merge({
           name: new RegExp(filters.name, "i"),
@@ -86,12 +86,12 @@ namespace ChannelRepository {
         })
       }
 
-      const channelMessages = await query
+      const channels = await query
         .clone()
         .exec()
 
       const total = await query.countDocuments()
-      return Result.ok(Pagination.createPaginatedResource(channelMessages, { ...paginationOptions, total }))
+      return Result.ok(Pagination.createPaginatedResource(channels, { ...paginationOptions, total }))
     }
     catch (err) {
       return Result.err(err.message)
@@ -121,9 +121,6 @@ namespace ChannelRepository {
 
   export async function deleteChannel(payload: DeleteChannelPayload): Promise<Result<undefined, string>> {
     try {
-      const user = await ChannelUser.findOne({ _id: payload.userId })
-      const channel = await Channel.findOne({ _id: payload.channelId })
-
       const { acknowledged } = await Channel.deleteOne({ _id: payload.channelId })
       await ChannelUser.deleteMany({ channelId: payload.channelId })
 
@@ -143,15 +140,14 @@ namespace ChannelRepository {
     try {
       const sender = await ChannelUser.findOne({ _id: payload.senderId, channelId: payload.channelId })
 
-      console.log(sender)
       if (!PermissionsManager.ChannelUser(sender).can("post", "ChannelMessage")) {
         return Result.err("User doesn't have permission to send messages")
       }
 
       const mediaIds: Types.ObjectId[] = []
       for (const medium of payload.media) {
-        const data = new Buffer([await medium.arrayBuffer()]).toString("base64")
-        
+        const data = Buffer.from(await medium.arrayBuffer()).toString("base64")
+
         const media = await ChannelMedia.create({
           data,
           type: medium.type,
@@ -180,25 +176,40 @@ namespace ChannelRepository {
 
   export type ChannelMessageQueryFilters = {
     contains?: string
-    before?: Date
-    after?: Date
+    sentBefore?: Date
+    sentAfter?: Date
   }
 
-  export async function getMessagesInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelMessageQueryFilters): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelMessage>>, string>> {
+  export async function getMessagesInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelMessageQueryFilters = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelMessage>>, string>> {
     try {
-      const query = ChannelMessage
-        .find({
-          _id: payload.channelId,
-          content: new RegExp(filters.contains, "i"),
-          sentAt: {
-            $lte: filters.before,
-            $gte: filters.after
-          },
+      const query = ChannelMessage.find({
+        _id: payload.channelId
+      })
+
+      if (filters.contains) {
+        query.merge({
+          contains: new RegExp(filters.contains, "i"),
         })
-        .skip(paginationOptions.perPage * paginationOptions.page - 1)
-        .limit(paginationOptions.perPage)
+      }
+
+      if (filters.sentBefore) {
+        query.merge({
+          createdAt: {
+            $lte: filters.sentBefore
+          }
+        })
+      }
+
+      if (filters.sentAfter) {
+        query.merge({
+          createdAt: {
+            $gte: filters.sentAfter
+          }
+        })
+      }
 
       const channelMessages = await query
+        .clone()
         .exec()
 
       const total = await query.countDocuments()
@@ -248,6 +259,39 @@ namespace ChannelRepository {
         joinedAt: new Date()
       })
       return Result.ok(user)
+    }
+    catch (err) {
+      return Result.err(err.message)
+    }
+  }
+
+  export type ChannelUserQueryFilter = {
+    username?: string
+    name?: string
+  }
+
+  export async function getUsersInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelUserQueryFilter = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelUser>>, string>> {
+    try {
+      const query = ChannelUser.find({
+        channelId: payload.channelId
+      })
+
+      // TODO: test this out to ensure this query actually works
+      if (filters.name || filters.username) {
+        query.merge({
+          $or: [
+            { name: new RegExp(filters.name, "i") },
+            { username: new RegExp(filters.username, "i") },
+          ]
+        })
+      }
+
+      const channelUsers = await query
+        .clone()
+        .exec()
+
+      const total = await query.countDocuments()
+      return Result.ok(Pagination.createPaginatedResource(channelUsers, { ...paginationOptions, total }))
     }
     catch (err) {
       return Result.err(err.message)

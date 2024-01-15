@@ -4,6 +4,7 @@ import { describe, test, expect } from "vitest";
 import Database from "@studybuddy/backend/utils/database";
 import { ulid } from "ulidx";
 import { File } from '@web-std/file'
+import { Maybe } from "true-myth";
 
 describe("Channels unit test", async () => {
   await Database.start()
@@ -66,6 +67,7 @@ describe("Channels unit test", async () => {
 
     channelsRetrievalResult.map(channels => {
       expect(channels.data).to.have.lengthOf(1)
+      expect(channels.meta.total).to.equal(1)
     })
   })
 
@@ -76,6 +78,7 @@ describe("Channels unit test", async () => {
 
     channelsRetrievalResult.map(channels => {
       expect(channels.data).to.have.lengthOf(1)
+      expect(channels.meta.total).to.equal(1)
     })
   })
 
@@ -86,14 +89,35 @@ describe("Channels unit test", async () => {
     })
 
     expect(channelUpdateResult.isOk).to.be.true
+
     const channelRetrievalResult = await ChannelRepository.getChannel({
       id: channelId
     })
 
-    channelRetrievalResult.map(channel => {
-      expect(channel.name).to.equal(newChannel.name)
-      expect(channel.description).to.equal(newChannel.description)
-      expect(channel.subjects).to.deep.equal(newChannel.subjects)
+    expect(channelRetrievalResult.isOk).to.be.true
+
+    channelRetrievalResult.map(maybeChannel => {
+      expect(maybeChannel.isJust).to.be.true
+
+      maybeChannel.andThen(channel => {
+        expect(channel.name).to.equal(newChannel.name)
+        expect(channel.description).to.equal(newChannel.description)
+        expect(channel.subjects).to.deep.equal(newChannel.subjects)
+
+        return Maybe.nothing()
+      })
+    })
+  })
+
+  test("that members of a channel can be fetched", async () => {
+    const channelUsersResult = await ChannelRepository.getUsersInChannel({
+      channelId,
+    }, { page: 1, perPage: 10 })
+
+    expect(channelUsersResult.isOk).to.be.true
+    channelUsersResult.map(channelUsers => {
+      expect(channelUsers.data).to.have.lengthOf(1)
+      expect(channelUsers.meta.total).to.equal(1)
     })
   })
 
@@ -109,13 +133,25 @@ describe("Channels unit test", async () => {
     })
   })
 
+  test("that number of channel members has increased", async () => {
+    const channelUsersResult = await ChannelRepository.getUsersInChannel({
+      channelId,
+    }, { page: 1, perPage: 10 })
+
+    expect(channelUsersResult.isOk).to.be.true
+    channelUsersResult.map(channelUsers => {
+      expect(channelUsers.data).to.have.lengthOf(2)
+      expect(channelUsers.meta.total).to.equal(2)
+    })
+  })
+
   test("that a user cannot send a message to the channel", async () => {
     const channelMessageCreationResult = await ChannelRepository.addMessageToChannel({
       senderId: memberId,
       channelId,
       content: ulid(),
       media: [
-        new File([], ulid(), { type: "text/plain" })
+        new File(["content"], ulid(), { type: "text/plain" })
       ]
     })
 
@@ -138,7 +174,7 @@ describe("Channels unit test", async () => {
       channelId,
       content: ulid(),
       media: [
-        new File([], ulid(), { type: "text/plain" })
+        new File(["content"], ulid(), { type: "text/plain" })
       ]
     })
 
@@ -154,6 +190,18 @@ describe("Channels unit test", async () => {
     expect(channelUserRemovalResult.isOk).to.be.true
   })
 
+  test("that number of channel members has decreased", async () => {
+    const channelUsersResult = await ChannelRepository.getUsersInChannel({
+      channelId,
+    }, { page: 1, perPage: 10 })
+
+    expect(channelUsersResult.isOk).to.be.true
+    channelUsersResult.map(channelUsers => {
+      expect(channelUsers.data).to.have.lengthOf(1)
+      expect(channelUsers.meta.total).to.equal(1)
+    })
+  })
+
   test("that a channel can be deleted", async () => {
     const channelDeletionResult = await ChannelRepository.deleteChannel({
       channelId,
@@ -165,6 +213,10 @@ describe("Channels unit test", async () => {
       id: channelId
     })
 
-    expect(channelRetrievalResult.isErr).to.be.true
+    expect(channelRetrievalResult.isOk).to.be.true
+
+    channelRetrievalResult.map(maybeChannel => {
+      expect(maybeChannel.isNothing).to.be.true
+    })
   })
 })
