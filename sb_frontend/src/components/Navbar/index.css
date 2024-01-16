@@ -1,0 +1,120 @@
+.main-nav-container {
+  box-shadow: var(--box-shadow-black);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 65px;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: var(--color-white);
+}
+
+@keyframes morph {
+
+  0%,
+  100% {
+    border-radius: 70% 30% 41% 59% / 47% 73% 27% 53%;
+  }
+
+  34% {
+    border-radius: 70% 30% 41% 59% / 29% 45% 55% 71%;
+  }
+
+  60% {
+    border-radius: 55% 45% 56% 44% / 57% 23% 77% 43%;
+  }
+
+  80% {
+    border-radius: 55% 45% 39% 61% / 25% 50% 50% 75%;
+  }
+}
+
+.logo-container h1 {
+  color: var(--color-white);
+  font-family: "Pacifico";
+  text-transform: capitalize;
+  position: relative;
+}
+
+.logo-container h1 span:nth-child(1) {
+  position: relative;
+  top: -10px;
+}
+
+.logo-container {
+  background: var(--color-orange);
+  width: max-content;
+  padding: 8px 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  width: 60px;
+  height: 80px;
+  border-radius: 61% 39% 56% 44% / 44% 61% 39% 56%;
+  animation: morph 3s linear infinite;
+}
+
+.nav-links-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-links-container h3 {
+  color: var(--color-orange);
+  font-family: "Roboto";
+  opacity: 0.5;
+  margin: 0px 8px;
+  transition: 0.3s;
+}
+
+.nav-links-container h3:hover {
+  opacity: 1;
+}
+
+.auth-container {}
+
+.auth-container button {
+  padding: 12px 18px;
+  width: max-content;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  margin: 0 10px;
+  font-family: "Roboto";
+  background: var(--color-green);
+  color: var(--color-white);
+  box-shadow: var(--box-shadow-green);
+  text-transform: uppercase;
+}
+
+.auth-container button i {
+  margin-left: 8px;
+}
+
+.auth-container button:nth-child(1) {
+  background: var(--color-red);
+  box-shadow: var(--box-shadow-red);
+}
+
+@media (max-width: 750px) {
+  .logo-container {
+    padding: 18px;
+    width: 40px;
+    height: 40px;
+    margin-left: -40px;
+  }
+
+  .main-nav-container {
+    padding: 10px 45px;
+
+    background: var(--color-orange);
+  }
+
+  .nav-links-container,
+  .auth-container {
+    display: none;
+  }
+}
