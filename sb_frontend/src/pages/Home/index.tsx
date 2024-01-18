@@ -9,7 +9,7 @@ type CardProp = {
 };
 
 const index: FC = () => {
-  const [cardData, setCardData] = useState<CardProp>([
+  const [cardData, setCardData] = useState<CardProp[]>([
     {
       icon: "fa-solid fa-list-check",
       title: "Goals",
