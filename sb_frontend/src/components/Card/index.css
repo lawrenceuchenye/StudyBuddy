@@ -35,6 +35,9 @@
 
 @media (max-width: 750px) {
   .card-container {
-    width: 320px;
+    width: 300px;
+    position: relative;
+    margin: 5px;
+    margin-bottom: 30px;
   }
 }
