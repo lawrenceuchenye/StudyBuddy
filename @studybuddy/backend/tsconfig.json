@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "composite": true,
-    "noEmit": true
+    "noEmit": true,
+    "noImplicitAny": true,
+    "allowUnreachableCode": false,
   },
   "include": [
     "./src/**/*.ts",
