@@ -1,6 +1,7 @@
 import "./index.css";
-import React, { FC } from "react";
+import { FC } from "react";
 
+//@ts-ignore
 const index: FC = () => {
   return (
     <div className="main-nav-container">

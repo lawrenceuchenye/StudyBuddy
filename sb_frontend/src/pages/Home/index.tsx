@@ -1,5 +1,5 @@
 import "./index.css";
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 import Card from "../../components/Card/";
 
 type CardProp = {
@@ -8,8 +8,9 @@ type CardProp = {
   desc: string;
 };
 
+//@ts-ignore
 const index: FC = () => {
-  const [cardData, setCardData] = useState<CardProp[]>([
+  const cardData = useState<CardProp[]>([
     {
       icon: "fa-solid fa-list-check",
       title: "Goals",
@@ -35,7 +36,8 @@ const index: FC = () => {
       title: "Earn",
       desc: "finding it hard to get those academic goals,studybud goal setter festure makes trackibg yoir prigress to your goals easier thus aiding you get them and without losing the flow.",
     },
-  ]);
+  ])[0];
+
   return (
     <div className="main-container">
       <div className="hero-container">

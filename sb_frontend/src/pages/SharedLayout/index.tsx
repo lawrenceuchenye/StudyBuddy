@@ -1,5 +1,5 @@
 import "./index.css";
-import React, { FC } from "react";
+import { FC } from "react";
 import { Outlet } from "react-router-dom";
 
 import Navbar from "../../components/Navbar/";
@@ -12,7 +12,11 @@ const index: FC = () => {
       <section>
         <Outlet />
       </section>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+      <svg
+        style={{ position: "relative", top: "20px" }}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 1440 320"
+      >
         <path
           fill="#000"
           fill-opacity="1"

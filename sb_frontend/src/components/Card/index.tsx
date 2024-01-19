@@ -1,5 +1,5 @@
 import "./index.css";
-import React, { FC } from "react";
+import { FC } from "react";
 
 type CardProp = {
   icon: string;
@@ -7,6 +7,7 @@ type CardProp = {
   desc: string;
 };
 
+//@ts-ignore
 export const index: FC<CardProp> = ({ icon, title, desc }) => {
   return (
     <div className="card-container">
