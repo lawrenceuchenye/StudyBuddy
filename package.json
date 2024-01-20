@@ -6,6 +6,7 @@
   "description": "",
   "scripts": {
     "backend:dev": "dotenv -c -- pnpm --filter @studybuddy/backend dev",
+    "backend:test": "dotenv -c -- pnpm --filter @studybuddy/backend test",
     "backend:build": "pnpm --filter @studybuddy/backend build",
     "frontend:dev": "dotenv -c -- pnpm --filter @studybuddy/frontend dev"
   },
