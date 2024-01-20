@@ -1,8 +1,12 @@
 import "./index.css";
-import { FC } from "react";
-
+import { FC, useState } from "react";
+import { useStudyBudStore } from "../../store/";
 //@ts-ignore
 const index: FC = () => {
+  //  const [isTapped, setIsTapped] = useState<boolean>(false);
+  const isTapped = useStudyBudStore((state) => state.isTapped);
+  const toggleIsTapped = useStudyBudStore((state) => state.toggleIsTapped);
+
   return (
     <div className="main-nav-container">
       <div className="logo-container">
@@ -29,6 +33,9 @@ const index: FC = () => {
             Sign up <i className="fa fa-user-plus"></i>
           </h3>{" "}
         </button>
+      </div>
+      <div className="ham_parent_container" onClick={toggleIsTapped}>
+        <div className={isTapped ? "ham_open" : "ham"}></div>
       </div>
     </div>
   );

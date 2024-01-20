@@ -2,10 +2,14 @@ import "./index.css";
 import { FC } from "react";
 import { Outlet } from "react-router-dom";
 
+import { useStudyBudStore } from "../../store/";
 import Navbar from "../../components/Navbar/";
 import FootNavbar from "../../components/FootNavbar/";
+import MobileMenu from "../../components/MobileMenu/";
 
 const index: FC = () => {
+  const isTapped = useStudyBudStore((state) => state.isTapped);
+
   return (
     <div>
       <Navbar />
@@ -24,6 +28,7 @@ const index: FC = () => {
         ></path>
       </svg>
       <FootNavbar />
+      {isTapped && <MobileMenu />}
     </div>
   );
 };

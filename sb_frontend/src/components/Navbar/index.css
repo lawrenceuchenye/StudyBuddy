@@ -68,6 +68,7 @@
   opacity: 0.5;
   margin: 0px 8px;
   transition: 0.3s;
+  cursor: pointer;
 }
 
 .nav-links-container h3:hover {
@@ -99,6 +100,87 @@
   box-shadow: var(--box-shadow-red);
 }
 
+.ham_parent_container {
+  width: 40px;
+  height: 40px;
+  display: none;
+  position: relative;
+  z-index: 3;
+  left: 35px;
+}
+
+.ham {
+  width: 40px;
+  height: 5px;
+  border-radius: 8px;
+  background: var(--color-white);
+  position: relative;
+  top: 15px;
+  transition: 0.8s;
+  left: -10px;
+}
+
+.ham::before {
+  width: 50px;
+  height: 5px;
+  content: "";
+  border-radius: 8px;
+  background: var(--color-white);
+  position: absolute;
+  top: -13px;
+  left: -10px;
+  transition: 0.3s;
+}
+
+.ham::after {
+  width: 30px;
+  height: 5px;
+  content: "";
+  border-radius: 8px;
+  background: var(--color-white);
+  position: absolute;
+  top: 13px;
+  right: 0;
+  transition: 0.3s;
+}
+
+.ham_open {
+  width: 30px;
+  height: 5px;
+  border-radius: 8px;
+  background: transparent;
+  position: relative;
+  top: 15px;
+  left: -10px;
+  transition: 0.8s;
+  transform: rotate(310deg);
+}
+
+.ham_open::before {
+  width: 50px;
+  height: 5px;
+  content: "";
+  border-radius: 8px;
+  background: var(--color-white);
+  position: absolute;
+  top: 0px;
+  left: -10px;
+  transform: rotate(90deg);
+  transition: 0.3s;
+}
+
+.ham_open::after {
+  width: 50px;
+  height: 5px;
+  content: "";
+  border-radius: 8px;
+  background: var(--color-white);
+  position: absolute;
+  top: 0px;
+  left: -10px;
+  transition: 0.3s;
+}
+
 @media (max-width: 750px) {
   .logo-container {
     padding: 18px;
@@ -116,5 +198,10 @@
   .nav-links-container,
   .auth-container {
     display: none;
+  }
+
+  .ham_parent_container {
+    display: flex;
+    align-content: center;
   }
 }
