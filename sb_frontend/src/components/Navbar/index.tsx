@@ -1,6 +1,7 @@
 import "./index.css";
 import { FC, useState } from "react";
 import { useStudyBudStore } from "../../store/";
+import { NavLink } from "react-router-dom";
 //@ts-ignore
 const index: FC = () => {
   //  const [isTapped, setIsTapped] = useState<boolean>(false);
@@ -18,20 +19,38 @@ const index: FC = () => {
         </i>
       </div>
       <div className="nav-links-container">
-        <h3>Home</h3>
+        <h3>
+          <NavLink
+            to="/"
+            style={{ color: "var(--color-orange)", textDecoration: "none" }}
+          >
+            Home
+          </NavLink>
+        </h3>
+
         <h3>Resources</h3>
         <h3>About</h3>
       </div>
       <div className="auth-container">
         <button>
-          <h3>
-            Log in <i className="fa fa-sign-in"></i>
-          </h3>{" "}
+          <NavLink
+            to="login/"
+            style={{ color: "var(--color-white)", textDecoration: "none" }}
+          >
+            <h3>
+              Log in <i className="fa fa-sign-in"></i>
+            </h3>
+          </NavLink>
         </button>
         <button>
-          <h3>
-            Sign up <i className="fa fa-user-plus"></i>
-          </h3>{" "}
+          <NavLink
+            to="signup/"
+            style={{ color: "var(--color-white)", textDecoration: "none" }}
+          >
+            <h3>
+              Sign up <i className="fa fa-user-plus"></i>
+            </h3>{" "}
+          </NavLink>
         </button>
       </div>
       <div className="ham_parent_container" onClick={toggleIsTapped}>

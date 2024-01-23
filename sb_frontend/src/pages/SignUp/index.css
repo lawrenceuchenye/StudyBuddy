@@ -1,0 +1,115 @@
+.form-auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container {
+  width: 80%;
+  min-height: 400px;
+  box-shadow: var(--box-shadow-black);
+  margin: 50px 0px;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-img-container {
+  width: 50%;
+  min-height: 400px;
+  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)),
+    url("../../../public/books.jpg");
+  background-size: cover;
+  background-position: center;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+}
+
+.form-img-container h1 {
+  font-family: "Syne";
+  font-size: 38px;
+  text-transform: uppercase;
+  color: var(--color-white);
+}
+
+.form-img-container span {
+  color: var(--color-orange);
+}
+
+.main-form-container {
+  width: 50%;
+  text-align: center;
+  padding: 10px;
+}
+
+.main-form-container h1 {
+  font-family: "Roboto";
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-size: 30px;
+}
+
+.main-form-container p {
+  font-family: "Opem Sans";
+  margin-bottom: 15px;
+  color: var(--color-orange);
+  opacity: 0.5;
+}
+
+.form-fields-container input {
+  width: 80%;
+  padding: 15px 20px;
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  background: var(--color-light-grey);
+  margin: 10px 0px;
+  font-family: "Roboto";
+}
+
+.form-fields-container button {
+  width: 80%;
+  padding: 15px 20px;
+  border: none;
+  outline: none;
+  border-radius: 25px;
+  background: var(--color-orange);
+  margin: 10px 0px;
+  font-family: "Roboto";
+  color: var(--color-white);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+@media (max-width: 750px) {
+  .form-auth-container {
+    flex-direction: column;
+  }
+
+  .form-img-container {
+    width: 100%;
+    border-radius: 0;
+    position: relative;
+  }
+
+  .main-form-container {
+    width: 100%;
+    padding-top: 50px;
+    border-radius: 15px;
+    position: relative;
+    top: -100px;
+    background: var(--color-white);
+  }
+
+  .form-container {
+    box-shadow: none;
+    margin: 0;
+    flex-direction: column;
+    width: 100%;
+  }
+}

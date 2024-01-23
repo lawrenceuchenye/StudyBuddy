@@ -1,6 +1,7 @@
 import "./index.css";
 import React, { FC } from "react";
 import { useStudyBudStore } from "../../store/";
+import { NavLink } from "react-router-dom";
 
 const index: FC = () => {
   const toggleIsTapped = useStudyBudStore((state) => state.toggleIsTapped);
@@ -9,19 +10,36 @@ const index: FC = () => {
     <div className="mm-main-container" onClick={toggleIsTapped}>
       <div className="mm-info-container" onClick={(e) => e.stopPropagation()}>
         <div className="mm-info-container-nav">
-          <h3>Home</h3>
+          <h3>
+            <NavLink
+              to="/"
+              style={{ color: "var(--color-orange)", textDecoration: "none" }}
+            >
+              Home
+            </NavLink>
+          </h3>
           <h3>Resources</h3>
           <h3>About </h3>
         </div>
         <div className="mm-auth-container">
           <button>
-            <h3>
-              Log in <i className="fa fa-sign-in"></i>
-            </h3>
+            <NavLink
+              to="login/"
+              style={{ color: "var(--color-white)", textDecoration: "none" }}
+            >
+              <h3>
+                Log in <i className="fa fa-sign-in"></i>
+              </h3>
+            </NavLink>
           </button>
           <button>
             <h3>
-              Sign up <i className="fa fa-user-plus"></i>
+              <NavLink
+                to="signup/"
+                style={{ color: "var(--color-white)", textDecoration: "none" }}
+              >
+                Sign up <i className="fa fa-user-plus"></i>
+              </NavLink>
             </h3>
           </button>
         </div>
