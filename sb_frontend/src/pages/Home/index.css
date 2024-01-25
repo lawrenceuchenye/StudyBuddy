@@ -1,0 +1,243 @@
+.main-container {
+  overflow: hidden;
+}
+
+.hero-container {
+  padding: var(--pasding-desktop);
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7)),
+    url("../../../public/books.jpg");
+  color: var(--color-white);
+  min-height: 30vh;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  padding: var(--padding-desktop);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 200px;
+}
+
+.hero-container h1 {
+  font-size: 45px;
+  font-family: "Roboto";
+  text-transform: capitalize;
+}
+
+.hero-container h1 span {
+  color: var(--color-orange);
+}
+
+.hero-container p {
+  margin-top: 20px;
+  font-family: "Open Sans";
+}
+
+.hero-container button {
+  width: max-content;
+  padding: 10px 25px;
+  color: var(--color-white);
+  background: var(--color-orange);
+  border: none;
+  border-radius: 30px;
+  font-family: "Roboto";
+  font-size: 24px;
+  margin: 20px 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hero-container button i {
+  margin-left: 15px;
+}
+
+.hero-info-container {
+  width: 50%;
+}
+
+.wave-1 {
+  margin-top: -260px;
+}
+
+.img-container {
+  background: url("../../../public/lp-img.jpg");
+  background-size: cover;
+  background-position: center;
+  width: 450px;
+  height: 400px;
+  position: relative;
+  right: 0;
+  border-radius: 15px 0 0 15px;
+  box-shadow: var(--box-shadow-orange);
+  right: -65px;
+}
+
+.features-container {
+  background: var(--color-orange);
+  padding: var(--padding-desktop);
+  margin-top: -10px;
+}
+
+.features-container h1 {
+  font-family: "Roboto";
+  color: var(--color-white);
+  margin-bottom: 50px;
+  font-size: 28px;
+}
+
+.cards-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.wave-2 {
+  margin-top: -10px;
+}
+
+.info-m-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 50px 0px;
+}
+
+.info-container h1 {
+  font-size: 45px;
+  font-family: "Pacifico";
+  margin-bottom: 20px;
+}
+
+.info-container h1 span {
+  color: var(--color-orange);
+}
+
+.info-container p {
+  font-family: "Open Sans";
+}
+
+.info-container {
+  width: 50%;
+  text-align: center;
+  padding: var(--padding-desktop);
+}
+
+.img-2-container {
+  box-shadow: var(--box-shadow-orange);
+  padding: 20px;
+  border-radius: 0 15px 15px 0;
+  width: 45%;
+  height: 300px;
+  background: url("../../../public/books.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.testimonials-container {
+  padding: var(--padding-desktop);
+}
+
+.testimonials-container h1 {
+  font-size: 35px;
+  font-family: "Roboto";
+  margin-bottom: 30px;
+}
+
+.testimonial {
+  padding: 25px 15px;
+  border-radius: 8px;
+  box-shadow: var(--box-shadow-orange);
+  text-align: center;
+  width: 280px;
+  margin: 20px;
+}
+
+.testimonial i {
+  font-size: 35px;
+  margin-bottom: 20px;
+  background: var(--color-orange);
+  padding: 20px;
+  border-radius: 50%;
+  color: var(--color-white);
+}
+
+.testimonial:nth-child(1) i {
+  background: var(--color-red);
+}
+
+.testimonial:nth-child(2) i {
+  background: var(--color-green);
+}
+
+.testimonial:nth-child(3) i {
+  background: var(--color-blue);
+}
+
+.testimonial p {
+  font-family: "Open Sans";
+}
+
+.t-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 750px) {
+  .hero-container {
+    padding: var(--padding-mobile);
+    flex-direction: column;
+  }
+
+  .cards-container {
+    flex-direction: column;
+    flex-wrap: no-wrap;
+  }
+
+  .hero-info-container {
+    width: 100%;
+    padding-bottom: 100px;
+  }
+
+  .img-container {
+    width: 320px;
+    height: 250px;
+    margin-top: -50px;
+    margin-bottom: 50px;
+    right: -25px;
+  }
+
+  .wave-1 {
+    margin-top: -100px;
+  }
+
+  .features-container {
+    padding: var(--padding-mobile);
+  }
+
+  .info-m-container {
+    flex-wrap: wrap;
+  }
+
+  .img-2-container {
+    width: 60%;
+  }
+
+  .info-container {
+    width: 100%;
+    padding: var(--padding-mobile);
+  }
+
+  .testimonials-container {
+    padding: var(--padding-mobile);
+  }
+
+  .testimonial {
+    margin: 0;
+    margin-bottom: 30px;
+  }
+}
