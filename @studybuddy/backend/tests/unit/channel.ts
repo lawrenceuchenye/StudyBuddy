@@ -158,11 +158,11 @@ describe("Channels unit test", async () => {
     expect(channelMessageCreationResult.isErr).to.be.true
   })
 
-  test("that a user can be promoted to poster", async () => {
+  test("that a user can be promoted to tutor", async () => {
     const channelUserPromotionResult = await ChannelRepository.updateUserInChannel({
       channelId,
       userId: memberId,
-      role: "POSTER"
+      role: "TUTOR"
     })
 
     expect(channelUserPromotionResult.isOk).to.be.true

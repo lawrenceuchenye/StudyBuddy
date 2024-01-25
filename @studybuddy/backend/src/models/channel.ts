@@ -18,13 +18,13 @@ export interface IChannelMessage {
 }
 
 export interface IChannelMedia {
-  data: String
+  data: string
   type: string
   size: number
   uploadedAt: Date
 }
 
-export type ChannelUserRole = "CREATOR" | "MODERATOR" | "MEMBER" | "POSTER"
+export type ChannelUserRole = "CREATOR" | "TUTOR"
 
 export interface IChannelUser {
   channelId: Types.ObjectId

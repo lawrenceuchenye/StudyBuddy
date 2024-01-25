@@ -170,6 +170,31 @@ export default new Hono()
 
     return c.json(userResult.value)
   })
+  .post(":id/messages",
+    async (c) => {
+      // TODO: Check if user is in channel
+
+      const body = await c.req.parseBody()
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+      const payload = z.object({
+        content: z.string(),
+        media: z.array(z.instanceof(File)),
+      }).parse({
+        content: body.content,
+        media: body.media
+      })
+
+      const messageCreationResult = await ChannelRepository.addMessageToChannel({
+        senderId: new Types.ObjectId(""),
+        channelId,
+        ...payload
+      })
+
+      if (messageCreationResult.isErr)
+        return c.json({ message: messageCreationResult.error }, messageCreationResult.error.code)
+
+      return c.json({ message: "Message sent successfully!" })
+    })
   .get("/:id/messages", async (c) => {
     // TODO: Check if user is in channel
 
