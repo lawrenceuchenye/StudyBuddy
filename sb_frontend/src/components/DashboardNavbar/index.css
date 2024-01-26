@@ -1,0 +1,46 @@
+.cmp-nav-container {
+  min-width: 200px;
+  height: 100vh;
+  background: var(--color-orange);
+  box-shadow: var(--box-shadow-black);
+  padding: 20px 10px;
+  margin-bottom: -20vh;
+  position: relative;
+}
+
+.link h1 {
+  font-family: "Roboto";
+  color: var(--color-white);
+}
+
+.link i {
+  color: var(--color-white);
+  font-size: 28px;
+}
+
+.link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin: 20px 0px;
+  transition: 0.3s;
+  position: relative;
+}
+
+.link:hover {
+  background: var(--color-dark-orange);
+}
+
+.link:nth-child(1):after {
+  position: absolute;
+  height: 3px;
+  width: 115.1%;
+  background: var(--color-white);
+  content: "";
+  left: -10%;
+  top: 55px;
+}
+
+.link:last-child {}
