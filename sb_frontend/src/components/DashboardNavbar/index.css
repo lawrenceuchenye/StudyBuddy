@@ -1,4 +1,17 @@
-.cmp-nav-container {
+.cmp-nav-container_closed {
+  width: 50px;
+  height: 100vh;
+  background: var(--color-orange);
+  box-shadow: var(--box-shadow-black);
+  padding: 20px 10px;
+  margin-bottom: -20vh;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.cmp-nav-container_open {
   min-width: 200px;
   height: 100vh;
   background: var(--color-orange);
@@ -6,11 +19,21 @@
   padding: 20px 10px;
   margin-bottom: -20vh;
   position: relative;
+  overflow: hidden;
+  transition: 0.3s;
 }
 
 .link h1 {
   font-family: "Roboto";
   color: var(--color-white);
+}
+
+.cmp-nav-container_closed .link h1 {
+  display: none;
+}
+
+.cmp-nav-container_closed .link {
+  justify-content: center;
 }
 
 .link i {

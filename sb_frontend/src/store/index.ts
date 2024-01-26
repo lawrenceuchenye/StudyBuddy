@@ -12,4 +12,7 @@ export const useStudyBudStore = create<StudyBudStoreProp>((set) => ({
       isTapped: !state.isTapped,
     }));
   },
+  setIsTapped:(boolVal)=>{
+    set({isTapped:boolVal})
+  }
 }));

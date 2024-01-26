@@ -10,14 +10,12 @@ const index: FC = () => {
     <div className="mm-main-container" onClick={toggleIsTapped}>
       <div className="mm-info-container" onClick={(e) => e.stopPropagation()}>
         <div className="mm-info-container-nav">
-          <h3>
-            <NavLink
-              to="/"
-              style={{ color: "var(--color-orange)", textDecoration: "none" }}
-            >
-              Home
-            </NavLink>
-          </h3>
+          <NavLink
+            to="/"
+            style={{ color: "var(--color-black)", textDecoration: "none" }}
+          >
+            <h3>Home</h3>
+          </NavLink>
           <h3>Resources</h3>
           <h3>About </h3>
         </div>

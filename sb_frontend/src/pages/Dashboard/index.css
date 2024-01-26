@@ -1,0 +1,99 @@
+.dashboard-main-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.userprofile-card {
+  padding: 8px 4px;
+  border-radius: 8px;
+  box-shadow: var(--box-shadow-black);
+  font-family: "Roboto";
+  display: flex;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.userprofile-info-container h2 {
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+
+.userprofile-info-container h3 {
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.userprofile-info-container h4 {
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+.userprofile-info-container p {
+  font-family: "Open Sans";
+  text-transform: uppercase;
+}
+
+.user-info-card h1 {
+  font-family: "Pacifico";
+  text-transform: uppercase;
+}
+
+.userprofile-img-container {
+  width: 120px;
+  height: 120px;
+  margin: auto 10px;
+  border-radius: 5px;
+  background: url("../../../public/books.jpg");
+  background-size: cover;
+  background-position: center;
+  margin-right: 15px;
+}
+
+.main-user-info-container {
+  padding: var(--padding-desktop);
+  width: 100%;
+}
+
+.dcards-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dcard-container {
+  width: 250px;
+  min-height: 150px;
+  background: var(--color-white);
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: var(--box-shadow-black);
+  background: var(--color-light-orange);
+  overflow: hidden;
+  margin: 30px 0px;
+}
+
+.dcard-container:nth-child(2) {
+  width: 250px;
+  min-height: 150px;
+  background: var(--color-white);
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: var(--box-shadow-green);
+  background: var(--color-green);
+  overflow: hidden;
+  margin: 0px 10px;
+}
+
+.dcard-container:nth-child(3) {
+  width: 250px;
+  min-height: 150px;
+  background: var(--color-white);
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: var(--box-shadow-red);
+  background: var(--color-red);
+  overflow: hidden;
+}

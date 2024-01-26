@@ -1,5 +1,7 @@
 import "./index.css";
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
+import { useStudyBudStore } from "../../store/";
+
 import Card from "../../components/Card/";
 
 type CardProp = {
@@ -37,6 +39,11 @@ const index: FC = () => {
       desc: "finding it hard to get those academic goals,studybud goal setter festure makes trackibg yoir prigress to your goals easier thus aiding you get them and without losing the flow.",
     },
   ])[0];
+  const setIsTapped = useStudyBudStore((state) => state.setIsTapped);
+
+  useEffect(() => {
+    setIsTapped(false);
+  }, []);
 
   return (
     <div className="main-container">

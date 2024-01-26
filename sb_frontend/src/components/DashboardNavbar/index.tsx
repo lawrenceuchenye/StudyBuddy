@@ -1,34 +1,39 @@
 import "./index.css";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 
 const index: FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="cmp-nav-container">
-      <div className="link">
-        <h1>Profile</h1>
-
+    <div
+      className={isOpen ? "cmp-nav-container_open" : "cmp-nav-container_closed"}
+      onClick={() => setIsOpen(!isOpen)}
+    >
+      <div className="link" onClick={(e) => e.stopPropagation()}>
         <i className="fa-solid fa-user"></i>
+
+        <h1>Profile</h1>
       </div>
 
-      <div className="link">
-        <h1>Goals</h1>
-
+      <div className="link" onClick={(e) => e.stopPropagation()}>
         <i className="fa-solid fa-bullseye"></i>
-      </div>
-      <div className="link">
-        <h1>Match</h1>
 
+        <h1>Goals</h1>
+      </div>
+      <div className="link" onClick={(e) => e.stopPropagation()}>
         <i className="fa-solid fa-users"></i>
-      </div>
-      <div className="link">
-        <h1>Tutor</h1>
 
+        <h1>Match</h1>
+      </div>
+      <div className="link" onClick={(e) => e.stopPropagation()}>
         <i className="fa-solid fa-chalkboard-teacher"></i>
-      </div>
-      <div className="link">
-        <h1>Share</h1>
 
+        <h1>Tutor</h1>
+      </div>
+      <div className="link" onClick={(e) => e.stopPropagation()}>
         <i className="fa-solid fa-share"></i>
+
+        <h1>Share</h1>
       </div>
     </div>
   );

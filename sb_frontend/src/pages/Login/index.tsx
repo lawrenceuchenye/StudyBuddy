@@ -1,7 +1,14 @@
 import "./index.css";
-import React from "react";
+import React, { FC, useEffect } from "react";
+import { useStudyBudStore } from "../../store/";
 
-const index = (props: {}) => {
+const index: FC = () => {
+  const setIsTapped = useStudyBudStore((state) => state.setIsTapped);
+
+  useEffect(() => {
+    setIsTapped(false);
+  }, []);
+
   return (
     <div className="form-auth-container">
       <div className="form-container">

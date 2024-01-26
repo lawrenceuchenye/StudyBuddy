@@ -1,5 +1,5 @@
 import "./index.css";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 
 import { useStudyBudStore } from "../../store/";
@@ -9,7 +9,6 @@ import MobileMenu from "../../components/MobileMenu/";
 
 const index: FC = () => {
   const isTapped = useStudyBudStore((state) => state.isTapped);
-
   return (
     <div>
       <Navbar />
