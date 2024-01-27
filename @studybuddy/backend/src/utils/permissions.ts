@@ -1,21 +1,25 @@
-import { defineAbility } from '@casl/ability';
-import { IChannelUser } from '../models/channel';
+import { defineAbility, subject as caslAbility } from '@casl/ability';
+import { IChannel, IChannelMessage, IChannelUser } from '../models/channel';
 import { HydratedDocument } from 'mongoose';
 
 namespace PermissionsManager {
-  export const ChannelUser = (user: HydratedDocument<IChannelUser>) => defineAbility((can) => {
-    if (user.role === "POSTER" || user.role === "MODERATOR" || user.role === "CREATOR") {
-      can('post', 'ChannelMessage')
-    }
+  export const subject = caslAbility
 
-    if (user.role === "MODERATOR" || user.role === "CREATOR") {
+  export const ChannelUser = (user: HydratedDocument<IChannelUser>) => defineAbility((can) => {
+    if (user.role === "CREATOR" || user.role === "TUTOR") {
+      can('post', 'ChannelMessage')
       can('delete', "ChannelMessage")
+      can('remove', "ChannelUser")
     }
     else {
-      can('delete', 'ChannelMessage', { senderId: user._id })
+      can<IChannelMessage>('update', 'ChannelMessage', { senderId: user._id })
+      can<IChannelMessage>('delete', 'ChannelMessage', { senderId: user._id })
+
+      can<HydratedDocument<IChannelUser>>('remove', 'ChannelUser', { _id: user._id })
     }
 
-    can('delete', 'Channel', { creatorId: user._id })
+    can<IChannel>('update', 'Channel', { creatorId: user._id })
+    can<IChannel>('delete', 'Channel', { creatorId: user._id })
   })
 }
 

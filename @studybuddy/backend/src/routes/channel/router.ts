@@ -2,25 +2,29 @@ import { Hono } from "hono";
 import ChannelRepository from "@studybuddy/backend/repositories/channel";
 import { z } from "zod"
 import { zValidator } from '@hono/zod-validator'
-import { Types } from "mongoose";
 import { StatusCodes } from "http-status-codes";
 import Pagination from "@studybuddy/backend/utils/pagination";
 import { transformMongoId } from "@studybuddy/backend/utils/validator";
+import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
+import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
+import { deleteChannelById, deleteChannelMessage, joinChannel, leaveChannel, postChannelMessage, promoteChannelUser, removeUserFromChannel, updateChannelById, updateChannelMessage } from "./controller";
 
 export default new Hono()
   .post("/",
+    JwtMiddleware.verify,
     zValidator("json", z.object({
       name: z.string().min(3),
       description: z.string().min(3),
       subjects: z.array(z.string().min(3)),
     })),
     async (c) => {
+      const user = c.var.user
       const { name, description, subjects } = c.req.valid("json")
       const channel = await ChannelRepository.createChannel({
         name,
         description,
         subjects,
-        creatorId: new Types.ObjectId(""), // TODO: Get creator id from auth token
+        creatorId: user._id
       })
       return c.json({
         data: channel,
@@ -44,7 +48,7 @@ export default new Hono()
       const channelsResult = await ChannelRepository.getChannels({ page, perPage }, filters)
 
       if (channelsResult.isErr)
-        return c.json({ message: channelsResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
+        return c.json({ message: channelsResult.error.message }, channelsResult.error.code)
 
       return c.json(channelsResult.value)
     })
@@ -54,7 +58,7 @@ export default new Hono()
       const channelResult = await ChannelRepository.getChannel({ id })
 
       if (channelResult.isErr)
-        return c.json({ message: channelResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
+        return c.json({ message: channelResult.error.message }, channelResult.error.code)
 
       const maybeChannel = channelResult.value
 
@@ -64,72 +68,46 @@ export default new Hono()
       return c.json(Pagination.createSingleResource(maybeChannel.value))
     })
   .patch("/:id",
-    zValidator("json", z.object({
-      name: z.string().min(3),
-      description: z.string().min(3),
-      subjects: z.array(z.string().min(3)),
-    }).partial()),
+    JwtMiddleware.verify,
+    zValidator("json", updateChannelSchema),
     async (c) => {
-      // TODO: Check if user is channel creator or a mod
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+      const payload = c.req.valid("json")
 
-      const id = z.string().transform(transformMongoId).parse(c.req.param("id"))
-      const { name, description, subjects } = c.req.valid("json")
-      const updateResult = await ChannelRepository.updateChannel({
-        id,
-        name,
-        description,
-        subjects
-      })
+      const user = c.var.user
+
+      const updateResult = await updateChannelById(channelId, payload, user)
 
       if (updateResult.isErr)
-        return c.json({ message: updateResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
+        return c.json({ message: updateResult.error.message }, updateResult.error.code)
 
       return c.json({ message: "Channel updated successfully!" })
     })
-  .post("/:id/join", async (c) => {
-    const id = z.string().transform(transformMongoId).parse(c.req.param("id"))
-    const joinResult = await ChannelRepository.addUserToChannel({
-      channelId: id,
-      userId: new Types.ObjectId("") // TODO: Get user id from auth token
+  .delete("/:id",
+    JwtMiddleware.verify,
+    async (c) => {
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+
+      const user = c.var.user
+      const deleteResult = await deleteChannelById(channelId, user)
+
+      if (deleteResult.isErr)
+        return c.json({ message: deleteResult.error.message }, deleteResult.error.code)
+
+      return c.json({ message: "Channel deleted successfully!" })
     })
+  .post("/:id/join",
+    JwtMiddleware.verify,
+    async (c) => {
+      const user = c.var.user
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
 
-    if (joinResult.isErr)
-      return c.json({ message: joinResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
+      const joinResult = await joinChannel(channelId, user)
+      if (joinResult.isErr)
+        return c.json({ message: joinResult.error.message }, joinResult.error.code)
 
-    return c.json({ message: "Channel joined successfully!" })
-  })
-  .post("/:id/leave", async (c) => {
-    const id = z.string().transform(transformMongoId).parse(c.req.param("id"))
-    const removeREsult = await ChannelRepository.removeUserFromChannel({
-      channelId: id,
-      userId: new Types.ObjectId("") // TODO: Get user id from auth token
+      return c.json({ message: "Channel joined successfully!" })
     })
-
-    if (removeREsult.isErr)
-      return c.json({ message: removeREsult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
-
-    return c.json({ message: "Left channel successfully!" })
-  })
-  .delete("/:id/members/:memberId", async (c) => {
-    const {
-      id,
-      memberId
-    } = z.object({
-      id: z.string().transform(transformMongoId),
-      memberId: z.string().transform(transformMongoId)
-    }).parse(c.req.param())
-    // TODO: Check if user is channel creator or a mod
-
-    const removeResult = await ChannelRepository.removeUserFromChannel({
-      channelId: id,
-      userId: memberId
-    })
-
-    if (removeResult.isErr)
-      return c.json({ message: removeResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
-
-    return c.json({ message: "Left channel successfully!" })
-  })
   .get("/:id/members", async (c) => {
     const id = z.string().transform(transformMongoId).parse(c.req.param("id"))
     const filterSchema = z.object({
@@ -147,7 +125,7 @@ export default new Hono()
     }, { page, perPage }, filters)
 
     if (usersResult.isErr)
-      return c.json({ message: usersResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
+      return c.json({ message: usersResult.error.message }, usersResult.error.code)
 
     return c.json(usersResult.value)
   })
@@ -166,39 +144,86 @@ export default new Hono()
     })
 
     if (userResult.isErr)
-      return c.json({ message: userResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
+      return c.json({ message: userResult.error.message }, userResult.error.code)
 
     return c.json(userResult.value)
   })
-  .post(":id/messages",
+  .patch("/:channelId/members/:memberId",
+    JwtMiddleware.verify,
+    zValidator("json", z.object({
+      role: z.enum(["TUTOR"]).optional()
+    })),
     async (c) => {
-      // TODO: Check if user is in channel
-
-      const body = await c.req.parseBody()
-      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
-      const payload = z.object({
-        content: z.string(),
-        media: z.array(z.instanceof(File)),
-      }).parse({
-        content: body.content,
-        media: body.media
-      })
-
-      const messageCreationResult = await ChannelRepository.addMessageToChannel({
-        senderId: new Types.ObjectId(""),
+      const {
         channelId,
-        ...payload
-      })
+        memberId
+      } = z.object({
+        channelId: z.string().transform(transformMongoId),
+        memberId: z.string().transform(transformMongoId)
+      }).parse(c.req.param())
+      const { role } = c.req.valid("json")
+
+      const user = c.var.user
+
+      const updateResult = await promoteChannelUser(channelId, memberId, role, user)
+
+      if (updateResult.isErr)
+        return c.json({ message: updateResult.error.message }, updateResult.error.code)
+
+      return c.json({ message: "Updated user successfully!" })
+    })
+  .post("/:id/leave",
+    JwtMiddleware.verify,
+    async (c) => {
+      const user = c.var.user
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+
+      const leaveResult = await leaveChannel(channelId, user)
+
+      if (leaveResult.isErr)
+        return c.json({ message: leaveResult.error.message }, leaveResult.error.code)
+
+      return c.json({ message: "Left channel successfully!" })
+    })
+  .delete("/:id/members/:memberId", async (c) => {
+    const {
+      id: channelId,
+      memberId
+    } = z.object({
+      id: z.string().transform(transformMongoId),
+      memberId: z.string().transform(transformMongoId)
+    }).parse(c.req.param())
+
+    const user = c.var.user
+
+    const removeResult = await removeUserFromChannel(channelId, memberId, user)
+
+    if (removeResult.isErr)
+      return c.json({ message: removeResult.error.message }, removeResult.error.code)
+
+    return c.json({ message: "Removed user successfully!" })
+  })
+  .post("/:id/messages",
+    async (c) => {
+      const body = await c.req.parseBody()
+      const payload = postChannelMessageSchema
+        .parse({
+          content: body.content,
+          media: body.media
+        })
+      const channelId = z.string()
+        .transform(transformMongoId).parse(c.req.param("id"))
+
+      const user = c.var.user
+
+      const messageCreationResult = await postChannelMessage(channelId, payload, user)
 
       if (messageCreationResult.isErr)
-        return c.json({ message: messageCreationResult.error }, messageCreationResult.error.code)
+        return c.json({ message: messageCreationResult.error.message }, messageCreationResult.error.code)
 
-      return c.json({ message: "Message sent successfully!" })
+      return c.json({ message: "Message posted successfully!" })
     })
   .get("/:id/messages", async (c) => {
-    // TODO: Check if user is in channel
-
-    const id = z.string().transform(transformMongoId).parse(c.req.param("id"))
     const filterSchema = z.object({
       contains: z.string(),
       sentBefore: z.date(),
@@ -209,24 +234,41 @@ export default new Hono()
       perPage,
       ...filters
     } = Pagination.schema.merge(filterSchema).parse(c.req.query())
+    const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
 
     const messagesResult = await ChannelRepository.getMessagesInChannel({
-      channelId: id
+      channelId
     }, { page, perPage }, filters)
 
     if (messagesResult.isErr)
-      return c.json({ message: messagesResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
+      return c.json({ message: messagesResult.error.message }, messagesResult.error.code)
 
     return c.json(messagesResult.value)
   })
   .patch("/:channelId/messages/:messageId",
-    zValidator("json", z.object({
-      content: z.string().trim().min(1),
-      mediaIds: z.array(z.string().transform(transformMongoId)).optional(),
-    }).partial()),
+    zValidator("json", updateChannelMessageSchema),
     async (c) => {
-      // TODO: Check if user is the sender of message
+      const {
+        channelId,
+        messageId
+      } = z.object({
+        channelId: z.string().transform(transformMongoId),
+        messageId: z.string().transform(transformMongoId),
+      }).parse(c.req.param())
+      const payload = c.req.valid("json")
 
+      const user = c.var.user
+
+      const updateResult = await updateChannelMessage(channelId, messageId, payload, user)
+
+      if (updateResult.isErr)
+        return c.json({ message: updateResult.error.message }, updateResult.error.code)
+
+      return c.json({ message: "Message updated successfully!" })
+    })
+  .delete("/:channelId/messages/:messageId",
+    JwtMiddleware.verify,
+    async (c) => {
       const {
         channelId,
         messageId
@@ -235,44 +277,12 @@ export default new Hono()
         messageId: z.string().transform(transformMongoId),
       }).parse(c.req.param())
 
-      const payload = c.req.valid("json")
-      const updateResult = await ChannelRepository.updateMessageInChannel({
-        ...payload,
-        messageId: messageId,
-        channelId,
-      })
+      const user = c.var.user
 
-      if (updateResult.isErr)
-        return c.json({ message: updateResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
+      const deleteResult = await deleteChannelMessage(channelId, messageId, user)
 
-      return c.json({ message: "Message updated successfully!" })
+      if (deleteResult.isErr)
+        return c.json({ message: deleteResult.error.message }, deleteResult.error.code)
+
+      return c.json({ message: "Message deleted successfully!" })
     })
-  .delete("/:channelId/messages/:messageId", async (c) => {
-    // TODO: Check if user is message sender or mod
-
-    const {
-      channelId,
-      messageId
-    } = z.object({
-      channelId: z.string().transform(transformMongoId),
-      messageId: z.string().transform(transformMongoId),
-    }).parse(c.req.param())
-    const deleteResult = await ChannelRepository.deleteMessageInChannel({ messageId: messageId, channelId })
-
-    if (deleteResult.isErr)
-      return c.json({ message: deleteResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
-
-    return c.json({ message: "Message deleted successfully!" })
-  })
-  .delete("/:id", async (c) => {
-    // TODO: Check if user is channel creator
-
-    const id = z.string().transform(transformMongoId).parse(c.req.param("id"))
-    const deleteResult = await ChannelRepository.deleteChannel({ id })
-
-    if (deleteResult.isErr)
-      return c.json({ message: deleteResult.error }, StatusCodes.INTERNAL_SERVER_ERROR)
-
-    return c.json({ message: "Channel deleted successfully!" })
-  })
-

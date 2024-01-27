@@ -29,7 +29,7 @@ export type ChannelUserRole = "CREATOR" | "TUTOR"
 export interface IChannelUser {
   channelId: Types.ObjectId
   userId: Types.ObjectId
-  role: ChannelUserRole
+  role?: ChannelUserRole
   joinedAt: Date
 }
 

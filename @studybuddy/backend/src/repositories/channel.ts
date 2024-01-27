@@ -155,7 +155,11 @@ namespace ChannelRepository {
       if (!sender)
         return Result.err(new APIError("User doesn't exist in channel", { code: StatusCodes.NOT_FOUND }))
 
-      if (!PermissionsManager.ChannelUser(sender).can("post", "ChannelMessage")) {
+      if (
+        PermissionsManager
+          .ChannelUser(sender)
+          .cannot("post", "ChannelMessage")
+      ) {
         return Result.err(new APIError("User doesn't have permission to send messages", { code: StatusCodes.UNAUTHORIZED }))
       }
 
@@ -186,6 +190,26 @@ namespace ChannelRepository {
     }
   }
 
+  export type GetMessageInChannelPayload = {
+    channelId: Types.ObjectId
+    messageId: Types.ObjectId
+  }
+
+  export async function getMessageInChannel(payload: GetMessageInChannelPayload): Promise<Result<Maybe<HydratedDocument<IChannelMessage>>, APIError>> {
+    try {
+      const channelMessage = await ChannelMessage.findOne({
+        _id: payload.messageId,
+        channelId: payload.channelId,
+      }).exec()
+
+      return Result.ok(Maybe.of(channelMessage))
+    }
+    catch (err) {
+      logger.error(err)
+      return Result.err(new APIError((err as Error).message, { code: StatusCodes.INTERNAL_SERVER_ERROR }))
+    }
+  }
+
   export type GetMessagesInChannelPayload = {
     channelId: Types.ObjectId
   }
@@ -199,7 +223,7 @@ namespace ChannelRepository {
   export async function getMessagesInChannel(payload: GetMessagesInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelMessageQueryFilters = {}): Promise<Result<Pagination.PaginatedResource<HydratedDocument<IChannelMessage>>, APIError>> {
     try {
       const query = ChannelMessage.find({
-        _id: payload.channelId
+        channelId: payload.channelId
       })
 
       if (filters.contains) {
