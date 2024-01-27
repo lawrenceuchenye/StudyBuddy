@@ -7,6 +7,8 @@
   "scripts": {
     "backend:dev": "dotenv -c -- pnpm --filter @studybuddy/backend dev",
     "backend:test": "dotenv -c -- pnpm --filter @studybuddy/backend test",
+    "backend:test:unit": "dotenv -c -- pnpm --filter @studybuddy/backend test tests/unit",
+    "backend:test:integration": "dotenv -c -- pnpm --filter @studybuddy/backend test tests/integration",
     "backend:build": "pnpm --filter @studybuddy/backend build",
     "frontend:dev": "dotenv -c -- pnpm --filter @studybuddy/frontend dev"
   },

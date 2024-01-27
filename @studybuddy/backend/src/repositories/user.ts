@@ -19,8 +19,6 @@ namespace UserRepository {
 			const user = await User.create(
 				Object.assign(payload, { password: hashedPassword })
 			);
-
-			console.log(user);
 			return Result.ok(user);
 		} catch (err) {
 			logger.error(err);
@@ -45,8 +43,8 @@ namespace UserRepository {
 			const user = payload.id
 				? await User.findById({ _id: payload.id })
 				: payload.email
-				? await User.findOne({ email: payload.email })
-				: await User.findOne({ userName: payload.userName });
+					? await User.findOne({ email: payload.email })
+					: await User.findOne({ userName: payload.userName });
 			return Result.ok(Maybe.of(user));
 		} catch (err) {
 			logger.error(err);
@@ -124,7 +122,7 @@ namespace UserRepository {
 		id: Types.ObjectId;
 	};
 
-	export async function deleteChannel(
+	export async function deleteUser(
 		payload: DeleteUserPayload
 	): Promise<Result<undefined, APIError>> {
 		try {

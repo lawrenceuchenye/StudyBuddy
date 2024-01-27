@@ -20,13 +20,23 @@ export default new Hono()
     async (c) => {
       const user = c.var.user
       const { name, description, subjects } = c.req.valid("json")
-      const channel = await ChannelRepository.createChannel({
+      const creationResult = await ChannelRepository.createChannel({
         name,
         description,
         subjects,
         creatorId: user._id
       })
+
+      if (creationResult.isErr)
+        return c.json({
+          status: "failed",
+          message: creationResult.error.message
+        },
+          creationResult.error.code)
+      const channel = creationResult.value
+
       return c.json({
+        status: "success",
         data: channel,
         message: "Channel created successfully!"
       }, StatusCodes.CREATED)
