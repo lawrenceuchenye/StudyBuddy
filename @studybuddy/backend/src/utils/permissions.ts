@@ -9,13 +9,16 @@ namespace PermissionsManager {
     if (user.role === "CREATOR" || user.role === "TUTOR") {
       can('post', 'ChannelMessage')
       can('delete', "ChannelMessage")
-      can('remove', "ChannelUser")
     }
     else {
       can<IChannelMessage>('update', 'ChannelMessage', { senderId: user._id })
       can<IChannelMessage>('delete', 'ChannelMessage', { senderId: user._id })
 
       can<HydratedDocument<IChannelUser>>('remove', 'ChannelUser', { _id: user._id })
+    }
+
+    if (user.role === "CREATOR") {
+      can('remove', "ChannelUser")
     }
 
     can<IChannel>('update', 'Channel', { creatorId: user._id })

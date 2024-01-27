@@ -10,37 +10,21 @@ import { z } from "zod";
 import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
 import { fromMaybe } from "true-myth/result";
 
-export const fetchChannelUser = async (channelId: Types.ObjectId, userId: Types.ObjectId): Promise<Result<Maybe<HydratedDocument<IChannelUser>>, APIError>> => {
-  const channelUserFetchResult = await ChannelRepository.getUserInChannel({
-    userId,
+export const updateChannelById = async (channelId: Types.ObjectId, payload: z.infer<typeof updateChannelSchema>, user: HydratedDocument<IUser>) => {
+  const channelUser = await ChannelRepository.getUserInChannel({
+    userId: user._id,
     channelId
   })
 
-  if (channelUserFetchResult.isErr)
-    return Result.err(new APIError(channelUserFetchResult.error.message, { code: channelUserFetchResult.error.code }))
-  const maybeChannelUser = channelUserFetchResult.value
-
-  return Result.ok(maybeChannelUser)
-}
-
-export const updateChannelById = async (channelId: Types.ObjectId, payload: z.infer<typeof updateChannelSchema>, user: HydratedDocument<IUser>): Promise<Result<unknown, APIError>> => {
-  const channelUserResult = await fetchChannelUser(channelId, user._id)
-    .then<Result<HydratedDocument<IChannelUser>, APIError>>(result => result
-      .andThen(maybeChannelUser => fromMaybe(
-        new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND }),
-        maybeChannelUser
-      )))
-
-  if (channelUserResult.isErr)
-    return channelUserResult
-  const channelUser = channelUserResult.value
+  if (!channelUser)
+    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
 
   if (
     PermissionsManager
       .ChannelUser(channelUser)
       .cannot("update", "Channel")
   )
-    return Result.err(new APIError("You do not have permission to update this channel!", { code: StatusCodes.FORBIDDEN }))
+    throw new APIError("You do not have permission to update this channel!", { code: StatusCodes.FORBIDDEN })
 
   return ChannelRepository
     .updateChannel({
@@ -49,17 +33,14 @@ export const updateChannelById = async (channelId: Types.ObjectId, payload: z.in
     })
 }
 
-export const deleteChannelById = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>): Promise<Result<unknown, APIError>> => {
-  const channelUserResult = await fetchChannelUser(channelId, user._id)
-    .then<Result<HydratedDocument<IChannelUser>, APIError>>(result => result
-      .andThen(maybeChannelUser => fromMaybe(
-        new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND }),
-        maybeChannelUser
-      )))
+export const deleteChannelById = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>) => {
+  const channelUser = await ChannelRepository.getUserInChannel({
+    userId: user._id,
+    channelId
+  })
 
-  if (channelUserResult.isErr)
-    return channelUserResult
-  const channelUser = channelUserResult.value
+  if (!channelUser)
+    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
 
   if (
     PermissionsManager
@@ -74,17 +55,14 @@ export const deleteChannelById = async (channelId: Types.ObjectId, user: Hydrate
     })
 }
 
-export const joinChannel = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>): Promise<Result<unknown, APIError>> => {
-  const channelUserResult = await fetchChannelUser(channelId, user._id)
-    .then<Result<undefined, APIError>>(result => result
-      .andThen(maybeChannelUser => {
-        if (maybeChannelUser.isJust)
-          return Result.err(new APIError("You are already in this channel!", { code: StatusCodes.BAD_REQUEST }))
-        return Result.ok(undefined)
-      }))
+export const joinChannel = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>) => {
+  const channelUser = await ChannelRepository.getUserInChannel({
+    userId: user._id,
+    channelId
+  })
 
-  if (channelUserResult.isErr)
-    return channelUserResult
+  if (channelUser)
+    throw new APIError("You are already in this channel!", { code: StatusCodes.BAD_REQUEST })
 
   return ChannelRepository.addUserToChannel({
     channelId,
@@ -92,17 +70,14 @@ export const joinChannel = async (channelId: Types.ObjectId, user: HydratedDocum
   })
 }
 
-export const leaveChannel = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>): Promise<Result<unknown, APIError>> => {
-  const channelUserResult = await fetchChannelUser(channelId, user._id)
-    .then<Result<HydratedDocument<IChannelUser>, APIError>>(result => result
-      .andThen(maybeChannelUser => fromMaybe(
-        new APIError("You are not in this channel!", { code: StatusCodes.BAD_REQUEST }),
-        maybeChannelUser
-      )))
+export const leaveChannel = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>) => {
+  const channelUser = await ChannelRepository.getUserInChannel({
+    userId: user._id,
+    channelId
+  })
 
-  if (channelUserResult.isErr)
-    return channelUserResult
-  const channelUser = channelUserResult.value
+  if (!channelUser)
+    throw new APIError("You are not in this channel!", { code: StatusCodes.BAD_REQUEST })
 
   return ChannelRepository.removeUserFromChannel({
     channelId,
@@ -110,37 +85,29 @@ export const leaveChannel = async (channelId: Types.ObjectId, user: HydratedDocu
   })
 }
 
-export const removeUserFromChannel = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, remover: HydratedDocument<IUser>): Promise<Result<unknown, APIError>> => {
-  const removerUserResult = await fetchChannelUser(channelId, remover._id)
-    .then<Result<HydratedDocument<IChannelUser>, APIError>>(result => result
-      .andThen(maybeChannelUser => {
-        if (maybeChannelUser.isNothing)
-          return Result.err(new APIError("You are not in this channel!", { code: StatusCodes.BAD_REQUEST }))
+export const removeUserFromChannel = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, remover: HydratedDocument<IUser>) => {
+  const removerUser = await ChannelRepository.getUserInChannel({
+    userId: remover._id,
+    channelId
+  })
 
-        if (
-          PermissionsManager
-            .ChannelUser(maybeChannelUser.value)
-            .cannot("remove", "ChannelUser")
-        )
-          return Result.err(new APIError("You do not have permission to remove this user from the channel!", { code: StatusCodes.FORBIDDEN }))
+  if (!removerUser)
+    throw new APIError("You are not in this channel!", { code: StatusCodes.BAD_REQUEST })
 
-        return Result.ok(maybeChannelUser.value)
-      }))
+  if (
+    PermissionsManager
+      .ChannelUser(removerUser)
+      .cannot("remove", "ChannelUser")
+  )
+    return Result.err(new APIError("You do not have permission to remove this user from the channel!", { code: StatusCodes.FORBIDDEN }))
 
-  if (removerUserResult.isErr)
-    return removerUserResult
+  const channelUser = await ChannelRepository.getUserInChannel({
+    userId: channelUserId,
+    channelId
+  })
 
-  const channelUserResult = await fetchChannelUser(channelId, channelUserId)
-    .then<Result<HydratedDocument<IChannelUser>, APIError>>(result => result
-      .andThen(maybeChannelUser => fromMaybe(
-        new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND }),
-        maybeChannelUser
-      )))
-
-  if (channelUserResult.isErr)
-    return channelUserResult
-
-  const channelUser = removerUserResult.value
+  if (!channelUser)
+    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
 
   return ChannelRepository.removeUserFromChannel({
     channelId,
@@ -148,36 +115,36 @@ export const removeUserFromChannel = async (channelId: Types.ObjectId, channelUs
   })
 }
 
-export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, role: ChannelUserRole | undefined, promoter: HydratedDocument<IUser>): Promise<Result<unknown, APIError>> => {
-  const promoterUserResult = await fetchChannelUser(channelId, promoter._id)
-    .then<Result<HydratedDocument<IChannelUser>, APIError>>(result => result
-      .andThen(maybeChannelUser => {
-        if (maybeChannelUser.isNothing)
-          return Result.err(new APIError("You are not in this channel!", { code: StatusCodes.BAD_REQUEST }))
+export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, role: ChannelUserRole | undefined, promoter: HydratedDocument<IUser>) => {
+  const promoterUser = await ChannelRepository.getUserInChannel({
+    userId: promoter._id,
+    channelId
+  })
 
-        if (
-          PermissionsManager
-            .ChannelUser(maybeChannelUser.value)
-            .cannot("remove", "ChannelUser")
-        )
-          return Result.err(new APIError("You do not have permission to update this user in the channel!", { code: StatusCodes.FORBIDDEN }))
+  if (!promoterUser)
+    throw new APIError("You are not in this channel!", { code: StatusCodes.BAD_REQUEST })
 
-        return Result.ok(maybeChannelUser.value)
-      }))
+  if (
+    PermissionsManager
+      .ChannelUser(promoterUser)
+      .cannot("remove", "ChannelUser")
+  )
+    return Result.err(new APIError("You do not have permission to remove this user from the channel!", { code: StatusCodes.FORBIDDEN }))
 
-  if (promoterUserResult.isErr)
-    return promoterUserResult
+  const channelUser = await ChannelRepository.getUserInChannel({
+    userId: channelUserId,
+    channelId
+  })
 
-  const channelUserResult = await fetchChannelUser(channelId, channelUserId)
-    .then<Result<HydratedDocument<IChannelUser>, APIError>>(result => result
-      .andThen(maybeChannelUser => fromMaybe(
-        new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND }),
-        maybeChannelUser
-      )))
+  if (!channelUser)
+    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
 
-  if (channelUserResult.isErr)
-    return channelUserResult
-  const channelUser = channelUserResult.value
+  if (
+    PermissionsManager
+      .ChannelUser(promoterUser)
+      .cannot("update", "ChannelUser")
+  )
+    throw new APIError("You do not have permission to update this user in the channel!", { code: StatusCodes.FORBIDDEN })
 
   return ChannelRepository.updateUserInChannel({
     channelId,
@@ -186,24 +153,21 @@ export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserI
   })
 }
 
-export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.infer<typeof postChannelMessageSchema>, sender: HydratedDocument<IUser>): Promise<Result<unknown, APIError>> => {
-  const channelUserResult = await fetchChannelUser(channelId, sender._id)
-    .then<Result<HydratedDocument<IChannelUser>, APIError>>(result => result
-      .andThen(maybeChannelUser => fromMaybe(
-        new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND }),
-        maybeChannelUser
-      )))
+export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.infer<typeof postChannelMessageSchema>, sender: HydratedDocument<IUser>) => {
+  const channelUser = await ChannelRepository.getUserInChannel({
+    channelId,
+    userId: sender._id
+  })
 
-  if (channelUserResult.isErr)
-    return channelUserResult
-  const channelUser = channelUserResult.value
+  if (!channelUser)
+    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
 
   if (
     PermissionsManager
       .ChannelUser(channelUser)
       .cannot("post", "ChannelMessage")
   )
-    return Result.err(new APIError("You do not have permission to post in this channel!", { code: StatusCodes.FORBIDDEN }))
+    throw new APIError("You do not have permission to post in this channel!", { code: StatusCodes.FORBIDDEN })
 
   return ChannelRepository.addMessageToChannel({
     ...payload,
@@ -212,26 +176,22 @@ export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.i
   })
 }
 
-export const updateChannelMessage = async (channelId: Types.ObjectId, messageId: Types.ObjectId, payload: z.infer<typeof updateChannelMessageSchema>, sender: HydratedDocument<IUser>): Promise<Result<unknown, APIError>> => {
-  const channelUserResult = await fetchChannelUser(channelId, sender._id)
-    .then<Result<HydratedDocument<IChannelUser>, APIError>>(result => result
-      .andThen(maybeChannelUser => fromMaybe(
-        new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND }),
-        maybeChannelUser
-      )))
+export const updateChannelMessage = async (channelId: Types.ObjectId, messageId: Types.ObjectId, payload: z.infer<typeof updateChannelMessageSchema>, sender: HydratedDocument<IUser>) => {
+  const channelUser = await ChannelRepository.getUserInChannel({
+    channelId,
+    userId: sender._id
+  })
 
-  if (channelUserResult.isErr)
-    return channelUserResult
-  const channelUser = channelUserResult.value
+  if (!channelUser)
+    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
 
-  const channelMessageFetchResult = await ChannelRepository.getMessageInChannel({
+  const channelMessage = await ChannelRepository.getMessageInChannel({
     channelId,
     messageId
   })
 
-  if (channelMessageFetchResult.isErr)
-    return channelMessageFetchResult
-  const channelMessage = channelMessageFetchResult.value
+  if (!channelMessage)
+    throw new APIError("Message not found in channel!", { code: StatusCodes.NOT_FOUND })
 
   if (
     PermissionsManager
@@ -247,33 +207,29 @@ export const updateChannelMessage = async (channelId: Types.ObjectId, messageId:
   })
 }
 
-export const deleteChannelMessage = async (channelId: Types.ObjectId, messageId: Types.ObjectId, sender: HydratedDocument<IUser>): Promise<Result<unknown, APIError>> => {
-  const channelUserResult = await fetchChannelUser(channelId, sender._id)
-    .then<Result<HydratedDocument<IChannelUser>, APIError>>(result => result
-      .andThen(maybeChannelUser => fromMaybe(
-        new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND }),
-        maybeChannelUser
-      )))
+export const deleteChannelMessage = async (channelId: Types.ObjectId, messageId: Types.ObjectId, sender: HydratedDocument<IUser>) => {
+  const channelUser = await ChannelRepository.getUserInChannel({
+    channelId,
+    userId: sender._id
+  })
 
-  if (channelUserResult.isErr)
-    return channelUserResult
-  const channelUser = channelUserResult.value
+  if (!channelUser)
+    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
 
-  const channelMessageFetchResult = await ChannelRepository.getMessageInChannel({
+  const channelMessage = await ChannelRepository.getMessageInChannel({
     channelId,
     messageId
   })
 
-  if (channelMessageFetchResult.isErr)
-    return channelMessageFetchResult
-  const channelMessage = channelMessageFetchResult.value
+  if (!channelMessage)
+    throw new APIError("Message not found in channel!", { code: StatusCodes.NOT_FOUND })
 
   if (
     PermissionsManager
       .ChannelUser(channelUser)
       .cannot("update", PermissionsManager.subject("ChannelMessage", channelMessage))
   )
-    return Result.err(new APIError("You do not have permission to delete this message!", { code: StatusCodes.FORBIDDEN }))
+    throw new APIError("You do not have permission to delete this message!", { code: StatusCodes.FORBIDDEN })
 
   return ChannelRepository.deleteMessageInChannel({
     messageId,
