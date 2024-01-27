@@ -1,4 +1,5 @@
 import { transformMongoId } from "@studybuddy/backend/utils/validator"
+import { File } from '@web-std/file'
 import { z } from "zod"
 
 export const updateChannelSchema = z.object({
