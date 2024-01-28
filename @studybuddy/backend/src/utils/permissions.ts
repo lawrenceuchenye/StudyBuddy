@@ -11,9 +11,21 @@ namespace PermissionsManager {
   }
 
   export const Channel = ({ user, channel }: ChannelProps) => defineAbility(can => {
-    if (user.role === "CREATOR" && user.channelId === channel._id) {
-      can<IChannelUser>('promote', 'ChannelUser', { channelId: channel._id })
-      can<IChannelUser>('remove', 'ChannelUser', { channelId: channel._id })
+    if (user.channelId.equals(channel._id)) {
+      if (user.role === "CREATOR") {
+        can<IChannelUser>('promote', 'ChannelUser', { channelId: channel._id })
+        can<IChannelUser>('remove', 'ChannelUser', { channelId: channel._id })
+
+        can('update', 'Channel')
+        can('delete', 'Channel')
+
+        can('post', 'ChannelMessage')
+        can('delete', "ChannelMessage")
+      }
+      else if (user.role === "TUTOR") {
+        can('post', 'ChannelMessage', { senderId: user._id })
+        can('delete', "ChannelMessage", { senderId: user._id })
+      }
     }
   })
 

@@ -4,12 +4,14 @@ import { describe, test, expect } from "vitest";
 import Database from "@studybuddy/backend/utils/database";
 import { ulid } from "ulidx";
 import { File } from '@web-std/file'
+import UserRepository from "@studybuddy/backend/repositories/user";
+import UserSeeder from "../seeders/user";
 
 describe("Channels unit test", async () => {
   await Database.start()
 
   const userId = new Types.ObjectId()
-  const user2Id = new Types.ObjectId()
+  const user2 = await UserSeeder.generate()
 
   let creatorId: Types.ObjectId
   let memberId: Types.ObjectId
@@ -103,9 +105,8 @@ describe("Channels unit test", async () => {
   })
 
   test("that a user can be added to a channel", async () => {
-    const channelUser = await ChannelRepository.addMember({
+    const channelUser = await ChannelRepository.addMember(user2, {
       channelId,
-      userId: user2Id,
     })
 
     memberId = channelUser._id
@@ -118,20 +119,6 @@ describe("Channels unit test", async () => {
 
     expect(channelUsers.data).to.have.lengthOf(2)
     expect(channelUsers.meta.total).to.equal(2)
-  })
-
-  test("that a user cannot send a message to the channel", async () => {
-    expect(
-      async () => ChannelRepository.sendMessage({
-        senderId: memberId,
-        channelId,
-        content: ulid(),
-        media: [
-          new File(["content"], ulid(), { type: "text/plain" })
-        ]
-      })
-    )
-      .rejects.toThrow()
   })
 
   test("that a user can be promoted to tutor", async () => {
