@@ -82,7 +82,7 @@ namespace ChannelRepository {
       .exec()
 
     const total = await query.countDocuments()
-    return Pagination.createPaginatedResource(channels, { ...paginationOptions, total })
+    return Pagination.createPaginatedResource(channels.map(c => c.toJSON()), { ...paginationOptions, total })
   }
 
   export type UpdateChannelPayload = Partial<Omit<IChannel, "creatorId" | "createdAt">> & {
@@ -204,7 +204,7 @@ namespace ChannelRepository {
       .exec()
 
     const total = await query.countDocuments()
-    return Pagination.createPaginatedResource(channelMessages, { ...paginationOptions, total })
+    return Pagination.createPaginatedResource(channelMessages.map(cm => cm.toJSON()), { ...paginationOptions, total })
   }
 
   export type UpdateMessageInChannelPayload = Partial<Omit<IChannelMessage, "sentAt" | "deleted" | "senderId">> & {
@@ -280,7 +280,7 @@ namespace ChannelRepository {
       .exec()
 
     const total = await query.countDocuments()
-    return Pagination.createPaginatedResource(channelUsers, { ...paginationOptions, total })
+    return Pagination.createPaginatedResource(channelUsers.map(cu => cu.toJSON()), { ...paginationOptions, total })
   }
 
   export type GetMemberPayload = {

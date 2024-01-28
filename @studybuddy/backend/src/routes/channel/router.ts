@@ -9,7 +9,7 @@ import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
 import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
 import { deleteChannelById, deleteChannelMessage, joinChannel, leaveChannel, postChannelMessage, promoteChannelUser, removeUserFromChannel, updateChannelById, updateChannelMessage } from "./controller";
 import { APIError } from "@studybuddy/backend/utils/error";
-import GlobalLogger from "@studybuddy/backend/utils/logger";
+import { IChannel } from "@studybuddy/backend/models/channel";
 
 export default new Hono()
   .post("/",
@@ -30,7 +30,7 @@ export default new Hono()
       })
 
       return c.json({
-        data: channel,
+        data: channel.toJSON(),
         message: "Channel created successfully!"
       }, StatusCodes.CREATED)
     })
@@ -58,9 +58,9 @@ export default new Hono()
       const channel = await ChannelRepository.getChannel({ id })
 
       if (!channel)
-        return c.json({ message: "Channel not found" }, StatusCodes.NOT_FOUND)
+        throw new APIError("Channel not found", { code: StatusCodes.NOT_FOUND })
 
-      return c.json(Pagination.createSingleResource(channel))
+      return c.json(Pagination.createSingleResource(channel.toJSON()))
     })
   .patch("/:id",
     JwtMiddleware.verify,
@@ -85,16 +85,6 @@ export default new Hono()
       await deleteChannelById(channelId, user)
 
       return c.json({ message: "Channel deleted successfully!" })
-    })
-  .post("/:id/join",
-    JwtMiddleware.verify,
-    async (c) => {
-      const user = c.var.user
-      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
-
-      const channelUser = await joinChannel(channelId, user)
-
-      return c.json({ message: "Channel joined successfully!", data: channelUser })
     })
   .get("/:id/members", async (c) => {
     const id = z.string().transform(transformMongoId).parse(c.req.param("id"))
@@ -133,24 +123,24 @@ export default new Hono()
 
     return c.json(member)
   })
-  .get("/:id/members/:memberId", async (c) => {
+  .get("/:channelId/members/:memberId", async (c) => {
     const {
-      id,
+      channelId,
       memberId
     } = z.object({
-      id: z.string().transform(transformMongoId),
+      channelId: z.string().transform(transformMongoId),
       memberId: z.string().transform(transformMongoId)
     }).parse(c.req.param())
 
     const member = await ChannelRepository.getMember({
-      channelId: id,
+      channelId: channelId,
       userId: memberId
     })
 
     if (!member)
       throw new APIError("User not found in channel", { code: StatusCodes.NOT_FOUND })
 
-    return c.json(member)
+    return c.json({ message: "Fetched member successfully", data: member.toJSON() })
   })
   .patch("/:channelId/members/:memberId",
     JwtMiddleware.verify,
@@ -173,6 +163,16 @@ export default new Hono()
 
       return c.json({ message: "Updated user successfully!" })
     })
+  .post("/:id/join",
+    JwtMiddleware.verify,
+    async (c) => {
+      const user = c.var.user
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+
+      const channelUser = await joinChannel(channelId, user)
+
+      return c.json({ message: "Channel joined successfully!", data: channelUser.toJSON() })
+    })
   .post("/:id/leave",
     JwtMiddleware.verify,
     async (c) => {
@@ -183,7 +183,7 @@ export default new Hono()
 
       return c.json({ message: "Left channel successfully!" })
     })
-  .delete("/:id/members/:memberId", async (c) => {
+  .delete("/:channelId/members/:memberId", async (c) => {
     const {
       id: channelId,
       memberId
