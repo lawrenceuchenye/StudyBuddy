@@ -8,6 +8,7 @@ describe("Channels integration test", async () => {
   const user = await UserSeeder.generate()
   const token = await Token.generateAccessToken(user)
   const channelPayload = ChannelSeeder.seed()
+  let channelId: string
 
   afterAll(async () => user.destroy())
 
@@ -20,6 +21,10 @@ describe("Channels integration test", async () => {
       }
     })
 
+    const data = await res.json()
+
+    channelId = data.data._id
+
     expect(res.status).toBe(201)
   })
 
@@ -29,6 +34,20 @@ describe("Channels integration test", async () => {
     const json = await res.json()
 
     expect(res.status).toBe(200)
-    // expect(json.data).toBeInstanceOf(Array)
+    expect(json.data).toBeInstanceOf(Array)
+  })
+
+  test("that a channel can be deleted", async () => {
+    const res = await client.channels[":id"].$delete({
+      param: {
+        id: channelId
+      }
+    }, {
+      headers: {
+        authorization: `Bearer ${token}`
+      }
+    })
+
+    expect(res.status).toBe(200)
   })
 })

@@ -4,7 +4,6 @@ import { describe, test, expect } from "vitest";
 import Database from "@studybuddy/backend/utils/database";
 import { ulid } from "ulidx";
 import { File } from '@web-std/file'
-import { Maybe } from "true-myth";
 
 describe("Channels unit test", async () => {
   await Database.start()
@@ -104,7 +103,7 @@ describe("Channels unit test", async () => {
   })
 
   test("that a user can be added to a channel", async () => {
-    const channelUser = await ChannelRepository.addUserToChannel({
+    const channelUser = await ChannelRepository.addMember({
       channelId,
       userId: user2Id,
     })
@@ -136,9 +135,7 @@ describe("Channels unit test", async () => {
   })
 
   test("that a user can be promoted to tutor", async () => {
-    await ChannelRepository.updateMember({
-      channelId,
-      userId: memberId,
+    await ChannelRepository.updateMember(memberId, {
       role: "TUTOR"
     })
   })

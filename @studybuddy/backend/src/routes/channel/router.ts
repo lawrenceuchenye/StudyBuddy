@@ -9,6 +9,7 @@ import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
 import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
 import { deleteChannelById, deleteChannelMessage, joinChannel, leaveChannel, postChannelMessage, promoteChannelUser, removeUserFromChannel, updateChannelById, updateChannelMessage } from "./controller";
 import { APIError } from "@studybuddy/backend/utils/error";
+import GlobalLogger from "@studybuddy/backend/utils/logger";
 
 export default new Hono()
   .post("/",
@@ -29,7 +30,6 @@ export default new Hono()
       })
 
       return c.json({
-        status: "success",
         data: channel,
         message: "Channel created successfully!"
       }, StatusCodes.CREATED)
@@ -78,7 +78,8 @@ export default new Hono()
   .delete("/:id",
     JwtMiddleware.verify,
     async (c) => {
-      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+      const channelId = z.string()
+        .transform(transformMongoId).parse(c.req.param("id"))
 
       const user = c.var.user
       await deleteChannelById(channelId, user)
@@ -112,6 +113,25 @@ export default new Hono()
     }, { page, perPage }, filters)
 
     return c.json(paginatedMembers)
+  })
+  .get("/:id/members/profile", JwtMiddleware.verify, async (c) => {
+    const {
+      id,
+    } = z.object({
+      id: z.string().transform(transformMongoId),
+    }).parse(c.req.param())
+
+    const user = c.var.user
+
+    const member = await ChannelRepository.getMember({
+      channelId: id,
+      userId: user._id
+    })
+
+    if (!member)
+      throw new APIError("User not found in channel", { code: StatusCodes.NOT_FOUND })
+
+    return c.json(member)
   })
   .get("/:id/members/:memberId", async (c) => {
     const {
@@ -208,7 +228,7 @@ export default new Hono()
     } = Pagination.schema.merge(filterSchema).parse(c.req.query())
     const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
 
-    const paginatedMessages = await ChannelRepository.getMessagesInChannel({
+    const paginatedMessages = await ChannelRepository.getMessages({
       channelId
     }, { page, perPage }, filters)
 

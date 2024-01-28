@@ -64,7 +64,7 @@ export const joinChannel = async (channelId: Types.ObjectId, user: HydratedDocum
   if (channelUser)
     throw new APIError("You are already in this channel!", { code: StatusCodes.BAD_REQUEST })
 
-  return ChannelRepository.addUserToChannel({
+  return ChannelRepository.addMember({
     channelId,
     userId: user._id
   })
@@ -146,9 +146,7 @@ export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserI
   )
     throw new APIError("You do not have permission to update this user in the channel!", { code: StatusCodes.FORBIDDEN })
 
-  return ChannelRepository.updateMember({
-    channelId,
-    userId: channelUser._id,
+  return ChannelRepository.updateMember(channelUser._id, {
     role
   })
 }
