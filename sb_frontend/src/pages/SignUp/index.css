@@ -86,6 +86,15 @@
   text-transform: uppercase;
 }
 
+.login-txt {
+  text-align: left;
+  margin: 10px 20px;
+}
+
+.login-txt p a {
+  opacity: 1;
+}
+
 @media (max-width: 750px) {
   .form-auth-container {
     flex-direction: column;
