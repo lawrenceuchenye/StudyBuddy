@@ -34,7 +34,7 @@ importers:
         version: 1.4.0
       '@hono/zod-validator':
         specifier: ^0.1.11
-        version: 0.1.11(hono@3.12.3)(zod@3.22.4)
+        version: 0.1.11(hono@3.12.8)(zod@3.22.4)
       '@t3-oss/env-core':
         specifier: ^0.7.3
         version: 0.7.3(typescript@5.3.3)(zod@3.22.4)
@@ -45,8 +45,8 @@ importers:
         specifier: ^2.4.3
         version: 2.4.3
       hono:
-        specifier: ^3.12.3
-        version: 3.12.3
+        specifier: ^3.12.8
+        version: 3.12.8
       http-status-codes:
         specifier: ^2.3.0
         version: 2.3.0
@@ -1192,13 +1192,13 @@ packages:
     engines: {node: '>=18.14.1'}
     dev: false
 
-  /@hono/zod-validator@0.1.11(hono@3.12.3)(zod@3.22.4):
+  /@hono/zod-validator@0.1.11(hono@3.12.8)(zod@3.22.4):
     resolution: {integrity: sha512-PQXeHUP0+36qpRt8yfeD7N2jbK3ETlGvSN6dMof/HwUC/APRokQRjpXZm4rrlG71Ft0aWE01+Bm4XejqPie5Uw==}
     peerDependencies:
       hono: '>=3.9.0'
       zod: ^3.19.1
     dependencies:
-      hono: 3.12.3
+      hono: 3.12.8
       zod: 3.22.4
     dev: false
 
@@ -4088,8 +4088,8 @@ packages:
     resolution: {integrity: sha512-9riBbIorIgSvsLQHL/rKEK6vJBexhgSRZC/tkieuei7a1U+CHgrXJVqW+RPswgEyuPbxcGCpx0QXO3iJuKRrrw==}
     dev: true
 
-  /hono@3.12.3:
-    resolution: {integrity: sha512-eymmA0t4YzoBlaZhfcJiR6wC9tIdIgx68fdHYCpbKf0RMYXux+uJjwuZSAa2pKPNXZd6K6oGgizqaiLDvQ5jzg==}
+  /hono@3.12.8:
+    resolution: {integrity: sha512-vnOEIRdqsp4uHE/dkOBr9EYmTsR86sD/FyG2xhfAQzR9udDRglN1nuO7SGc/7U3HfSorc6PSCNGN6upnVtCmfg==}
     engines: {node: '>=16.0.0'}
     dev: false
 

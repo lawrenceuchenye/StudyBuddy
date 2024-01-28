@@ -34,7 +34,7 @@ export interface IChannelUser {
 
 const channelUserSchema = new Schema<IChannelUser>({
   channelId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  role: { type: String, required: true },
+  role: { type: String, required: false },
   joinedAt: { type: Date, required: true },
 });
 

@@ -1,7 +1,6 @@
 import { HydratedDocument, Types } from "mongoose"
 import { Channel, ChannelMedia, ChannelMessage, ChannelUser, IChannel, IChannelMessage, IChannelUser } from "@studybuddy/backend/models/channel"
 import Pagination from "../utils/pagination"
-import PermissionsManager from "../utils/permissions"
 import { APIError } from "../utils/error"
 import { StatusCodes } from "http-status-codes"
 import { IUser } from "../models/user"
@@ -120,13 +119,6 @@ namespace ChannelRepository {
     if (!sender)
       throw new APIError("User doesn't exist in channel", { code: StatusCodes.NOT_FOUND })
 
-    if (
-      PermissionsManager
-        .ChannelUser(sender)
-        .cannot("post", "ChannelMessage")
-    )
-      throw new APIError("User doesn't have permission to send messages", { code: StatusCodes.UNAUTHORIZED })
-
     const mediaIds: Types.ObjectId[] = []
     for (const medium of payload.media) {
       const data = Buffer.from(await medium.arrayBuffer()).toString("base64")
@@ -238,7 +230,6 @@ namespace ChannelRepository {
     return ChannelUser.create({
       ...payload,
       _id: user._id,
-      role: "MEMBER",
       joinedAt: new Date()
     })
   }

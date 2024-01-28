@@ -141,19 +141,22 @@ describe("Channels integration test", async () => {
     }
   })
 
-  // test("that a channel cannot be updated by a random user", async () => {
-  //   const res = await client.channels[":id"].$patch({
-  //     param: {
-  //       id: channelId
-  //     },
-  //     json: channelPayload.new
-  //   }, {
-  //     headers: members[0].headers
-  //   })
-  //
-  //   // because the user is not in the channel
-  //   expect(res.status).to.equal(StatusCodes.NOT_FOUND)
-  // })
+  test("that a channel cannot be updated by a random user", async () => {
+    const res = await client.channels[":id"].$patch({
+      param: {
+        id: channelId
+      },
+      json: channelPayload.new
+    }, {
+      headers: members[0].headers
+    })
+
+    const data = await res.text()
+    console.log(data)
+
+    // because the user is not in the channel
+    expect(res.status).to.equal(StatusCodes.FORBIDDEN)
+  })
 
   test("that the number of channel members has gone up", async () => {
     const res = await client.channels[":id"].members.$get({
@@ -256,11 +259,19 @@ describe("Channels integration test", async () => {
   })
 
   test("that a member cannot post to the channel", async () => {
+    const url = client.channels[":id"].messages.$url({
+      param: {
+        id: channelId
+      }
+    })
+    console.log("URL:", url)
+    expect(false).to.be.true
+    return false
+
     const res = await client.channels[":id"].messages.$post({
       param: {
         id: channelId,
-      },
-      form: 
+      }
     })
 
     const json = await res.json()

@@ -17,13 +17,26 @@ export const getMember = async (userId: Types.ObjectId, channelId: Types.ObjectI
   return channelUser
 }
 
+export const getChannel = async (channelId: Types.ObjectId) => {
+  const channel = await ChannelRepository.getChannel({
+    id: channelId
+  })
+  if (!channel)
+    throw new APIError("Channel not found!", { code: StatusCodes.NOT_FOUND })
+  return channel
+}
+
 export const updateChannelById = async (channelId: Types.ObjectId, payload: z.infer<typeof updateChannelSchema>, user: HydratedDocument<IUser>) => {
   const channelUser = await getMember(user._id, channelId)
+  const channel = await getChannel(channelId)
 
   if (
     PermissionsManager
-      .ChannelUser(channelUser)
-      .cannot("update", "Channel")
+      .Channel({
+        user: channelUser,
+        channel
+      })
+      .cannot("update", PermissionsManager.subject("Channel", channel))
   )
     throw new APIError("You do not have permission to update this channel!", { code: StatusCodes.FORBIDDEN })
 
@@ -36,10 +49,14 @@ export const updateChannelById = async (channelId: Types.ObjectId, payload: z.in
 
 export const deleteChannelById = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>) => {
   const channelUser = await getMember(user._id, channelId)
+  const channel = await getChannel(channelId)
 
   if (
     PermissionsManager
-      .ChannelUser(channelUser)
+      .Channel({
+        user: channelUser,
+        channel
+      })
       .cannot("delete", "Channel")
   )
     throw new APIError("You do not have permission to delete this channel!", { code: StatusCodes.FORBIDDEN })
@@ -79,15 +96,18 @@ export const leaveChannel = async (channelId: Types.ObjectId, user: HydratedDocu
 
 export const removeUserFromChannel = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, remover: HydratedDocument<IUser>) => {
   const removerUser = await getMember(remover._id, channelId)
+  const channel = await getChannel(channelId)
+  const channelUser = await getMember(channelUserId, channelId)
 
   if (
     PermissionsManager
-      .ChannelUser(removerUser)
-      .cannot("remove", "ChannelUser")
+      .Channel({
+        user: removerUser,
+        channel
+      })
+      .cannot("remove", PermissionsManager.subject("ChannelUser", channelUser))
   )
     throw new APIError("You do not have permission to remove this user from the channel!", { code: StatusCodes.FORBIDDEN })
-
-  const channelUser = await getMember(channelUserId, channelId)
 
   return ChannelRepository.removeMember({
     channelId,
@@ -97,22 +117,18 @@ export const removeUserFromChannel = async (channelId: Types.ObjectId, channelUs
 
 export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, role: ChannelUserRole | undefined, promoter: HydratedDocument<IUser>) => {
   const promoterUser = await getMember(promoter._id, channelId)
+  const channelUser = await getMember(channelUserId, channelId)
+  const channel = await getChannel(channelId)
 
   if (
     PermissionsManager
-      .ChannelUser(promoterUser)
-      .cannot("remove", "ChannelUser")
+      .Channel({
+        user: promoterUser,
+        channel
+      })
+      .cannot("promote", PermissionsManager.subject("ChannelUser", channelUser))
   )
     throw new APIError("You do not have permission to remove this user from the channel!", { code: StatusCodes.FORBIDDEN })
-
-  const channelUser = await getMember(channelUserId, channelId)
-
-  if (
-    PermissionsManager
-      .ChannelUser(promoterUser)
-      .cannot("update", "ChannelUser")
-  )
-    throw new APIError("You do not have permission to update this user in the channel!", { code: StatusCodes.FORBIDDEN })
 
   return ChannelRepository.updateMember(channelUser._id, {
     role
@@ -121,10 +137,14 @@ export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserI
 
 export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.infer<typeof postChannelMessageSchema>, sender: HydratedDocument<IUser>) => {
   const channelUser = await getMember(sender._id, channelId)
+  const channel = await getChannel(channelId)
 
   if (
     PermissionsManager
-      .ChannelUser(channelUser)
+      .Channel({
+        user: channelUser,
+        channel
+      })
       .cannot("post", "ChannelMessage")
   )
     throw new APIError("You do not have permission to post in this channel!", { code: StatusCodes.FORBIDDEN })
@@ -138,6 +158,7 @@ export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.i
 
 export const updateChannelMessage = async (channelId: Types.ObjectId, messageId: Types.ObjectId, payload: z.infer<typeof updateChannelMessageSchema>, sender: HydratedDocument<IUser>) => {
   const channelUser = await getMember(sender._id, channelId)
+  const channel = await getChannel(channelId)
 
   const channelMessage = await ChannelRepository.getMessage({
     channelId,
@@ -149,7 +170,10 @@ export const updateChannelMessage = async (channelId: Types.ObjectId, messageId:
 
   if (
     PermissionsManager
-      .ChannelUser(channelUser)
+      .Channel({
+        user: channelUser,
+        channel
+      })
       .cannot("update", PermissionsManager.subject("ChannelMessage", channelMessage))
   )
     throw new APIError("You do not have permission to update this message!", { code: StatusCodes.FORBIDDEN })
@@ -163,6 +187,7 @@ export const updateChannelMessage = async (channelId: Types.ObjectId, messageId:
 
 export const deleteChannelMessage = async (channelId: Types.ObjectId, messageId: Types.ObjectId, sender: HydratedDocument<IUser>) => {
   const channelUser = await getMember(sender._id, channelId)
+  const channel = await getChannel(channelId)
 
   const channelMessage = await ChannelRepository.getMessage({
     channelId,
@@ -174,7 +199,10 @@ export const deleteChannelMessage = async (channelId: Types.ObjectId, messageId:
 
   if (
     PermissionsManager
-      .ChannelUser(channelUser)
+      .Channel({
+        user: channelUser,
+        channel
+      })
       .cannot("update", PermissionsManager.subject("ChannelMessage", channelMessage))
   )
     throw new APIError("You do not have permission to delete this message!", { code: StatusCodes.FORBIDDEN })
