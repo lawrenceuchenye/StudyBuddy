@@ -1,8 +1,9 @@
 import "./index.css";
 import DashboardNavbar from "../../components/DashboardNavbar/";
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
+import { useStudyBudStore } from "../../store/";
+import TaskManager from "../../components/TaskManager//";
 import { Data } from "./data.tsx";
-
 import { Line } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import { Chart as ChartJS } from "chart.js/auto";
@@ -10,6 +11,10 @@ import { Chart as ChartJS } from "chart.js/auto";
 ChartJS.register(CategoryScale);
 
 const index: FC = (props: {}) => {
+  const isDashboardNavActive = useStudyBudStore(
+    (state) => state.isDashboardNavActive,
+  );
+
   const [chartData, setChartData] = useState({
     labels: Data.map((data) => data.year),
     datasets: [
@@ -19,13 +24,34 @@ const index: FC = (props: {}) => {
       },
     ],
   });
-  console.log(chartData);
+
+  const [tasks, setTasks] = useState([
+    {
+      title: "Study Calc 204",
+      time: "3:40pm",
+    },
+    {
+      title: "Study Stats 240",
+      time: "2:40pm",
+    },
+  ]);
+
+  useEffect(() => {
+    console.log(isDashboardNavActive);
+  }, []);
+
   return (
     <div className="dashboard-main-container">
-      <div>
+      <div className="dnav-container">
         <DashboardNavbar />
       </div>
-      <div className="main-user-info-container">
+      <div
+        className={
+          isDashboardNavActive
+            ? "main-user-info-container-a"
+            : "main-user-info-container"
+        }
+      >
         <div className="user-info-card">
           <h1>Welcome back,Dave!!</h1>
           <div className="userprofile-card">
@@ -39,14 +65,47 @@ const index: FC = (props: {}) => {
           </div>
         </div>
         <div className="dcards-container">
-          <div className="dcard-container"></div>
-          <div className="dcard-container"></div>
-          <div className="dcard-container"></div>
+          <div className="dcard-container">
+            <h1>Study Groups</h1>
+            <p>
+              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
+              sint cillum sint consectetur cupidatat.
+            </p>
+            <div className="stats">
+              <p>
+                <i className="fa fa-user-group"></i> 55
+              </p>
+            </div>
+          </div>
+          <div className="dcard-container">
+            <h1>Lessons</h1>
+            <p>
+              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
+              sint cillum sint consectetur cupidatat.
+            </p>
+            <div className="stats">
+              <p>
+                <i className="fa-solid fa-chalkboard-teacher"></i> 55
+              </p>
+            </div>
+          </div>
+          <div className="dcard-container">
+            <h1>contribute</h1>
+            <p>
+              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
+              sint cillum sint consectetur cupidatat.
+            </p>
+          </div>
         </div>
 
-        <div>
+        <div
+          className={
+            isDashboardNavActive ? "chart-container-a" : "chart-container"
+          }
+        >
           <Line data={chartData} />
         </div>
+        <TaskManager Tasks={tasks} />
       </div>
     </div>
   );

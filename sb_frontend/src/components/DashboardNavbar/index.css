@@ -1,31 +1,46 @@
 .cmp-nav-container_closed {
   width: 50px;
-  height: 100vh;
   background: var(--color-orange);
-  box-shadow: var(--box-shadow-black);
-  padding: 20px 10px;
-  margin-bottom: -20vh;
-  position: relative;
+  box-shadow: var(--box-shadow-orange);
+  padding: 20px 15px;
+  position: absolute;
   overflow: hidden;
   text-align: center;
   transition: 0.3s;
+  margin: 40px 20px;
+  border-radius: 5px;
+  margin-right: 0;
+  height: 90%;
+}
+
+.mb-nav-container {
+  background: var(--color-orange);
+  box-shadow: var(--box-shadow-black);
+  position: sticky;
+  top: 0;
+  padding: 20px 15px;
 }
 
 .cmp-nav-container_open {
-  min-width: 200px;
-  height: 100vh;
+  min-width: 180px;
   background: var(--color-orange);
-  box-shadow: var(--box-shadow-black);
+  box-shadow: var(--box-shadow-orange);
   padding: 20px 10px;
-  margin-bottom: -20vh;
-  position: relative;
+  position: absolute;
   overflow: hidden;
   transition: 0.3s;
+  top: 40px;
+  z-index: 5;
+  left: 20px;
+  border-radius: 5px;
+  height: 90%;
 }
 
 .link h1 {
-  font-family: "Roboto";
+  font-family: "Pacifico";
   color: var(--color-white);
+  text-transform: uppercase;
+  font-size: 20px;
 }
 
 .cmp-nav-container_closed .link h1 {
@@ -66,4 +81,17 @@
   top: 55px;
 }
 
-.link:last-child {}
+.alink {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  width: 100%;
+}
+
+.alink .link {
+  margin: 10px;
+}
+
+.alink .link:nth-child(1):after {
+  display: none;
+}

@@ -1,6 +1,13 @@
 .dashboard-main-container {
   display: flex;
   align-items: flex-start;
+  justify-content: space-around;
+  position: relative;
+}
+
+.dnav-container {
+  min-height: 100%;
+  width: 120px;
 }
 
 .userprofile-card {
@@ -53,7 +60,12 @@
 
 .main-user-info-container {
   padding: var(--padding-desktop);
-  width: 100%;
+  width: 80%;
+}
+
+.main-user-info-container-a {
+  padding: var(--padding-desktop);
+  width: 65%;
 }
 
 .dcards-container {
@@ -73,10 +85,37 @@
   background: var(--color-light-orange);
   overflow: hidden;
   margin: 30px 0px;
+  padding: 10px;
+  text-align: left;
+}
+
+.dcard-container h1 {
+  font-family: "Roboto";
+  color: var(--color-white);
+  text-transform: uppercase;
+}
+
+.dcard-container p {
+  font-family: "Open Sans";
+  color: var(--color-white);
+  margin: 10px 0px;
+}
+
+.dcard-container .stats p {
+  font-weight: 800;
+}
+
+.dcard-container p i {
+  margin-right: 10px;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .dcard-container:nth-child(2) {
-  width: 250px;
   min-height: 150px;
   background: var(--color-white);
   border-radius: 15px;
@@ -85,10 +124,10 @@
   background: var(--color-green);
   overflow: hidden;
   margin: 0px 10px;
+  text-align: left;
 }
 
 .dcard-container:nth-child(3) {
-  width: 250px;
   min-height: 150px;
   background: var(--color-white);
   border-radius: 15px;
@@ -96,4 +135,46 @@
   box-shadow: var(--box-shadow-red);
   background: var(--color-red);
   overflow: hidden;
+  text-align: left;
+}
+
+.chart-container {
+  min-width: 100%;
+}
+
+.chart-container-a {
+  min-width: 65%;
+}
+
+@media (max-width: 750px) {
+  .dashboard-main-container {
+    display: block;
+  }
+
+  .main-user-info-container {
+    padding: 20px 10px;
+    width: 94%;
+    margin: 0 auto;
+  }
+
+  .dcard-container {
+    width: 300px;
+  }
+
+  .dcard-container:nth-child(2) {
+    margin: 0;
+  }
+
+  .chart-container {
+    margin: 20px 0;
+  }
+
+  .userprofile-card {
+    justify-content: space-between;
+  }
+
+  .userprofile-img-container {
+    width: 160px;
+    height: 80px;
+  }
 }
