@@ -6,7 +6,7 @@ import Token from "@studybuddy/backend/utils/token";
 import { StatusCodes } from "http-status-codes";
 
 describe("Channels integration test", async () => {
-  const [creator, ...members] = await Promise.all(Array(2)
+  const [creator, ...members] = await Promise.all(Array(10)
     .fill(null)
     .map(async (_) => {
       const member = await UserSeeder.generate()
@@ -187,7 +187,7 @@ describe("Channels integration test", async () => {
         id: channelId
       }
     }, {
-      headers: creatorHeaders
+      headers: creator.headers
     })
 
     expect(res.status).to.equal(StatusCodes.OK)
