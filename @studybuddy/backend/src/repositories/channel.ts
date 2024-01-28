@@ -113,7 +113,7 @@ namespace ChannelRepository {
     media: File[]
   }
 
-  export async function addMessageToChannel(payload: AddMessageToChannelPayload) {
+  export async function sendMessage(payload: AddMessageToChannelPayload) {
     const sender = await ChannelUser.findOne({ _id: payload.senderId, channelId: payload.channelId })
 
     if (!sender)
@@ -153,7 +153,7 @@ namespace ChannelRepository {
     messageId: Types.ObjectId
   }
 
-  export async function getMessageInChannel(payload: GetMessageInChannelPayload) {
+  export async function getMessage(payload: GetMessageInChannelPayload) {
     return ChannelMessage.findOne({
       _id: payload.messageId,
       channelId: payload.channelId,
@@ -224,7 +224,7 @@ namespace ChannelRepository {
     channelId: Types.ObjectId
   }
 
-  export async function deleteMessageInChannel(payload: DeleteMessageInChannelPayload) {
+  export async function deleteMessage(payload: DeleteMessageInChannelPayload) {
     const { messageId: id, channelId } = payload
     const { acknowledged } = await ChannelMessage.updateOne({ _id: id, channelId }, { deleted: true, content: "", mediaIds: [] })
     if (!acknowledged)
@@ -241,7 +241,7 @@ namespace ChannelRepository {
     })
   }
 
-  export type GetUsersInChannelPayload = {
+  export type GetMembersPayload = {
     id: Types.ObjectId
   }
 
@@ -250,7 +250,7 @@ namespace ChannelRepository {
     name?: string
   }
 
-  export async function getUsersInChannel(payload: GetUsersInChannelPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelUserQueryFilter = {}) {
+  export async function getMembers(payload: GetMembersPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelUserQueryFilter = {}) {
     const query = ChannelUser.find({
       channelId: payload.id
     })
@@ -288,7 +288,7 @@ namespace ChannelRepository {
     userId: Types.ObjectId
   }
 
-  export async function getUserInChannel(payload: GetUserInChannelPayload) {
+  export async function getMember(payload: GetUserInChannelPayload) {
     const channelUser = await ChannelUser.findOne({
       _id: payload.userId,
       channelId: payload.channelId,
@@ -299,7 +299,7 @@ namespace ChannelRepository {
 
   export type UpdateUserInChannelPayload = Omit<IChannelUser, "joinedAt">
 
-  export async function updateUserInChannel(payload: UpdateUserInChannelPayload) {
+  export async function updateMember(payload: UpdateUserInChannelPayload) {
     const { userId, channelId, ...updatePayload } = payload
 
     if (updatePayload.role === "CREATOR")
@@ -316,7 +316,7 @@ namespace ChannelRepository {
     channelId: Types.ObjectId
   }
 
-  export async function removeUserFromChannel(payload: RemoveUserFromChannelPayload) {
+  export async function removeMember(payload: RemoveUserFromChannelPayload) {
     const { userId, channelId } = payload
     const { acknowledged } = await ChannelUser.deleteOne({ _id: userId, channelId })
 

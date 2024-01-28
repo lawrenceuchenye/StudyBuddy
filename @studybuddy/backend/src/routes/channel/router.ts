@@ -8,6 +8,7 @@ import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
 import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
 import { deleteChannelById, deleteChannelMessage, joinChannel, leaveChannel, postChannelMessage, promoteChannelUser, removeUserFromChannel, updateChannelById, updateChannelMessage } from "./controller";
+import { APIError } from "@studybuddy/backend/utils/error";
 
 export default new Hono()
   .post("/",
@@ -20,20 +21,12 @@ export default new Hono()
     async (c) => {
       const user = c.var.user
       const { name, description, subjects } = c.req.valid("json")
-      const creationResult = await ChannelRepository.createChannel({
+      const channel = await ChannelRepository.createChannel({
         name,
         description,
         subjects,
         creatorId: user._id
       })
-
-      if (creationResult.isErr)
-        return c.json({
-          status: "failed",
-          message: creationResult.error.message
-        },
-          creationResult.error.code)
-      const channel = creationResult.value
 
       return c.json({
         status: "success",
@@ -55,27 +48,19 @@ export default new Hono()
         ...filters
       } = Pagination.schema.merge(filterSchema).parse(c.req.query())
 
-      const channelsResult = await ChannelRepository.getChannels({ page, perPage }, filters)
+      const channels = await ChannelRepository.getChannels({ page, perPage }, filters)
 
-      if (channelsResult.isErr)
-        return c.json({ message: channelsResult.error.message }, channelsResult.error.code)
-
-      return c.json(channelsResult.value)
+      return c.json(channels)
     })
   .get("/:id",
     async (c) => {
       const id = z.string().transform(transformMongoId).parse(c.req.param("id"))
-      const channelResult = await ChannelRepository.getChannel({ id })
+      const channel = await ChannelRepository.getChannel({ id })
 
-      if (channelResult.isErr)
-        return c.json({ message: channelResult.error.message }, channelResult.error.code)
-
-      const maybeChannel = channelResult.value
-
-      if (maybeChannel.isNothing)
+      if (!channel)
         return c.json({ message: "Channel not found" }, StatusCodes.NOT_FOUND)
 
-      return c.json(Pagination.createSingleResource(maybeChannel.value))
+      return c.json(Pagination.createSingleResource(channel))
     })
   .patch("/:id",
     JwtMiddleware.verify,
@@ -86,10 +71,7 @@ export default new Hono()
 
       const user = c.var.user
 
-      const updateResult = await updateChannelById(channelId, payload, user)
-
-      if (updateResult.isErr)
-        return c.json({ message: updateResult.error.message }, updateResult.error.code)
+      await updateChannelById(channelId, payload, user)
 
       return c.json({ message: "Channel updated successfully!" })
     })
@@ -99,10 +81,7 @@ export default new Hono()
       const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
 
       const user = c.var.user
-      const deleteResult = await deleteChannelById(channelId, user)
-
-      if (deleteResult.isErr)
-        return c.json({ message: deleteResult.error.message }, deleteResult.error.code)
+      await deleteChannelById(channelId, user)
 
       return c.json({ message: "Channel deleted successfully!" })
     })
@@ -112,11 +91,9 @@ export default new Hono()
       const user = c.var.user
       const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
 
-      const joinResult = await joinChannel(channelId, user)
-      if (joinResult.isErr)
-        return c.json({ message: joinResult.error.message }, joinResult.error.code)
+      const channelUser = await joinChannel(channelId, user)
 
-      return c.json({ message: "Channel joined successfully!" })
+      return c.json({ message: "Channel joined successfully!", data: channelUser })
     })
   .get("/:id/members", async (c) => {
     const id = z.string().transform(transformMongoId).parse(c.req.param("id"))
@@ -130,14 +107,11 @@ export default new Hono()
       ...filters
     } = Pagination.schema.merge(filterSchema).parse(c.req.query())
 
-    const usersResult = await ChannelRepository.getUsersInChannel({
+    const members = await ChannelRepository.getMembers({
       id
     }, { page, perPage }, filters)
 
-    if (usersResult.isErr)
-      return c.json({ message: usersResult.error.message }, usersResult.error.code)
-
-    return c.json(usersResult.value)
+    return c.json(members)
   })
   .get("/:id/members/:memberId", async (c) => {
     const {
@@ -148,15 +122,15 @@ export default new Hono()
       memberId: z.string().transform(transformMongoId)
     }).parse(c.req.param())
 
-    const userResult = await ChannelRepository.getUserInChannel({
+    const member = await ChannelRepository.getMember({
       channelId: id,
       userId: memberId
     })
 
-    if (userResult.isErr)
-      return c.json({ message: userResult.error.message }, userResult.error.code)
+    if (!member)
+      throw new APIError("User not found in channel", { code: StatusCodes.NOT_FOUND })
 
-    return c.json(userResult.value)
+    return c.json(member)
   })
   .patch("/:channelId/members/:memberId",
     JwtMiddleware.verify,
@@ -175,10 +149,7 @@ export default new Hono()
 
       const user = c.var.user
 
-      const updateResult = await promoteChannelUser(channelId, memberId, role, user)
-
-      if (updateResult.isErr)
-        return c.json({ message: updateResult.error.message }, updateResult.error.code)
+      await promoteChannelUser(channelId, memberId, role, user)
 
       return c.json({ message: "Updated user successfully!" })
     })
@@ -188,10 +159,7 @@ export default new Hono()
       const user = c.var.user
       const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
 
-      const leaveResult = await leaveChannel(channelId, user)
-
-      if (leaveResult.isErr)
-        return c.json({ message: leaveResult.error.message }, leaveResult.error.code)
+      await leaveChannel(channelId, user)
 
       return c.json({ message: "Left channel successfully!" })
     })

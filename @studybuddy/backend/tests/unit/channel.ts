@@ -95,7 +95,7 @@ describe("Channels unit test", async () => {
   })
 
   test("that members of a channel can be fetched", async () => {
-    const channelUsers = await ChannelRepository.getUsersInChannel({
+    const channelUsers = await ChannelRepository.getMembers({
       id: channelId,
     }, { page: 1, perPage: 10 })
 
@@ -113,7 +113,7 @@ describe("Channels unit test", async () => {
   })
 
   test("that number of channel members has increased", async () => {
-    const channelUsers = await ChannelRepository.getUsersInChannel({
+    const channelUsers = await ChannelRepository.getMembers({
       id: channelId,
     }, { page: 1, perPage: 10 })
 
@@ -123,7 +123,7 @@ describe("Channels unit test", async () => {
 
   test("that a user cannot send a message to the channel", async () => {
     expect(
-      async () => ChannelRepository.addMessageToChannel({
+      async () => ChannelRepository.sendMessage({
         senderId: memberId,
         channelId,
         content: ulid(),
@@ -136,7 +136,7 @@ describe("Channels unit test", async () => {
   })
 
   test("that a user can be promoted to tutor", async () => {
-    await ChannelRepository.updateUserInChannel({
+    await ChannelRepository.updateMember({
       channelId,
       userId: memberId,
       role: "TUTOR"
@@ -144,7 +144,7 @@ describe("Channels unit test", async () => {
   })
 
   test("that a user can now send a message to the channel", async () => {
-    await ChannelRepository.addMessageToChannel({
+    await ChannelRepository.sendMessage({
       senderId: memberId,
       channelId,
       content: ulid(),
@@ -155,14 +155,14 @@ describe("Channels unit test", async () => {
   })
 
   test("that a user can be removed from a channel", async () => {
-    await ChannelRepository.removeUserFromChannel({
+    await ChannelRepository.removeMember({
       channelId,
       userId: memberId,
     })
   })
 
   test("that number of channel members has decreased", async () => {
-    const channelUsers = await ChannelRepository.getUsersInChannel({
+    const channelUsers = await ChannelRepository.getMembers({
       id: channelId
     }, { page: 1, perPage: 10 })
 
