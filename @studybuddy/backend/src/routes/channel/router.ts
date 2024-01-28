@@ -48,9 +48,9 @@ export default new Hono()
         ...filters
       } = Pagination.schema.merge(filterSchema).parse(c.req.query())
 
-      const channels = await ChannelRepository.getChannels({ page, perPage }, filters)
+      const paginatedChannels = await ChannelRepository.getChannels({ page, perPage }, filters)
 
-      return c.json(channels)
+      return c.json(paginatedChannels)
     })
   .get("/:id",
     async (c) => {
@@ -107,11 +107,11 @@ export default new Hono()
       ...filters
     } = Pagination.schema.merge(filterSchema).parse(c.req.query())
 
-    const members = await ChannelRepository.getMembers({
+    const paginatedMembers = await ChannelRepository.getMembers({
       id
     }, { page, perPage }, filters)
 
-    return c.json(members)
+    return c.json(paginatedMembers)
   })
   .get("/:id/members/:memberId", async (c) => {
     const {
@@ -174,10 +174,7 @@ export default new Hono()
 
     const user = c.var.user
 
-    const removeResult = await removeUserFromChannel(channelId, memberId, user)
-
-    if (removeResult.isErr)
-      return c.json({ message: removeResult.error.message }, removeResult.error.code)
+    await removeUserFromChannel(channelId, memberId, user)
 
     return c.json({ message: "Removed user successfully!" })
   })
@@ -194,12 +191,9 @@ export default new Hono()
 
       const user = c.var.user
 
-      const messageCreationResult = await postChannelMessage(channelId, payload, user)
+      const message = await postChannelMessage(channelId, payload, user)
 
-      if (messageCreationResult.isErr)
-        return c.json({ message: messageCreationResult.error.message }, messageCreationResult.error.code)
-
-      return c.json({ message: "Message posted successfully!" })
+      return c.json({ message: "Message posted successfully!", data: message })
     })
   .get("/:id/messages", async (c) => {
     const filterSchema = z.object({
@@ -214,14 +208,11 @@ export default new Hono()
     } = Pagination.schema.merge(filterSchema).parse(c.req.query())
     const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
 
-    const messagesResult = await ChannelRepository.getMessagesInChannel({
+    const paginatedMessages = await ChannelRepository.getMessagesInChannel({
       channelId
     }, { page, perPage }, filters)
 
-    if (messagesResult.isErr)
-      return c.json({ message: messagesResult.error.message }, messagesResult.error.code)
-
-    return c.json(messagesResult.value)
+    return c.json(paginatedMessages)
   })
   .patch("/:channelId/messages/:messageId",
     zValidator("json", updateChannelMessageSchema),
@@ -237,10 +228,7 @@ export default new Hono()
 
       const user = c.var.user
 
-      const updateResult = await updateChannelMessage(channelId, messageId, payload, user)
-
-      if (updateResult.isErr)
-        return c.json({ message: updateResult.error.message }, updateResult.error.code)
+      await updateChannelMessage(channelId, messageId, payload, user)
 
       return c.json({ message: "Message updated successfully!" })
     })
@@ -257,10 +245,7 @@ export default new Hono()
 
       const user = c.var.user
 
-      const deleteResult = await deleteChannelMessage(channelId, messageId, user)
-
-      if (deleteResult.isErr)
-        return c.json({ message: deleteResult.error.message }, deleteResult.error.code)
+      await deleteChannelMessage(channelId, messageId, user)
 
       return c.json({ message: "Message deleted successfully!" })
     })

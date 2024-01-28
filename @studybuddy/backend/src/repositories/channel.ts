@@ -216,7 +216,7 @@ namespace ChannelRepository {
     const { acknowledged } = await ChannelMessage.updateOne({ _id: id, channelId }, updatePayload)
 
     if (!acknowledged)
-      return new APIError("Failed to update message in channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })
+      throw new APIError("Failed to update message in channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })
   }
 
   export type DeleteMessageInChannelPayload = {
@@ -228,7 +228,7 @@ namespace ChannelRepository {
     const { messageId: id, channelId } = payload
     const { acknowledged } = await ChannelMessage.updateOne({ _id: id, channelId }, { deleted: true, content: "", mediaIds: [] })
     if (!acknowledged)
-      return new APIError("Failed to delete message in channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })
+      throw new APIError("Failed to delete message in channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })
   }
 
   export type AddUserToChannelPayload = Omit<IChannelUser, "role" | "joinedAt">

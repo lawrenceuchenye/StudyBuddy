@@ -198,7 +198,7 @@ export const updateChannelMessage = async (channelId: Types.ObjectId, messageId:
       .ChannelUser(channelUser)
       .cannot("update", PermissionsManager.subject("ChannelMessage", channelMessage))
   )
-    return Result.err(new APIError("You do not have permission to update this message!", { code: StatusCodes.FORBIDDEN }))
+    throw new APIError("You do not have permission to update this message!", { code: StatusCodes.FORBIDDEN })
 
   return ChannelRepository.updateMessageInChannel({
     ...payload,
