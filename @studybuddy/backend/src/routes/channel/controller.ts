@@ -5,19 +5,20 @@ import { APIError } from "@studybuddy/backend/utils/error";
 import PermissionsManager from "@studybuddy/backend/utils/permissions";
 import { StatusCodes } from "http-status-codes";
 import { HydratedDocument, Types } from "mongoose";
-import { Maybe, Result } from "true-myth";
 import { z } from "zod";
 import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
-import { fromMaybe } from "true-myth/result";
 
-export const updateChannelById = async (channelId: Types.ObjectId, payload: z.infer<typeof updateChannelSchema>, user: HydratedDocument<IUser>) => {
-  const channelUser = await ChannelRepository.getMember({
-    userId: user._id,
+export const getMember = async (userId: Types.ObjectId, channelId: Types.ObjectId) => {
+  const channelUser = await ChannelRepository.getMember(userId, {
     channelId
   })
-
   if (!channelUser)
     throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
+  return channelUser
+}
+
+export const updateChannelById = async (channelId: Types.ObjectId, payload: z.infer<typeof updateChannelSchema>, user: HydratedDocument<IUser>) => {
+  const channelUser = await getMember(user._id, channelId)
 
   if (
     PermissionsManager
@@ -34,13 +35,7 @@ export const updateChannelById = async (channelId: Types.ObjectId, payload: z.in
 }
 
 export const deleteChannelById = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>) => {
-  const channelUser = await ChannelRepository.getMember({
-    userId: user._id,
-    channelId
-  })
-
-  if (!channelUser)
-    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
+  const channelUser = await getMember(user._id, channelId)
 
   if (
     PermissionsManager
@@ -56,23 +51,20 @@ export const deleteChannelById = async (channelId: Types.ObjectId, user: Hydrate
 }
 
 export const joinChannel = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>) => {
-  const channelUser = await ChannelRepository.getMember({
-    userId: user._id,
+  const channelUser = await ChannelRepository.getMember(user._id, {
     channelId
   })
 
   if (channelUser)
     throw new APIError("You are already in this channel!", { code: StatusCodes.BAD_REQUEST })
 
-  return ChannelRepository.addMember({
+  return ChannelRepository.addMember(user, {
     channelId,
-    userId: user._id
   })
 }
 
 export const leaveChannel = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>) => {
-  const channelUser = await ChannelRepository.getMember({
-    userId: user._id,
+  const channelUser = await ChannelRepository.getMember(user._id, {
     channelId
   })
 
@@ -86,13 +78,7 @@ export const leaveChannel = async (channelId: Types.ObjectId, user: HydratedDocu
 }
 
 export const removeUserFromChannel = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, remover: HydratedDocument<IUser>) => {
-  const removerUser = await ChannelRepository.getMember({
-    userId: remover._id,
-    channelId
-  })
-
-  if (!removerUser)
-    throw new APIError("You are not in this channel!", { code: StatusCodes.BAD_REQUEST })
+  const removerUser = await getMember(remover._id, channelId)
 
   if (
     PermissionsManager
@@ -101,13 +87,7 @@ export const removeUserFromChannel = async (channelId: Types.ObjectId, channelUs
   )
     throw new APIError("You do not have permission to remove this user from the channel!", { code: StatusCodes.FORBIDDEN })
 
-  const channelUser = await ChannelRepository.getMember({
-    userId: channelUserId,
-    channelId
-  })
-
-  if (!channelUser)
-    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
+  const channelUser = await getMember(channelUserId, channelId)
 
   return ChannelRepository.removeMember({
     channelId,
@@ -116,13 +96,7 @@ export const removeUserFromChannel = async (channelId: Types.ObjectId, channelUs
 }
 
 export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, role: ChannelUserRole | undefined, promoter: HydratedDocument<IUser>) => {
-  const promoterUser = await ChannelRepository.getMember({
-    userId: promoter._id,
-    channelId
-  })
-
-  if (!promoterUser)
-    throw new APIError("You are not in this channel!", { code: StatusCodes.BAD_REQUEST })
+  const promoterUser = await getMember(promoter._id, channelId)
 
   if (
     PermissionsManager
@@ -131,13 +105,7 @@ export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserI
   )
     throw new APIError("You do not have permission to remove this user from the channel!", { code: StatusCodes.FORBIDDEN })
 
-  const channelUser = await ChannelRepository.getMember({
-    userId: channelUserId,
-    channelId
-  })
-
-  if (!channelUser)
-    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
+  const channelUser = await getMember(channelUserId, channelId)
 
   if (
     PermissionsManager
@@ -152,13 +120,7 @@ export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserI
 }
 
 export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.infer<typeof postChannelMessageSchema>, sender: HydratedDocument<IUser>) => {
-  const channelUser = await ChannelRepository.getMember({
-    channelId,
-    userId: sender._id
-  })
-
-  if (!channelUser)
-    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
+  const channelUser = await getMember(sender._id, channelId)
 
   if (
     PermissionsManager
@@ -175,13 +137,7 @@ export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.i
 }
 
 export const updateChannelMessage = async (channelId: Types.ObjectId, messageId: Types.ObjectId, payload: z.infer<typeof updateChannelMessageSchema>, sender: HydratedDocument<IUser>) => {
-  const channelUser = await ChannelRepository.getMember({
-    channelId,
-    userId: sender._id
-  })
-
-  if (!channelUser)
-    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
+  const channelUser = await getMember(sender._id, channelId)
 
   const channelMessage = await ChannelRepository.getMessage({
     channelId,
@@ -206,13 +162,7 @@ export const updateChannelMessage = async (channelId: Types.ObjectId, messageId:
 }
 
 export const deleteChannelMessage = async (channelId: Types.ObjectId, messageId: Types.ObjectId, sender: HydratedDocument<IUser>) => {
-  const channelUser = await ChannelRepository.getMember({
-    channelId,
-    userId: sender._id
-  })
-
-  if (!channelUser)
-    throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
+  const channelUser = await getMember(sender._id, channelId)
 
   const channelMessage = await ChannelRepository.getMessage({
     channelId,

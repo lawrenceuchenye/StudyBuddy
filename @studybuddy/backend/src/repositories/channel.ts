@@ -4,6 +4,7 @@ import Pagination from "../utils/pagination"
 import PermissionsManager from "../utils/permissions"
 import { APIError } from "../utils/error"
 import { StatusCodes } from "http-status-codes"
+import { IUser } from "../models/user"
 
 namespace ChannelRepository {
   export type CreateChannelPayload = Omit<IChannel, "createdAt">
@@ -233,9 +234,10 @@ namespace ChannelRepository {
 
   export type AddMemberPayload = Omit<IChannelUser, "role" | "joinedAt">
 
-  export async function addMember(payload: AddMemberPayload) {
+  export async function addMember(user: HydratedDocument<IUser>, payload: AddMemberPayload) {
     return ChannelUser.create({
       ...payload,
+      _id: user._id,
       role: "MEMBER",
       joinedAt: new Date()
     })
@@ -285,13 +287,12 @@ namespace ChannelRepository {
 
   export type GetMemberPayload = {
     channelId: Types.ObjectId
-    userId: Types.ObjectId
   }
 
-  export async function getMember(payload: GetMemberPayload) {
+  export async function getMember(id: Types.ObjectId, payload: GetMemberPayload) {
     return ChannelUser.findOne({
-      _id: payload.userId,
-      channelId: payload.channelId
+      _id: id,
+      ...payload
     }).exec()
   }
 

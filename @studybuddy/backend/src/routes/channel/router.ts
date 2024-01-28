@@ -7,9 +7,8 @@ import Pagination from "@studybuddy/backend/utils/pagination";
 import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
 import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
-import { deleteChannelById, deleteChannelMessage, joinChannel, leaveChannel, postChannelMessage, promoteChannelUser, removeUserFromChannel, updateChannelById, updateChannelMessage } from "./controller";
+import { deleteChannelById, deleteChannelMessage, getMember, joinChannel, leaveChannel, postChannelMessage, promoteChannelUser, removeUserFromChannel, updateChannelById, updateChannelMessage } from "./controller";
 import { APIError } from "@studybuddy/backend/utils/error";
-import { IChannel } from "@studybuddy/backend/models/channel";
 
 export default new Hono()
   .post("/",
@@ -113,13 +112,7 @@ export default new Hono()
 
     const user = c.var.user
 
-    const member = await ChannelRepository.getMember({
-      channelId: id,
-      userId: user._id
-    })
-
-    if (!member)
-      throw new APIError("User not found in channel", { code: StatusCodes.NOT_FOUND })
+    const member = await getMember(user._id, id)
 
     return c.json(member)
   })
@@ -132,13 +125,7 @@ export default new Hono()
       memberId: z.string().transform(transformMongoId)
     }).parse(c.req.param())
 
-    const member = await ChannelRepository.getMember({
-      channelId: channelId,
-      userId: memberId
-    })
-
-    if (!member)
-      throw new APIError("User not found in channel", { code: StatusCodes.NOT_FOUND })
+    const member = await getMember(memberId, channelId)
 
     return c.json({ message: "Fetched member successfully", data: member.toJSON() })
   })

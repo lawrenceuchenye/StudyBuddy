@@ -4,9 +4,14 @@ import { client } from "../setup";
 import ChannelSeeder from "../seeders/channel";
 import Token from "@studybuddy/backend/utils/token";
 import { StatusCodes } from "http-status-codes";
+import { Types } from "mongoose";
 
 describe("Channels integration test", async () => {
-  const [creator, ...members] = await Promise.all(Array(10)
+  const TOTAL_MEMBERS = 9
+  const MEMBERS_REMOVED_BY_CREATOR = 3
+  const MEMBERS_LEFT_BY_THEMSELVES = 2
+
+  const [creator, ...members] = await Promise.all(Array(TOTAL_MEMBERS + 1)
     .fill(null)
     .map(async (_) => {
       const member = await UserSeeder.generate()
@@ -150,6 +155,21 @@ describe("Channels integration test", async () => {
   //   expect(res.status).to.equal(StatusCodes.NOT_FOUND)
   // })
 
+  test("that the number of channel members has gone up", async () => {
+    const res = await client.channels[":id"].members.$get({
+      param: {
+        id: channelId,
+      }
+    })
+
+    const json = await res.json()
+
+    expect(res.status).to.equal(StatusCodes.OK)
+    expect(json.meta.total).to.equal(membersCount + TOTAL_MEMBERS)
+
+    membersCount = json.meta.total
+  })
+
   test("that users can be gotten from the channel", async () => {
     for (const member of members) {
       const res = await client.channels[":channelId"].members[":memberId"].$get({
@@ -161,14 +181,37 @@ describe("Channels integration test", async () => {
 
       const json = await res.json()
 
-      console.log(json)
-
       expect(res.status).to.equal(StatusCodes.OK)
       expect(json.data).to.be.instanceOf(Object)
     }
   })
 
-  test("that the number of channel members has gone up", async () => {
+  test("that a random user cannot be gotten from the channel", async () => {
+    const res = await client.channels[":channelId"].members[":memberId"].$get({
+      param: {
+        channelId,
+        memberId: new Types.ObjectId().toString()
+      }
+    })
+
+    expect(res.status).to.equal(StatusCodes.NOT_FOUND)
+  })
+
+  test("that members can be removed from a channel by the creator", async () => {
+    for (const member of members.splice(0, MEMBERS_REMOVED_BY_CREATOR)) {
+      const res = await client.channels[":id"].leave.$post({
+        param: {
+          id: channelId
+        }
+      }, {
+        headers: member.headers
+      })
+
+      expect(res.status).to.equal(StatusCodes.OK)
+    }
+  })
+
+  test("that the number of channel members has gone down", async () => {
     const res = await client.channels[":id"].members.$get({
       param: {
         id: channelId,
@@ -178,7 +221,53 @@ describe("Channels integration test", async () => {
     const json = await res.json()
 
     expect(res.status).to.equal(StatusCodes.OK)
-    expect(json.meta.total).to.be.greaterThan(membersCount)
+    expect(json.meta.total).to.be.equal(membersCount - MEMBERS_REMOVED_BY_CREATOR)
+
+    membersCount = json.meta.total
+  })
+
+  test("that members can leave a channel by themselves", async () => {
+    for (const member of members.splice(0, MEMBERS_LEFT_BY_THEMSELVES)) {
+      const res = await client.channels[":id"].leave.$post({
+        param: {
+          id: channelId
+        }
+      }, {
+        headers: member.headers
+      })
+
+      expect(res.status).to.equal(StatusCodes.OK)
+    }
+  })
+
+  test("that the number of channel members has gone down", async () => {
+    const res = await client.channels[":id"].members.$get({
+      param: {
+        id: channelId,
+      }
+    })
+
+    const json = await res.json()
+
+    expect(res.status).to.equal(StatusCodes.OK)
+    expect(json.meta.total).to.be.equal(membersCount - MEMBERS_LEFT_BY_THEMSELVES)
+
+    membersCount = json.meta.total
+  })
+
+  test("that a member cannot post to the channel", async () => {
+    const res = await client.channels[":id"].messages.$post({
+      param: {
+        id: channelId,
+      },
+      form: 
+    })
+
+    const json = await res.json()
+
+    expect(res.status).to.equal(StatusCodes.OK)
+    expect(json.meta.total).to.be.equal(membersCount - MEMBERS_LEFT_BY_THEMSELVES)
+
   })
 
   test("that a channel can be deleted", async () => {
