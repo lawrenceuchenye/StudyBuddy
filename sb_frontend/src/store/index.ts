@@ -3,7 +3,8 @@ import { create } from "zustand";
 type StudyBudStoreProp = {
   isTapped: boolean;
   isDashboardNavActive: boolean;
-  setIsTapped: () => void;
+  toggleIsTapped: () => void;
+  setIsTapped: (boolVal: boolean) => void;
   toggleIsDashboardNavActive: () => void;
 };
 

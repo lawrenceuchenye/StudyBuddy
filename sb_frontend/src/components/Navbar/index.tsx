@@ -1,5 +1,5 @@
 import "./index.css";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { useStudyBudStore } from "../../store/";
 import { NavLink } from "react-router-dom";
 //@ts-ignore

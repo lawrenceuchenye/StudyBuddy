@@ -1,7 +1,11 @@
 import "./index.css";
-import React from "react";
+import { FC } from "react";
 
-const index = ({ title, time }) => {
+type TaskProp = {
+  title: string;
+  time: string;
+};
+const index: FC<TaskProp> = ({ title, time }) => {
   return (
     <div className="main-task-container">
       <h2>{title}</h2>

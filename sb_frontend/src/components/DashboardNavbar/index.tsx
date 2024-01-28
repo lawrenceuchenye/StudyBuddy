@@ -1,9 +1,8 @@
 import "./index.css";
-import React, { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useStudyBudStore } from "../../store";
 
 const index: FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   const isDashboardNavActive = useStudyBudStore(

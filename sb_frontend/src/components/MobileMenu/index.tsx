@@ -1,5 +1,5 @@
 import "./index.css";
-import React, { FC } from "react";
+import { FC } from "react";
 import { useStudyBudStore } from "../../store/";
 import { NavLink } from "react-router-dom";
 

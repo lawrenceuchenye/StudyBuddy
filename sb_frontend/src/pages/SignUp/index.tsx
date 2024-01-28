@@ -1,8 +1,8 @@
 import "./index.css";
-import React, { FC, useEffect } from "react";
+import { FC, useEffect } from "react";
 import { useStudyBudStore } from "../../store/";
 
-const index: FC = (props: {}) => {
+const index: FC = () => {
   const setIsTapped = useStudyBudStore((state) => state.setIsTapped);
 
   useEffect(() => {

@@ -1,7 +1,17 @@
 import "./index.css";
 import Task from "../Task";
+import { FC } from "react";
 
-const index = ({ Tasks }) => {
+type TaskProp = {
+  title: string;
+  time: string;
+};
+
+type TaskMProps = {
+  Tasks: TaskProp[];
+};
+
+const index: FC<TaskMProps> = ({ Tasks }) => {
   return (
     <div className="task-manager-container">
       <div className="task-manager-header">

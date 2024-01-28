@@ -1,6 +1,6 @@
 import "./index.css";
 import DashboardNavbar from "../../components/DashboardNavbar/";
-import React, { FC, useState, useEffect } from "react";
+import { FC, useState, useEffect } from "react";
 import { useStudyBudStore } from "../../store/";
 import TaskManager from "../../components/TaskManager//";
 import { Data } from "./data.tsx";
@@ -10,12 +10,12 @@ import { Chart as ChartJS } from "chart.js/auto";
 
 ChartJS.register(CategoryScale);
 
-const index: FC = (props: {}) => {
+const index: FC = () => {
   const isDashboardNavActive = useStudyBudStore(
     (state) => state.isDashboardNavActive,
   );
 
-  const [chartData, setChartData] = useState({
+  const chartData = useState({
     labels: Data.map((data) => data.year),
     datasets: [
       {
@@ -23,9 +23,9 @@ const index: FC = (props: {}) => {
         data: Data.map((data) => data.gpa),
       },
     ],
-  });
+  })[0];
 
-  const [tasks, setTasks] = useState([
+  const tasks = useState([
     {
       title: "Study Calc 204",
       time: "3:40pm",
@@ -34,7 +34,7 @@ const index: FC = (props: {}) => {
       title: "Study Stats 240",
       time: "2:40pm",
     },
-  ]);
+  ])[0];
 
   useEffect(() => {
     console.log(isDashboardNavActive);

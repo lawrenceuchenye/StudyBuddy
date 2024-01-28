@@ -1,5 +1,5 @@
 import "./index.css";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { Outlet } from "react-router-dom";
 
 import { useStudyBudStore } from "../../store/";
