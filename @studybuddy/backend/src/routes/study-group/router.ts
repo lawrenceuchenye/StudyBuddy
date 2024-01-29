@@ -7,7 +7,7 @@ import Pagination from "@studybuddy/backend/utils/pagination";
 import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
 import { postStudyGroupMessageSchema, updateStudyGroupMessageSchema, updateStudyGroupSchema } from "./schema";
-import { deleteStudyGroupById, deleteStudyGroupMessage, getMember, addUserToStudyGroup, postStudyGroupMessage, removeUserFromStudyGroup, updateStudyGroupById, updateStudyGroupMessage } from "./controller";
+import { deleteStudyGroupById, deleteStudyGroupMessage, leaveStudyGroup, getMember, addUserToStudyGroup, postStudyGroupMessage, removeUserFromStudyGroup, updateStudyGroupById, updateStudyGroupMessage } from "./controller";
 import { APIError } from "@studybuddy/backend/utils/error";
 
 export default new Hono()
@@ -85,6 +85,16 @@ export default new Hono()
 
       return c.json({ message: "Study group deleted successfully!" })
     })
+  .post("/:id/leave",
+    JwtMiddleware.verify,
+    async (c) => {
+      const user = c.var.user
+      const studyGroupId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+
+      await leaveStudyGroup(studyGroupId, user)
+
+      return c.json({ message: "Left channel successfully!" })
+    })
   .get("/:id/members", async (c) => {
     const id = z.string().transform(transformMongoId).parse(c.req.param("id"))
     const filterSchema = z.object({
@@ -132,7 +142,6 @@ export default new Hono()
   .post("/:studyGroupId/members/:memberId",
     JwtMiddleware.verify,
     async (c) => {
-      const user = c.var.user
       const {
         studyGroupId,
         memberId
@@ -151,7 +160,7 @@ export default new Hono()
 
       const studyGroupUser = await addUserToStudyGroup(studyGroupId, memberId, creator)
 
-      return c.json({ message: "Study group joined successfully!", data: studyGroupUser.toJSON() })
+      return c.json({ message: "Study group member added successfully!", data: studyGroupUser.toJSON() })
     })
   .delete("/:studyGroupId/members/:memberId", async (c) => {
     const {

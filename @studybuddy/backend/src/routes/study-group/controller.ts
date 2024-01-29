@@ -68,24 +68,11 @@ export const deleteStudyGroupById = async (studyGroupId: Types.ObjectId, user: H
     })
 }
 
-export const addUserToStudyGroup = async (studyGroupId: Types.ObjectId, memberId: Types.ObjectId, creator: HydratedDocument<IUser>) => {
-  const userFetchResult = await UserRepository.getUser({
-    id: memberId
-  })
-  if (userFetchResult.isErr)
-    throw new APIError(userFetchResult.error.message, { code: userFetchResult.error.code })
-
-  const maybeUser = userFetchResult.value
-
-  if (maybeUser.isNothing)
-    throw new APIError("User not found!", { code: StatusCodes.NOT_FOUND })
-
-  const user = maybeUser.value
-
+export const addUserToStudyGroup = async (studyGroupId: Types.ObjectId, userId: Types.ObjectId, creator: HydratedDocument<IUser>) => {
   const creatorGroupProfile = await getMember(studyGroupId, creator._id)
   const studyGroup = await getStudyGroup(studyGroupId)
 
-  const studyGroupUser = await StudyGroupRepository.getMember(memberId, {
+  const studyGroupUser = await StudyGroupRepository.getMember(userId, {
     studyGroupId
   })
 
@@ -98,12 +85,26 @@ export const addUserToStudyGroup = async (studyGroupId: Types.ObjectId, memberId
         user: creatorGroupProfile,
         studyGroup
       })
-      .cannot("add", "StudyGroupMember")
+      .cannot("add", "StudyGroupUser")
   )
     throw new APIError("You do not have permission to add this user to this channel", { code: StatusCodes.FORBIDDEN })
 
-  return StudyGroupRepository.addMember(user._id, {
+  return StudyGroupRepository.addMember(userId, {
     studyGroupId,
+  })
+}
+
+export const leaveStudyGroup = async (studyGroupId: Types.ObjectId, user: HydratedDocument<IUser>) => {
+  const studyGroupUser = await StudyGroupRepository.getMember(user._id, {
+    studyGroupId
+  })
+
+  if (!studyGroupUser)
+    throw new APIError("You are not in this study group!", { code: StatusCodes.BAD_REQUEST })
+
+  return StudyGroupRepository.removeMember({
+    studyGroupId,
+    userId: studyGroupUser._id
   })
 }
 

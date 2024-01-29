@@ -38,6 +38,7 @@ namespace PermissionsManager {
   export const StudyGroup = ({ user, studyGroup }: StudyGroupProps) => defineAbility(can => {
     if (user.studyGroupId.equals(studyGroup._id)) {
       if (user.role === "CREATOR") {
+        can<IStudyGroupUser>('add', 'StudyGroupUser')
         can<IStudyGroupUser>('remove', 'StudyGroupUser', { studyGroupId: studyGroup._id })
 
         can('update', 'StudyGroup')

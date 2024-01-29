@@ -24,6 +24,12 @@ export interface IStudyGroupMedia {
   uploadedAt: Date
 }
 
+export interface IStudyGroupJoinRequest {
+  userId: Types.ObjectId,
+  studyGroupId: Types.ObjectId
+  dateSent: Date
+}
+
 export type StudyGroupUserRole = "CREATOR" | null
 
 export interface IStudyGroupUser {
@@ -44,10 +50,17 @@ const studyGroupMediaSchema = new Schema<IStudyGroupMedia>({
   data: { type: String, required: true },
   type: { type: String, required: true },
   size: { type: Number, required: true },
-  uploadedAt: { type: Date, required: true },
+  uploadedAt: { type: Date, required: true, default: Date.now() },
 })
 
 export const StudyGroupMedia = model<IStudyGroupMedia>('StudyGroupMedia', studyGroupMediaSchema);
+
+const studyGroupJoinRequestSchema = new Schema<IStudyGroupJoinRequest>({
+  userId: { type: Schema.Types.ObjectId, required: true },
+  studyGroupId: { type: Schema.Types.ObjectId, required: true }
+})
+
+export const studyGroupJoinRequest = model<IStudyGroupJoinRequest>("studyGroupJoinRequest", studyGroupJoinRequestSchema)
 
 const studyGroupMessageSchema = new Schema<IStudyGroupMessage>({
   content: { type: String, required: true },
