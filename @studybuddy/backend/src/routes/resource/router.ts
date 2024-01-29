@@ -33,7 +33,7 @@ export default new Hono()
         title: body.title,
         shortDescription: body.shortDescription,
         longDescription: body.longDescription,
-        subjects: body.subjects,
+        subjects: body["subjects[]"],
         media: body["media[]"]
       })
       const { media, ...rest } = payload

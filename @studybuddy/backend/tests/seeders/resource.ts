@@ -10,12 +10,11 @@ import { IUser } from '@studybuddy/backend/models/user'
 namespace ResourceSeeder {
   export const seed = (payload?: Partial<IResource>) => ({
     title: ulid(),
-    shortDescription: faker.word.words(),
-    longDescription: faker.word.words({
-      count: 10
-    }),
+    shortDescription: faker.word.words({ count: 10 }),
+    longDescription: faker.word.words({ count: 20 }),
     subjects: [ulid(), ulid(), ulid()],
     media: [
+      new File(["content"], ulid(), { type: "text/plain" }),
       new File(["content"], ulid(), { type: "text/plain" })
     ],
     ...payload

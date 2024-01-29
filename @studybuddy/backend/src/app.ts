@@ -31,7 +31,7 @@ export const app = new Hono()
 	.route("/auth", authRouter)
 	.route("/channels", channelsRouter)
 	.route("/study-group", studyGroupRouter)
-	.route("/reources", resourcesRouter)
+	.route("/resources", resourcesRouter)
 	.onError((err, c) => {
 		if (err instanceof ZodError) {
 			return c.json({ error: fromZodError(err) }, 400);
