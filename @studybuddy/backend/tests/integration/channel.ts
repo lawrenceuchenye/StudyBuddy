@@ -268,14 +268,12 @@ describe("Channels integration test", async () => {
         id: channelId
       }
     })
-    console.log("URL:", url)
-    expect(false).to.be.true
-    return false
 
-    const res = await client.channels[":id"].messages.$post({
-      param: {
-        id: channelId,
-      }
+    const formData = new FormData()
+
+    const res = await fetch(url, {
+      method: "POST",
+      body: formData
     })
 
     const json = await res.json()
