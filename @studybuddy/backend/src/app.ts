@@ -4,6 +4,7 @@ import { logger } from "hono/logger";
 import { Router as channelsRouter } from "./routes/channel";
 import { Router as authRouter } from "./routes/auth";
 import { Router as studyGroupRouter } from "./routes/study-group";
+import { Router as resourcesRouter } from "./routes/resource";
 
 import Database from "./utils/database";
 import { fromZodError } from "zod-validation-error";
@@ -27,9 +28,10 @@ process.on("SIGINT", gracefulShutdown)
 
 export const app = new Hono()
 	.use("*", logger())
+	.route("/auth", authRouter)
 	.route("/channels", channelsRouter)
 	.route("/study-group", studyGroupRouter)
-	.route("/auth", authRouter)
+	.route("/reources", resourcesRouter)
 	.onError((err, c) => {
 		if (err instanceof ZodError) {
 			return c.json({ error: fromZodError(err) }, 400);
