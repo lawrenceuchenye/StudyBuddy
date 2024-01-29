@@ -30,6 +30,15 @@ const index: FC = () => {
 
         <h3>Resources</h3>
         <h3>About</h3>
+
+        <h3>
+          <NavLink
+            to="/dashboard"
+            style={{ color: "var(--color-orange)", textDecoration: "none" }}
+          >
+            Dashboard
+          </NavLink>
+        </h3>
       </div>
       <div className="auth-container">
         <button>
