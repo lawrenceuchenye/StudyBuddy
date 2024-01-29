@@ -28,6 +28,14 @@ export default new Hono()
         creatorId: user._id
       })
 
+      console.log(
+        await StudyGroupRepository
+          .getMembers(
+            { id: studyGroup._id },
+            { page: 1, perPage: 10 }
+          )
+      )
+
       return c.json({
         data: studyGroup.toJSON(),
         message: "Study group created successfully!"

@@ -6,7 +6,7 @@ import { ulid } from "ulidx";
 import { File } from '@web-std/file'
 import UserSeeder from "../seeders/user";
 
-describe("Study group unit test", async () => {
+describe("Study groups unit test", async () => {
   await Database.start()
 
   const userId = new Types.ObjectId()

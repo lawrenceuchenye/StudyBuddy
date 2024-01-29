@@ -1,4 +1,3 @@
-import { StudyGroupUserRole, IStudyGroup, IStudyGroupUser } from "@studybuddy/backend/models/study-group";
 import { IUser } from "@studybuddy/backend/models/user";
 import StudyGroupRepository from "@studybuddy/backend/repositories/study-group";
 import { APIError } from "@studybuddy/backend/utils/error";
@@ -7,14 +6,13 @@ import { StatusCodes } from "http-status-codes";
 import { HydratedDocument, Types } from "mongoose";
 import { z } from "zod";
 import { postStudyGroupMessageSchema, updateStudyGroupMessageSchema, updateStudyGroupSchema } from "./schema";
-import UserRepository from "@studybuddy/backend/repositories/user";
 
 export const getMember = async (userId: Types.ObjectId, studyGroupId: Types.ObjectId) => {
   const studyGroupUser = await StudyGroupRepository.getMember(userId, {
     studyGroupId
   })
   if (!studyGroupUser)
-    throw new APIError("User not found in studyGroup!", { code: StatusCodes.NOT_FOUND })
+    throw new APIError("User not found in study group!", { code: StatusCodes.NOT_FOUND })
   return studyGroupUser
 }
 
@@ -69,7 +67,9 @@ export const deleteStudyGroupById = async (studyGroupId: Types.ObjectId, user: H
 }
 
 export const addUserToStudyGroup = async (studyGroupId: Types.ObjectId, userId: Types.ObjectId, creator: HydratedDocument<IUser>) => {
+  console.log("getting creator")
   const creatorGroupProfile = await getMember(studyGroupId, creator._id)
+  console.log("got creator")
   const studyGroup = await getStudyGroup(studyGroupId)
 
   const studyGroupUser = await StudyGroupRepository.getMember(userId, {
