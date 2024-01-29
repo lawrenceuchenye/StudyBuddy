@@ -91,19 +91,25 @@ const index: FC = () => {
         </div>
       </NavLink>
 
-      <NavLink to="/dashboard" style={{ color:"var(--color-white)",textDecoration:"none"}}>
-      <div className="link" onClick={(e) => e.stopPropagation()}>
-        <i className="fa-solid fa-users"></i>
+      <NavLink
+        to="/dashboard/find-match-buddies"
+        style={{ color: "var(--color-white)", textDecoration: "none" }}
+      >
+        <div className="link" onClick={(e) => e.stopPropagation()}>
+          <i className="fa-solid fa-users"></i>
 
-        <h1>Match</h1>
-      </div>
-</NavLink>
-      <NavLink to="/dashboard" style={{ color:"var(--color-white)",textDecoration:"none"}}>
-      <div className="link" onClick={(e) => e.stopPropagation()}>
-        <i className="fa-solid fa-chalkboard-teacher"></i>
+          <h1>Match</h1>
+        </div>
+      </NavLink>
+      <NavLink
+        to="/dashboard"
+        style={{ color: "var(--color-white)", textDecoration: "none" }}
+      >
+        <div className="link" onClick={(e) => e.stopPropagation()}>
+          <i className="fa-solid fa-chalkboard-teacher"></i>
 
-        <h1>Tutor</h1>
-      </div>
+          <h1>Tutor</h1>
+        </div>
       </NavLink>
       <div className="alink">
         <div className="link" onClick={(e) => e.stopPropagation()}>
