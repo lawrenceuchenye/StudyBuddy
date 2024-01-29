@@ -2,7 +2,7 @@ import "./index.css";
 import DashboardNavbar from "../../components/DashboardNavbar/";
 import { FC, useState, useEffect } from "react";
 import { useStudyBudStore } from "../../store/";
-import TaskManager from "../../components/TaskManager//";
+import GoalManager from "../../components/GoalManager//";
 import { Data } from "./data.tsx";
 import { Line } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
@@ -21,6 +21,11 @@ const index: FC = () => {
       {
         label: "CGPA",
         data: Data.map((data) => data.gpa),
+        tension: 0.2,
+      },
+      {
+        label: "Goals Completed",
+        data: Data.map((data) => data.goals),
         tension: 0.2,
       },
     ],
@@ -54,7 +59,7 @@ const index: FC = () => {
         }
       >
         <div className="user-info-card">
-          <h1>Welcome back,Dave!!</h1>
+          <h1>Crush those Goals,Dave!!!</h1>
           <div className="userprofile-card">
             <div className="userprofile-img-container"></div>
             <div className="userprofile-info-container">
@@ -65,39 +70,6 @@ const index: FC = () => {
             </div>
           </div>
         </div>
-        <div className="dcards-container">
-          <div className="dcard-container">
-            <h1>Study Groups</h1>
-            <p>
-              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
-              sint cillum sint consectetur cupidatat.
-            </p>
-            <div className="stats">
-              <p>
-                <i className="fa fa-user-group"></i> 55
-              </p>
-            </div>
-          </div>
-          <div className="dcard-container">
-            <h1>Lessons</h1>
-            <p>
-              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
-              sint cillum sint consectetur cupidatat.
-            </p>
-            <div className="stats">
-              <p>
-                <i className="fa-solid fa-chalkboard-teacher"></i> 55
-              </p>
-            </div>
-          </div>
-          <div className="dcard-container">
-            <h1>contribute</h1>
-            <p>
-              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
-              sint cillum sint consectetur cupidatat.
-            </p>
-          </div>
-        </div>
 
         <div
           className={
@@ -106,7 +78,8 @@ const index: FC = () => {
         >
           <Line data={chartData} />
         </div>
-        <TaskManager Tasks={tasks} />
+
+        <GoalManager Tasks={tasks} />
       </div>
     </div>
   );

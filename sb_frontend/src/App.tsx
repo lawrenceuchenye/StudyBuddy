@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import SignUp from "./pages/SignUp/";
 import Login from "./pages/Login/";
 import Dashboard from "./pages/Dashboard/";
+import DashboardGoals from "./pages/DashboardGoals/";
+
 import SharedLayout from "./pages/SharedLayout/";
 
 const App: FC = () => {
@@ -17,6 +19,8 @@ const App: FC = () => {
             <Route path="signup/" element={<SignUp />} />
             <Route path="login/" element={<Login />} />
             <Route path="dashboard/" element={<Dashboard />} />
+           <Route path="dashboard/goals/" element={<DashboardGoals />} />
+  
           </Route>
         </Routes>
       </BrowserRouter>

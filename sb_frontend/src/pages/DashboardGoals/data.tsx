@@ -1,6 +1,6 @@
 export const Data = [
   {
-    id: 0,
+    id: -1,
     year: 2019,
     gpa: 0,
     lgpa: 0,
@@ -20,13 +20,13 @@ export const Data = [
     year: 2020,
     gpa: 4.5,
     lgpa: 3,
-    goals: 6,
+    goals: 4,
   },
   {
     id: 3,
     year: 2020,
     gpa: 4,
     lgpa: 3,
-    goals: 4,
+    goals: 2,
   },
 ];

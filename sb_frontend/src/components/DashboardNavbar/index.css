@@ -3,14 +3,13 @@
   background: var(--color-orange);
   box-shadow: var(--box-shadow-orange);
   padding: 20px 15px;
-  position: absolute;
+  position: fixed;
   overflow: hidden;
   text-align: center;
   transition: 0.3s;
   margin: 40px 20px;
   border-radius: 5px;
-  margin-right: 0;
-  height: 90%;
+  min-height: 600px;
 }
 
 .mb-nav-container {
@@ -26,14 +25,14 @@
   background: var(--color-orange);
   box-shadow: var(--box-shadow-orange);
   padding: 20px 10px;
-  position: absolute;
+  position: fixed;
   overflow: hidden;
   transition: 0.3s;
-  top: 40px;
+  margin-top: 40px;
   z-index: 5;
   left: 20px;
   border-radius: 5px;
-  height: 90%;
+  height: 600px;
 }
 
 .link h1 {
