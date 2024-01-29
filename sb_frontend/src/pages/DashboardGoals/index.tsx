@@ -78,7 +78,15 @@ const index: FC = () => {
         >
           <Line data={chartData} />
         </div>
-
+        <div className="goals-tracker">
+          <div className="gt-header">
+            <h1>Progress</h1>
+            <p>1/2</p>
+          </div>
+          <div className="tracker-bar">
+            <div className="tracker-thumb"></div>
+          </div>
+        </div>
         <GoalManager Tasks={tasks} />
       </div>
     </div>
