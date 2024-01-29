@@ -105,7 +105,7 @@ describe("Channels unit test", async () => {
   })
 
   test("that a user can be added to a channel", async () => {
-    const channelUser = await ChannelRepository.addMember(user2, {
+    const channelUser = await ChannelRepository.addMember(user2._id, {
       channelId,
     })
 

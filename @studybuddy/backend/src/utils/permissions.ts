@@ -1,6 +1,7 @@
 import { defineAbility, subject as caslAbility } from '@casl/ability';
 import { IChannel, IChannelMessage, IChannelUser } from '../models/channel';
 import { HydratedDocument } from 'mongoose';
+import { IStudyGroup, IStudyGroupUser } from '../models/study-group';
 
 namespace PermissionsManager {
   export const subject = caslAbility
@@ -29,24 +30,26 @@ namespace PermissionsManager {
     }
   })
 
-  export const ChannelUser = (user: HydratedDocument<IChannelUser>) => defineAbility((can) => {
-    if (user.role === "CREATOR" || user.role === "TUTOR") {
-      can('post', 'ChannelMessage')
-      can('delete', "ChannelMessage")
-    }
-    else {
-      can<IChannelMessage>('update', 'ChannelMessage', { senderId: user._id })
-      can<IChannelMessage>('delete', 'ChannelMessage', { senderId: user._id })
+  type StudyGroupProps = {
+    user: HydratedDocument<IStudyGroupUser>
+    studyGroup: HydratedDocument<IStudyGroup>
+  }
 
-      can<HydratedDocument<IChannelUser>>('remove', 'ChannelUser', { _id: user._id })
-    }
+  export const StudyGroup = ({ user, studyGroup }: StudyGroupProps) => defineAbility(can => {
+    if (user.studyGroupId.equals(studyGroup._id)) {
+      if (user.role === "CREATOR") {
+        can<IStudyGroupUser>('remove', 'StudyGroupUser', { studyGroupId: studyGroup._id })
 
-    if (user.role === "CREATOR") {
-      can('remove', "ChannelUser")
-    }
+        can('update', 'StudyGroup')
+        can('delete', 'StudyGroup')
 
-    can<IChannel>('update', 'Channel', { creatorId: user._id })
-    can<IChannel>('delete', 'Channel', { creatorId: user._id })
+        can('post', 'StudyGroupMessage')
+        can('delete', "StudyGroupMessage")
+      }
+
+      can('post', 'StudyGroupMessage', { senderId: user._id })
+      can('delete', "StudyGroupMessage", { senderId: user._id })
+    }
   })
 }
 

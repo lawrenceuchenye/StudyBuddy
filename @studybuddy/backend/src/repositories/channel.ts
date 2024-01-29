@@ -226,10 +226,10 @@ namespace ChannelRepository {
 
   export type AddMemberPayload = Omit<IChannelUser, "role" | "joinedAt">
 
-  export async function addMember(user: HydratedDocument<IUser>, payload: AddMemberPayload) {
+  export async function addMember(userId: Types.ObjectId, payload: AddMemberPayload) {
     return ChannelUser.create({
       ...payload,
-      _id: user._id,
+      _id: userId,
       role: null,
       joinedAt: new Date()
     })

@@ -75,7 +75,7 @@ export const joinChannel = async (channelId: Types.ObjectId, user: HydratedDocum
   if (channelUser)
     throw new APIError("You are already in this channel!", { code: StatusCodes.BAD_REQUEST })
 
-  return ChannelRepository.addMember(user, {
+  return ChannelRepository.addMember(user._id, {
     channelId,
   })
 }

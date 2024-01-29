@@ -1,7 +1,10 @@
 import { Hono } from "hono";
 import { logger } from "hono/logger";
+
 import { Router as channelsRouter } from "./routes/channel";
 import { Router as authRouter } from "./routes/auth";
+import { Router as studyGroupRouter } from "./routes/study-group";
+
 import Database from "./utils/database";
 import { fromZodError } from "zod-validation-error";
 import { ZodError } from "zod";
@@ -14,6 +17,7 @@ const stopDatabase = await Database.start();
 
 const gracefulShutdown = async () => {
 	stopDatabase()
+	process.exit()
 }
 
 process.on("uncaughtException", gracefulShutdown)
@@ -24,6 +28,7 @@ process.on("SIGINT", gracefulShutdown)
 export const app = new Hono()
 	.use("*", logger())
 	.route("/channels", channelsRouter)
+	.route("/study-group", studyGroupRouter)
 	.route("/auth", authRouter)
 	.onError((err, c) => {
 		if (err instanceof ZodError) {
