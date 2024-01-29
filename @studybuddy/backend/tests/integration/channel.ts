@@ -5,8 +5,11 @@ import ChannelSeeder from "../seeders/channel";
 import Token from "@studybuddy/backend/utils/token";
 import { StatusCodes } from "http-status-codes";
 import { Types } from "mongoose";
+import Database from "@studybuddy/backend/utils/database";
 
 describe("Channels integration test", async () => {
+  await Database.start()
+
   const TOTAL_MEMBERS = 9
   const MEMBERS_REMOVED_BY_CREATOR = 3
   const MEMBERS_LEFT_BY_THEMSELVES = 2
@@ -54,6 +57,7 @@ describe("Channels integration test", async () => {
 
     const data = await res.json()
 
+    console.log(data)
     channelId = data.data._id
 
     expect(res.status).to.equal(201)

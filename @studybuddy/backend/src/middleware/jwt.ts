@@ -4,6 +4,7 @@ import { IUser } from "../models/user"
 import Token from "../utils/token"
 import UserRepository from "../repositories/user"
 import { HydratedDocument } from "mongoose"
+import { APIError } from "../utils/error"
 
 namespace JwtMiddleware {
   export const verify: MiddlewareHandler<{
@@ -13,16 +14,16 @@ namespace JwtMiddleware {
   }> = async (c, next) => {
     const authHeader = c.req.header("authorization")
     if (!authHeader)
-      return c.json({ message: "Invalid token" }, StatusCodes.UNAUTHORIZED)
+      throw new APIError("Invalid token1", { code: StatusCodes.UNAUTHORIZED })
 
     const [, suppliedAccessToken] = authHeader.split(" ")
     if (!suppliedAccessToken)
-      return c.json({ message: "Invalid token" }, StatusCodes.UNAUTHORIZED)
+      throw new APIError("Invalid token2", { code: StatusCodes.UNAUTHORIZED })
 
     const verifiedAccessToken =
-      Token.verifyAccessToken(suppliedAccessToken)
+      await Token.verifyAccessToken(suppliedAccessToken)
     if (!verifiedAccessToken)
-      return c.json({ message: "Invalid token" }, StatusCodes.UNAUTHORIZED)
+      throw new APIError("Invalid token3", { code: StatusCodes.UNAUTHORIZED })
 
     const userFetchResult = await UserRepository.getUser({
       email: verifiedAccessToken.email
@@ -34,7 +35,7 @@ namespace JwtMiddleware {
     const maybeUser = userFetchResult.value
 
     if (maybeUser.isNothing)
-      return c.json({ message: "Invalid token" }, StatusCodes.UNAUTHORIZED)
+      throw new APIError("Invalid token4", { code: StatusCodes.UNAUTHORIZED })
 
     c.set('user', maybeUser.value)
 

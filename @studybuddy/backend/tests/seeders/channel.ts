@@ -13,25 +13,19 @@ namespace ChannelSeeder {
   })
 
   export const generate = async (user: HydratedDocument<IChannelUser>, payload?: Partial<IChannel>) => {
-    const creationResult = await ChannelRepository
+    const channel = await ChannelRepository
       .createChannel({
         ...seed(payload),
         creatorId: user._id
       })
 
-    if (creationResult.isErr)
-      throw new Error("Failed to create channel")
-    const channel = creationResult.value
-
     return Object.assign(
       channel,
       {
         destroy: async () => {
-          const deletionResult = await ChannelRepository.deleteChannel({
+          await ChannelRepository.deleteChannel({
             id: channel._id
           })
-          if (!deletionResult)
-            throw new Error("Failed to delete channel")
         }
       }
     )

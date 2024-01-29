@@ -3,17 +3,15 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@studybuddy/frontend/*": [
-        "./@studybuddy/frontend/src/*"
+      "@studybuddyfrontend/*": [
+        "./frontend/src/*"
       ],
       "@studybuddy/backend/*": [
-        "./@studybuddy/backend/src/*"
+        "./backend/src/*"
       ]
     },
-    "rootDir": ".",
     "strict": true,
     "skipLibCheck": true,
-    "noEmit": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "noFallthroughCasesInSwitch": true,

@@ -10,7 +10,8 @@
     "backend:test:unit": "dotenv -c -- pnpm --filter @studybuddy/backend test tests/unit",
     "backend:test:integration": "dotenv -c -- pnpm --filter @studybuddy/backend test tests/integration",
     "backend:build": "pnpm --filter @studybuddy/backend build",
-    "frontend:dev": "dotenv -c -- pnpm --filter @studybuddy/frontend dev"
+    "frontend:dev": "dotenv -c -- pnpm --filter @studybuddy/frontend dev",
+    "lint": "tsc --build --watch ./@studybuddy/tsconfig.json"
   },
   "dependencies": {
     "typescript": "^5.3.3"
