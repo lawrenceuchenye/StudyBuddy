@@ -330,12 +330,8 @@ describe("Channels integration test", async () => {
         role: null
       }
     }, {
-        headers: creator.headers
-      })
-
-    const text = await res.text()
-
-    console.log(text)
+      headers: creator.headers
+    })
 
     expect(res.status).to.equal(StatusCodes.OK)
   })
