@@ -115,7 +115,7 @@ export const removeUserFromChannel = async (channelId: Types.ObjectId, channelUs
   })
 }
 
-export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, role: ChannelUserRole | undefined, promoter: HydratedDocument<IUser>) => {
+export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, role: ChannelUserRole, promoter: HydratedDocument<IUser>) => {
   const promoterUser = await getMember(promoter._id, channelId)
   const channelUser = await getMember(channelUserId, channelId)
   const channel = await getChannel(channelId)
@@ -128,7 +128,10 @@ export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserI
       })
       .cannot("promote", PermissionsManager.subject("ChannelUser", channelUser))
   )
-    throw new APIError("You do not have permission to remove this user from the channel!", { code: StatusCodes.FORBIDDEN })
+    throw new APIError("You do not have permission to promote this user!", { code: StatusCodes.FORBIDDEN })
+
+  if (promoterUser._id.equals(channelUser._id))
+    throw new APIError("You cannot promote yourself!", { code: StatusCodes.BAD_REQUEST })
 
   return ChannelRepository.updateMember(channelUser._id, {
     role

@@ -24,17 +24,17 @@ export interface IChannelMedia {
   uploadedAt: Date
 }
 
-export type ChannelUserRole = "CREATOR" | "TUTOR"
+export type ChannelUserRole = "CREATOR" | "TUTOR" | null
 
 export interface IChannelUser {
   channelId: Types.ObjectId
-  role?: ChannelUserRole
+  role: ChannelUserRole
   joinedAt: Date
 }
 
 const channelUserSchema = new Schema<IChannelUser>({
   channelId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  role: { type: String, required: false },
+  role: { type: String, required: true, default: null },
   joinedAt: { type: Date, required: true },
 });
 

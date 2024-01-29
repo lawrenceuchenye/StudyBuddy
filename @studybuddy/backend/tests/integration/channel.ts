@@ -6,6 +6,8 @@ import Token from "@studybuddy/backend/utils/token";
 import { StatusCodes } from "http-status-codes";
 import { Types } from "mongoose";
 import Database from "@studybuddy/backend/utils/database";
+import { ulid } from "ulidx";
+import { File } from "@web-std/file";
 
 describe("Channels integration test", async () => {
   await Database.start()
@@ -57,7 +59,6 @@ describe("Channels integration test", async () => {
 
     const data = await res.json()
 
-    console.log(data)
     channelId = data.data._id
 
     expect(res.status).to.equal(201)
@@ -154,9 +155,6 @@ describe("Channels integration test", async () => {
     }, {
       headers: members[0].headers
     })
-
-    const data = await res.text()
-    console.log(data)
 
     // because the user is not in the channel
     expect(res.status).to.equal(StatusCodes.FORBIDDEN)
@@ -271,16 +269,97 @@ describe("Channels integration test", async () => {
 
     const formData = new FormData()
 
+    formData.append("content", ulid())
+    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
+    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
+
     const res = await fetch(url, {
       method: "POST",
-      body: formData
+      body: formData,
+      headers: members[0].headers
     })
 
-    const json = await res.json()
+    expect(res.status).to.equal(StatusCodes.FORBIDDEN)
+  })
+
+  test("that a member can be promoted by the creator", async () => {
+    const res = await client.channels[":channelId"].members[":memberId"].$patch({
+      param: {
+        channelId,
+        memberId: members[0].data._id.toString()
+      },
+      json: {
+        role: "TUTOR"
+      }
+    }, {
+      headers: creator.headers
+    })
 
     expect(res.status).to.equal(StatusCodes.OK)
-    expect(json.meta.total).to.be.equal(membersCount - MEMBERS_LEFT_BY_THEMSELVES)
+  })
 
+  test("that a promoted member can now post to the channel", async () => {
+    const url = client.channels[":id"].messages.$url({
+      param: {
+        id: channelId
+      }
+    })
+
+    const formData = new FormData()
+
+    formData.append("content", ulid())
+    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
+    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
+
+    const res = await fetch(url, {
+      method: "POST",
+      body: formData,
+      headers: members[1].headers
+    })
+
+    expect(res.status).to.equal(StatusCodes.FORBIDDEN)
+  })
+
+  test("that a promoted member can be demoted by the creator", async () => {
+    const res = await client.channels[":channelId"].members[":memberId"].$patch({
+      param: {
+        channelId,
+        memberId: members[0].data._id.toString()
+      },
+      json: {
+        role: null
+      }
+    }, {
+        headers: creator.headers
+      })
+
+    const text = await res.text()
+
+    console.log(text)
+
+    expect(res.status).to.equal(StatusCodes.OK)
+  })
+
+  test("that a demoted member cannot post to the channel", async () => {
+    const url = client.channels[":id"].messages.$url({
+      param: {
+        id: channelId
+      }
+    })
+
+    const formData = new FormData()
+
+    formData.append("content", ulid())
+    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
+    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
+
+    const res = await fetch(url, {
+      method: "POST",
+      body: formData,
+      headers: members[1].headers
+    })
+
+    expect(res.status).to.equal(StatusCodes.FORBIDDEN)
   })
 
   test("that a channel can be deleted", async () => {

@@ -9,6 +9,7 @@ import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
 import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
 import { deleteChannelById, deleteChannelMessage, getMember, joinChannel, leaveChannel, postChannelMessage, promoteChannelUser, removeUserFromChannel, updateChannelById, updateChannelMessage } from "./controller";
 import { APIError } from "@studybuddy/backend/utils/error";
+import JWTConfig from "@studybuddy/backend/config/jwt";
 
 export default new Hono()
   .post("/",
@@ -132,7 +133,7 @@ export default new Hono()
   .patch("/:channelId/members/:memberId",
     JwtMiddleware.verify,
     zValidator("json", z.object({
-      role: z.enum(["TUTOR"]).optional()
+      role: z.enum(["TUTOR"]).nullable()
     })),
     async (c) => {
       const {
@@ -186,15 +187,17 @@ export default new Hono()
     return c.json({ message: "Removed user successfully!" })
   })
   .post("/:id/messages",
+    JwtMiddleware.verify,
     async (c) => {
       const body = await c.req.parseBody()
       const payload = postChannelMessageSchema
         .parse({
           content: body.content,
-          media: body.media
+          media: body["media[]"]
         })
       const channelId = z.string()
-        .transform(transformMongoId).parse(c.req.param("id"))
+        .transform(transformMongoId)
+        .parse(c.req.param("id"))
 
       const user = c.var.user
 

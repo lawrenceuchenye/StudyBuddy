@@ -230,6 +230,7 @@ namespace ChannelRepository {
     return ChannelUser.create({
       ...payload,
       _id: user._id,
+      role: null,
       joinedAt: new Date()
     })
   }
