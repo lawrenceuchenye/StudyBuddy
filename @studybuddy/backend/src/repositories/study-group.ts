@@ -18,7 +18,6 @@ namespace StudyGroupRepository {
 
     const studyGroup = await StudyGroup.create({
       ...payload,
-      creatorId: creator._id,
       createdAt: new Date(),
     })
 

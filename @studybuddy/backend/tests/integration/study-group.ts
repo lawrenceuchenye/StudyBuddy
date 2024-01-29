@@ -24,10 +24,6 @@ describe("Study groups integration test", async () => {
 
       return {
         data: member,
-        payload: {
-          new: UserSeeder.seed(),
-          old: UserSeeder.seed()
-        },
         token,
         headers: {
           authorization: `Bearer ${token}`
@@ -137,19 +133,18 @@ describe("Study groups integration test", async () => {
           memberId: member.data._id.toString()
         }
       }, {
-        headers: member.headers
+        headers: creator.headers
       })
 
       const json = await res.json()
-      console.log(json)
 
       expect(res.status).to.equal(StatusCodes.OK)
       expect(json.data).to.be.instanceOf(Object)
     }
   })
 
-  test("that a study group cannot be updated by a random user", async () => {
-    const res = await client["study-group"].$patch({
+  test("that a study group cannot be updated by a random user/member", async () => {
+    const res = await client["study-group"][":id"].$patch({
       param: {
         id: studyGroupId
       },
@@ -163,7 +158,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that the number of study group members has gone up", async () => {
-    const res = await client["study-group"].$get({
+    const res = await client["study-group"][":id"].members.$get({
       param: {
         id: studyGroupId,
       }
@@ -194,7 +189,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that a random user cannot be gotten from the study group", async () => {
-    const res = await client["study-group"].$get({
+    const res = await client["study-group"][":studyGroupId"].members[":memberId"].$get({
       param: {
         studyGroupId,
         memberId: new Types.ObjectId().toString()
@@ -206,12 +201,13 @@ describe("Study groups integration test", async () => {
 
   test("that members can be removed from a study group by the creator", async () => {
     for (const member of members.splice(0, MEMBERS_REMOVED_BY_CREATOR)) {
-      const res = await client["study-group"].$post({
+      const res = await client["study-group"][":studyGroupId"].members[":memberId"].$delete({
         param: {
-          id: studyGroupId
+          studyGroupId,
+          memberId: member.data._id.toString()
         }
       }, {
-        headers: member.headers
+        headers: creator.headers
       })
 
       expect(res.status).to.equal(StatusCodes.OK)

@@ -28,14 +28,6 @@ export default new Hono()
         creatorId: user._id
       })
 
-      console.log(
-        await StudyGroupRepository
-          .getMembers(
-            { id: studyGroup._id },
-            { page: 1, perPage: 10 }
-          )
-      )
-
       return c.json({
         data: studyGroup.toJSON(),
         message: "Study group created successfully!"
@@ -172,16 +164,20 @@ export default new Hono()
     })
   .delete("/:studyGroupId/members/:memberId", async (c) => {
     const {
-      id: studyGroupId,
+      studyGroupId,
       memberId
     } = z.object({
-      id: z.string().transform(transformMongoId),
+      studyGroupId: z.string().transform(transformMongoId),
       memberId: z.string().transform(transformMongoId)
     }).parse(c.req.param())
 
     const user = c.var.user
 
-    await removeUserFromStudyGroup(studyGroupId, memberId, user)
+    await removeUserFromStudyGroup(
+      studyGroupId,
+      memberId,
+      user
+    )
 
     return c.json({ message: "Removed user successfully!" })
   })

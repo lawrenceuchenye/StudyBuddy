@@ -67,9 +67,7 @@ export const deleteStudyGroupById = async (studyGroupId: Types.ObjectId, user: H
 }
 
 export const addUserToStudyGroup = async (studyGroupId: Types.ObjectId, userId: Types.ObjectId, creator: HydratedDocument<IUser>) => {
-  console.log("getting creator")
-  const creatorGroupProfile = await getMember(studyGroupId, creator._id)
-  console.log("got creator")
+  const groupCreatorProfile = await getMember(creator._id, studyGroupId)
   const studyGroup = await getStudyGroup(studyGroupId)
 
   const studyGroupUser = await StudyGroupRepository.getMember(userId, {
@@ -82,7 +80,7 @@ export const addUserToStudyGroup = async (studyGroupId: Types.ObjectId, userId: 
   if (
     PermissionsManager
       .StudyGroup({
-        user: creatorGroupProfile,
+        user: groupCreatorProfile,
         studyGroup
       })
       .cannot("add", "StudyGroupUser")
