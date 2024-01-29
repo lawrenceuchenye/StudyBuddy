@@ -17,13 +17,6 @@ export interface IChannelMessage {
   sentAt: Date
 }
 
-export interface IChannelMedia {
-  data: string
-  type: string
-  size: number
-  uploadedAt: Date
-}
-
 export type ChannelUserRole = "CREATOR" | "TUTOR" | null
 
 export interface IChannelUser {
@@ -40,18 +33,9 @@ const channelUserSchema = new Schema<IChannelUser>({
 
 export const ChannelUser = model<IChannelUser>('ChannelUser', channelUserSchema);
 
-const channelMediaSchema = new Schema<IChannelMedia>({
-  data: { type: String, required: true },
-  type: { type: String, required: true },
-  size: { type: Number, required: true },
-  uploadedAt: { type: Date, required: true },
-})
-
-export const ChannelMedia = model<IChannelMedia>('ChannelMedia', channelMediaSchema);
-
 const channelMessageSchema = new Schema<IChannelMessage>({
   content: { type: String, required: true },
-  mediaIds: { type: [Schema.Types.ObjectId], ref: "ChannelMedia", required: true },
+  mediaIds: { type: [Schema.Types.ObjectId], ref: "Media", required: true },
   senderId: { type: Schema.Types.ObjectId, ref: "ChannelUser", required: true },
   channelId: { type: Schema.Types.ObjectId, ref: "Channel", required: true },
   sentAt: { type: Date, required: true },

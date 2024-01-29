@@ -17,13 +17,6 @@ export interface IStudyGroupMessage {
   sentAt: Date
 }
 
-export interface IStudyGroupMedia {
-  data: string
-  type: string
-  size: number
-  uploadedAt: Date
-}
-
 export interface IStudyGroupJoinRequest {
   userId: Types.ObjectId,
   studyGroupId: Types.ObjectId
@@ -46,15 +39,6 @@ const studyGroupUserSchema = new Schema<IStudyGroupUser>({
 
 export const StudyGroupUser = model<IStudyGroupUser>('StudyGroupUser', studyGroupUserSchema);
 
-const studyGroupMediaSchema = new Schema<IStudyGroupMedia>({
-  data: { type: String, required: true },
-  type: { type: String, required: true },
-  size: { type: Number, required: true },
-  uploadedAt: { type: Date, required: true, default: Date.now() },
-})
-
-export const StudyGroupMedia = model<IStudyGroupMedia>('StudyGroupMedia', studyGroupMediaSchema);
-
 const studyGroupJoinRequestSchema = new Schema<IStudyGroupJoinRequest>({
   userId: { type: Schema.Types.ObjectId, required: true },
   studyGroupId: { type: Schema.Types.ObjectId, required: true }
@@ -64,7 +48,7 @@ export const studyGroupJoinRequest = model<IStudyGroupJoinRequest>("studyGroupJo
 
 const studyGroupMessageSchema = new Schema<IStudyGroupMessage>({
   content: { type: String, required: true },
-  mediaIds: { type: [Schema.Types.ObjectId], ref: "StudyGroupMedia", required: true },
+  mediaIds: { type: [Schema.Types.ObjectId], ref: "Media", required: true },
   senderId: { type: Schema.Types.ObjectId, ref: "StudyGroupUser", required: true },
   studyGroupId: { type: Schema.Types.ObjectId, ref: "StudyGroup", required: true },
   sentAt: { type: Date, required: true },

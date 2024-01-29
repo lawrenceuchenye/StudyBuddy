@@ -162,25 +162,27 @@ export default new Hono()
 
       return c.json({ message: "Study group member added successfully!", data: studyGroupUser.toJSON() })
     })
-  .delete("/:studyGroupId/members/:memberId", async (c) => {
-    const {
-      studyGroupId,
-      memberId
-    } = z.object({
-      studyGroupId: z.string().transform(transformMongoId),
-      memberId: z.string().transform(transformMongoId)
-    }).parse(c.req.param())
+  .delete("/:studyGroupId/members/:memberId",
+    JwtMiddleware.verify,
+    async (c) => {
+      const {
+        studyGroupId,
+        memberId
+      } = z.object({
+        studyGroupId: z.string().transform(transformMongoId),
+        memberId: z.string().transform(transformMongoId)
+      }).parse(c.req.param())
 
-    const user = c.var.user
+      const user = c.var.user
 
-    await removeUserFromStudyGroup(
-      studyGroupId,
-      memberId,
-      user
-    )
+      await removeUserFromStudyGroup(
+        studyGroupId,
+        memberId,
+        user
+      )
 
-    return c.json({ message: "Removed user successfully!" })
-  })
+      return c.json({ message: "Removed user successfully!" })
+    })
   .post("/:id/messages",
     JwtMiddleware.verify,
     async (c) => {

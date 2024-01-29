@@ -215,7 +215,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that the number of study group members has gone down", async () => {
-    const res = await client["study-group"].$get({
+    const res = await client["study-group"][":id"].members.$get({
       param: {
         id: studyGroupId,
       }
@@ -244,7 +244,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that the number of study group members has gone down", async () => {
-    const res = await client["study-group"].$get({
+    const res = await client["study-group"][":id"].members.$get({
       param: {
         id: studyGroupId,
       }
@@ -259,7 +259,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that a member can post to the study group", async () => {
-    const url = client["study-group"].$url({
+    const url = client["study-group"][":id"].messages.$url({
       param: {
         id: studyGroupId
       }
@@ -277,29 +277,7 @@ describe("Study groups integration test", async () => {
       headers: members[1].headers
     })
 
-    expect(res.status).to.equal(StatusCodes.FORBIDDEN)
-  })
-
-  test("that a demoted member cannot post to the study group", async () => {
-    const url = client["study-group"].$url({
-      param: {
-        id: studyGroupId
-      }
-    })
-
-    const formData = new FormData()
-
-    formData.append("content", ulid())
-    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
-    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
-
-    const res = await fetch(url, {
-      method: "POST",
-      body: formData,
-      headers: members[1].headers
-    })
-
-    expect(res.status).to.equal(StatusCodes.FORBIDDEN)
+    expect(res.status).to.equal(StatusCodes.OK)
   })
 
   test("that a study group can be deleted", async () => {

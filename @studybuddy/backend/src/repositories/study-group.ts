@@ -1,9 +1,9 @@
-import { HydratedDocument, Types } from "mongoose"
-import { StudyGroup, StudyGroupMedia, StudyGroupMessage, StudyGroupUser, IStudyGroup, IStudyGroupMessage, IStudyGroupUser } from "@studybuddy/backend/models/study-group"
+import { Types } from "mongoose"
+import { StudyGroup, StudyGroupMessage, StudyGroupUser, IStudyGroup, IStudyGroupMessage, IStudyGroupUser } from "@studybuddy/backend/models/study-group"
 import Pagination from "../utils/pagination"
 import { APIError } from "../utils/error"
 import { StatusCodes } from "http-status-codes"
-import { IUser } from "../models/user"
+import MediaRepository from "./media"
 
 namespace StudyGroupRepository {
   export type CreateStudyGroupPayload = Omit<IStudyGroup, "createdAt">
@@ -118,18 +118,14 @@ namespace StudyGroupRepository {
     if (!sender)
       throw new APIError("User doesn't exist in studyGroup", { code: StatusCodes.NOT_FOUND })
 
-    const mediaIds: Types.ObjectId[] = []
-    for (const medium of payload.media) {
-      const data = Buffer.from(await medium.arrayBuffer()).toString("base64")
-
-      const media = await StudyGroupMedia.create({
-        data,
-        type: medium.type,
-        size: medium.size,
-        uploadedAt: new Date(),
-      })
-      mediaIds.push(media._id)
-    }
+    const mediaIds = await Promise.all(
+      payload
+        .media
+        .map(async (medium) => {
+          const uploadedMedium = await MediaRepository.createMedia(medium)
+          return uploadedMedium._id
+        })
+    )
 
     const message = await StudyGroupMessage.create({
       ...payload,
@@ -219,6 +215,15 @@ namespace StudyGroupRepository {
   export async function deleteMessage(payload: DeleteMessageInStudyGroupPayload) {
     const { messageId: id, studyGroupId } = payload
     const { acknowledged } = await StudyGroupMessage.updateOne({ _id: id, studyGroupId }, { deleted: true, content: "", mediaIds: [] })
+
+    const message = await StudyGroupMessage.findOne({ _id: id })
+    if (!message)
+      throw new APIError("Message doesn't exist", { code: StatusCodes.NOT_FOUND })
+
+    for (const mediaId of message.mediaIds) {
+      await MediaRepository.deleteMedia(mediaId)
+    }
+
     if (!acknowledged)
       throw new APIError("Failed to delete message in studyGroup", { code: StatusCodes.INTERNAL_SERVER_ERROR })
   }

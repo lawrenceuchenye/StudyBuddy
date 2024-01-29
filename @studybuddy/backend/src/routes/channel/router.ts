@@ -171,21 +171,23 @@ export default new Hono()
 
       return c.json({ message: "Left channel successfully!" })
     })
-  .delete("/:channelId/members/:memberId", async (c) => {
-    const {
-      id: channelId,
-      memberId
-    } = z.object({
-      id: z.string().transform(transformMongoId),
-      memberId: z.string().transform(transformMongoId)
-    }).parse(c.req.param())
+  .delete("/:channelId/members/:memberId",
+    JwtMiddleware.verify,
+    async (c) => {
+      const {
+        channelId,
+        memberId
+      } = z.object({
+        channelId: z.string().transform(transformMongoId),
+        memberId: z.string().transform(transformMongoId)
+      }).parse(c.req.param())
 
-    const user = c.var.user
+      const user = c.var.user
 
-    await removeUserFromChannel(channelId, memberId, user)
+      await removeUserFromChannel(channelId, memberId, user)
 
-    return c.json({ message: "Removed user successfully!" })
-  })
+      return c.json({ message: "Removed user successfully!" })
+    })
   .post("/:id/messages",
     JwtMiddleware.verify,
     async (c) => {

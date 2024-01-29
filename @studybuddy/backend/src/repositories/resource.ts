@@ -1,9 +1,9 @@
 import { HydratedDocument, Types } from "mongoose"
-import { Channel, ChannelMessage, ChannelUser, IChannel, IChannelMessage, IChannelUser } from "@studybuddy/backend/models/channel"
+import { Channel, ChannelMedia, ChannelMessage, ChannelUser, IChannel, IChannelMessage, IChannelUser } from "@studybuddy/backend/models/channel"
 import Pagination from "../utils/pagination"
 import { APIError } from "../utils/error"
 import { StatusCodes } from "http-status-codes"
-import MediaRepository from "./media"
+import { IUser } from "../models/user"
 
 namespace ChannelRepository {
   export type CreateChannelPayload = Omit<IChannel, "createdAt">
@@ -119,14 +119,18 @@ namespace ChannelRepository {
     if (!sender)
       throw new APIError("User doesn't exist in channel", { code: StatusCodes.NOT_FOUND })
 
-    const mediaIds = await Promise.all(
-      payload
-        .media
-        .map(async (medium) => {
-          const uploadedMedium = await MediaRepository.createMedia(medium)
-          return uploadedMedium._id
-        })
-    )
+    const mediaIds: Types.ObjectId[] = []
+    for (const medium of payload.media) {
+      const data = Buffer.from(await medium.arrayBuffer()).toString("base64")
+
+      const media = await ChannelMedia.create({
+        data,
+        type: medium.type,
+        size: medium.size,
+        uploadedAt: new Date(),
+      })
+      mediaIds.push(media._id)
+    }
 
     const message = await ChannelMessage.create({
       ...payload,
@@ -215,16 +219,7 @@ namespace ChannelRepository {
 
   export async function deleteMessage(payload: DeleteMessageInChannelPayload) {
     const { messageId: id, channelId } = payload
-    const message = await ChannelMessage.findOne({ _id: id })
-    if (!message)
-      throw new APIError("Message doesn't exist", { code: StatusCodes.NOT_FOUND })
-
-    for (const mediaId of message.mediaIds) {
-      await MediaRepository.deleteMedia(mediaId)
-    }
-
     const { acknowledged } = await ChannelMessage.updateOne({ _id: id, channelId }, { deleted: true, content: "", mediaIds: [] })
-
     if (!acknowledged)
       throw new APIError("Failed to delete message in channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })
   }
