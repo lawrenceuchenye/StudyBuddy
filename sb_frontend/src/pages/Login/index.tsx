@@ -27,7 +27,7 @@ const index: FC = () => {
             <div className="login-txt">
               <p>
                 Don't have an account,
-                <NavLink to="/login" style={{ color: "var(--color-blue)" }}>
+                <NavLink to="/signup" style={{ color: "var(--color-blue)" }}>
                   <a>Sign Up</a>
                 </NavLink>
               </p>
