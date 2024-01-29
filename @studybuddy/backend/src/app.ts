@@ -10,7 +10,16 @@ import GlobalLogger from "./utils/logger";
 import { APIError } from "./utils/error";
 
 const errorLogger = GlobalLogger.getSubLogger({ name: "ErrorLogger" });
-await Database.start();
+const stopDatabase = await Database.start();
+
+const gracefulShutdown = async () => {
+	stopDatabase()
+}
+
+process.on("uncaughtException", gracefulShutdown)
+process.on("exit", gracefulShutdown)
+process.on("unhandledRejection", gracefulShutdown)
+process.on("SIGINT", gracefulShutdown)
 
 export const app = new Hono()
 	.use("*", logger())
