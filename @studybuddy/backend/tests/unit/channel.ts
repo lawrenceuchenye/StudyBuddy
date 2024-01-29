@@ -61,6 +61,7 @@ describe("Channels unit test", async () => {
     })
 
     expect(channels.meta.total).to.equal(channelsCount + 1)
+    channelsCount = channels.meta.total
   })
 
   test("that only channels with a matching subject can be retrieved", async () => {
@@ -164,5 +165,15 @@ describe("Channels unit test", async () => {
     })
 
     expect(channel).to.be.null
+  })
+
+  test("that the count of channels has decreased", async () => {
+    const channels = await ChannelRepository.getChannels({
+      page: 1,
+      perPage: 10
+    })
+
+    expect(channels.meta.total).to.equal(channelsCount - 1)
+    channelsCount = channels.meta.total
   })
 })

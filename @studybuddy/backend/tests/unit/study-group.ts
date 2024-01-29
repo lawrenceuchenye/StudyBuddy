@@ -60,6 +60,7 @@ describe("Study groups unit test", async () => {
     })
 
     expect(studyGroups.meta.total).to.equal(studyGroupsCount + 1)
+    studyGroupsCount = studyGroups.meta.total
   })
 
   test("that only study groups with a matching subject can be retrieved", async () => {
@@ -157,5 +158,15 @@ describe("Study groups unit test", async () => {
     })
 
     expect(studyGroup).to.be.null
+  })
+
+  test("that the count of study groups has decreased", async () => {
+    const studyGroups = await StudyGroupRepository.getStudyGroups({
+      page: 1,
+      perPage: 10
+    })
+
+    expect(studyGroups.meta.total).to.equal(studyGroupsCount - 1)
+    studyGroupsCount = studyGroups.meta.total
   })
 })
