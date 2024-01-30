@@ -5,9 +5,11 @@
   "main": "src/app.ts",
   "type": "module",
   "scripts": {
+    "start": "tsx run.ts",
     "dev": "tsx --watch run.ts",
     "db:shell": "pnpm dotenv -- mongosh",
-    "build": "esbuild run.ts --bundle --outfile=./build/run.js --platform=node",
+    "build": "esbuild run.ts --bundle --outfile=build/run.js --platform=node",
+    "build:app": "esbuild src/app.ts --bundle --outfile=build/app.js --platform=node",
     "test": "vitest"
   },
   "keywords": [],

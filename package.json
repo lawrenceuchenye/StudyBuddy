@@ -5,13 +5,14 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "backend:dev": "dotenv -c -- pnpm --filter @studybuddy/backend dev",
+    "backend:dev": "dotenv -- pnpm --filter @studybuddy/backend dev",
     "backend:dev:test": "dotenv -c test -- pnpm --filter @studybuddy/backend dev",
-    "backend:test": "dotenv -c -- pnpm --filter @studybuddy/backend test",
-    "backend:test:unit": "dotenv -c -- pnpm --filter @studybuddy/backend test tests/unit",
+    "backend:test": "dotenv -- pnpm --filter @studybuddy/backend test",
+    "backend:test:unit": "dotenv -- pnpm --filter @studybuddy/backend test tests/unit",
     "backend:test:integration": "dotenv -c -- pnpm --filter @studybuddy/backend test tests/integration",
     "backend:build": "pnpm --filter @studybuddy/backend build",
-    "frontend:dev": "dotenv -c -- pnpm --filter @studybuddy/frontend dev",
+    "backend:build:app": "pnpm --filter @studybuddy/backend build:app",
+    "frontend:dev": "dotenv -- pnpm --filter @studybuddy/frontend dev",
     "lint": "tsc --build --watch ./@studybuddy/tsconfig.json"
   },
   "dependencies": {
