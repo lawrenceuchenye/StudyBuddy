@@ -7,9 +7,7 @@
   "scripts": {
     "start": "tsx run.ts",
     "dev": "tsx --watch run.ts",
-    "db:shell": "pnpm dotenv -- mongosh",
-    "build": "esbuild run.ts --bundle --outfile=build/run.js --platform=node",
-    "build:app": "esbuild src/app.ts --bundle --outfile=build/app.js --platform=node",
+    "db:shell": "dotenv -- mongosh",
     "test": "vitest"
   },
   "keywords": [],
@@ -36,7 +34,6 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.11.0",
-    "esbuild": "^0.19.11",
     "mongosh": "^2.1.1",
     "tsx": "^4.7.0",
     "ulidx": "^2.2.1",
