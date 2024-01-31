@@ -88,7 +88,7 @@ const index: FC = () => {
               <h1>Friends</h1>
             </div>
             <div className="results-gotten-container">
-              <p>No results found.</p>
+              <p>pretty lonely here.</p>
             </div>
           </div>
           <div className="results-container">
@@ -96,7 +96,7 @@ const index: FC = () => {
               <h1>Study Groups</h1>
             </div>
             <div className="results-gotten-container">
-              <p>No results found.</p>
+              <p>Join a group.</p>
             </div>
           </div>
         </div>

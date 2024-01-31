@@ -10,7 +10,7 @@ const index: FC = () => {
 
   return (
     <div className="main-nav-container">
-      <div className="logo-container">
+      <div tabindex="0" aria-label="study buddy logo initials" className="logo-container">
         <i>
           <h1>
             <span>S</span>
@@ -19,50 +19,60 @@ const index: FC = () => {
         </i>
       </div>
       <div className="nav-links-container">
-        <h3>
-          <NavLink
-            to="/"
-            style={{ color: "var(--color-orange)", textDecoration: "none" }}
-          >
-            Home
-          </NavLink>
-        </h3>
+        <NavLink
+          tabindex="0"
+          to="/"
+          className="navLink"
+          style={{ color: "var(--color-orange)", textDecoration: "none" }}
+        >
+          <h3> Home</h3>
+        </NavLink>
 
-        <h3>Resources</h3>
-        <h3>About</h3>
+        <h3 tabindex="0">Resources</h3>
+        <h3 tabindex="0">About</h3>
 
-        <h3>
-          <NavLink
-            to="/dashboard"
-            style={{ color: "var(--color-orange)", textDecoration: "none" }}
-          >
-            Dashboard
-          </NavLink>
-        </h3>
+        <NavLink
+          tabindex="0"
+          className="navLink"
+          to="/dashboard"
+          style={{ color: "var(--color-orange)", textDecoration: "none" }}
+        >
+          <h3>Dashboard</h3>
+        </NavLink>
       </div>
       <div className="auth-container">
-        <button>
-          <NavLink
-            to="login/"
-            style={{ color: "var(--color-white)", textDecoration: "none" }}
-          >
+        <NavLink
+          className="navLink"
+          tabindex="0"
+          role="button"
+          to="login/"
+          style={{ color: "var(--color-white)", textDecoration: "none" }}
+        >
+          <button>
             <h3>
               Log in <i className="fa fa-sign-in"></i>
             </h3>
-          </NavLink>
-        </button>
-        <button>
-          <NavLink
-            to="signup/"
-            style={{ color: "var(--color-white)", textDecoration: "none" }}
-          >
+          </button>
+        </NavLink>
+        <NavLink
+          to="signup/"
+          tabindex="0"
+          role="button"
+          className="navLink"
+          style={{ color: "var(--color-white)", textDecoration: "none" }}
+        >
+          <button>
             <h3>
               Sign up <i className="fa fa-user-plus"></i>
             </h3>{" "}
-          </NavLink>
-        </button>
+          </button>
+        </NavLink>
       </div>
-      <div className="ham_parent_container" onClick={toggleIsTapped}>
+      <div
+        tabindex="0"
+        className="ham_parent_container"
+        onClick={toggleIsTapped}
+      >
         <div className={isTapped ? "ham_open" : "ham"}></div>
       </div>
     </div>

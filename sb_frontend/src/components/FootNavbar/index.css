@@ -42,6 +42,12 @@
   position: relative;
 }
 
+.fn-logo-container:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  border-radius: 5px;
+}
+
 .fn-logo-container h1 span:nth-child(1) {
   position: relative;
   top: -10px;
@@ -72,6 +78,12 @@
   margin-bottom: 20px;
 }
 
+.fn-links-container h1:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  border-radius: 5px;
+}
+
 .fn-links-container h3 {
   font-family: "Open Sans";
   text-transform: uppercase;
@@ -80,9 +92,21 @@
   margin-bottom: 5px;
 }
 
+.fn-links-container h3:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  border-radius: 5px;
+}
+
 .tc-container {
   font-family: "Pacifico";
   text-align: center;
+}
+
+.tc-container p:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  border-radius: 5px;
 }
 
 @media (max-width: 750px) {
