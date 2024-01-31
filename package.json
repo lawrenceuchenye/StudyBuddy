@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "backend:start": "dotenv -- pnpm --filter @studybuddy/backend start",
     "backend:dev": "dotenv -- pnpm --filter @studybuddy/backend dev",
     "backend:dev:test": "dotenv -c test -- pnpm --filter @studybuddy/backend dev",
     "backend:test": "dotenv -- pnpm --filter @studybuddy/backend test",
