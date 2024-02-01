@@ -7,12 +7,14 @@ import { fromZodError } from "zod-validation-error";
 import { ZodError } from "zod";
 import { StatusCodes } from "http-status-codes";
 import GlobalLogger from "./utils/logger";
+import { swaggerUI } from "@hono/swagger-ui";
 
 const errorLogger = GlobalLogger.getSubLogger({ name: "ErrorLogger" });
 await Database.start();
 
 export const app = new Hono()
 	.use("*", logger())
+	.use("/api/v1", swaggerUI({ url: "/doc" }))
 	.route("/channels", channelsRouter)
 	.route("/auth", authRouter)
 	.onError((err, c) => {

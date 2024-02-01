@@ -11,6 +11,8 @@
     "frontend:dev": "dotenv -c -- pnpm --filter @studybuddy/frontend dev"
   },
   "dependencies": {
+    "@hono/swagger-ui": "^0.2.1",
+    "@studybuddy/backend": "workspace:^",
     "typescript": "^5.3.3"
   },
   "keywords": [],

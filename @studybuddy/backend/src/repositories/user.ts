@@ -1,5 +1,14 @@
 import { HydratedDocument, Query, Types } from "mongoose";
-import { User, IUser } from "@studybuddy/backend/models/user";
+import {
+	User,
+	IUser,
+	IUserPersonalInformation,
+	IUserProfileInformation,
+	IUserAcademicInformation,
+	IUserContactInformation,
+	IUserExtracurricularInterestInformation,
+	IUserGoals,
+} from "@studybuddy/backend/models/user";
 import Pagination from "../utils/pagination";
 import PermissionsManager from "../utils/permissions";
 import { Result, Maybe } from "true-myth";
@@ -15,12 +24,19 @@ namespace UserRepository {
 		payload: IUser
 	): Promise<Result<HydratedDocument<IUser>, APIError>> {
 		try {
-			const hashedPassword = await Auth.encryptPassword(payload.password);
-			const user = await User.create(
-				Object.assign(payload, { password: hashedPassword })
+			const hashedPassword = await Auth.encryptPassword(
+				payload.personalInformation?.password!
 			);
 
-			console.log(user);
+			const user = await User.create(
+				Object.assign(payload, {
+					personalInformation: {
+						...payload.personalInformation,
+						password: hashedPassword,
+					},
+				})
+			);
+
 			return Result.ok(user);
 		} catch (err) {
 			logger.error(err);
@@ -124,7 +140,7 @@ namespace UserRepository {
 		id: Types.ObjectId;
 	};
 
-	export async function deleteChannel(
+	export async function deleteUser(
 		payload: DeleteUserPayload
 	): Promise<Result<undefined, APIError>> {
 		try {
@@ -136,6 +152,113 @@ namespace UserRepository {
 					code: StatusCodes.INTERNAL_SERVER_ERROR,
 				})
 			);
+		} catch (err) {
+			logger.error(err);
+			return Result.err(
+				new APIError((err as Error).message, {
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				})
+			);
+		}
+	}
+
+	export type UserInformationUpdatePayload = (
+		| IUserPersonalInformation
+		| IUserProfileInformation
+		| IUserAcademicInformation
+		| IUserContactInformation
+		| IUserExtracurricularInterestInformation
+		| IUserGoals
+	) & {
+		id: Types.ObjectId;
+	};
+	export type UpdateTags =
+		| "personal"
+		| "profile"
+		| "goals"
+		| "academic"
+		| "extra"
+		| "contact";
+
+	export async function updateUserInformation(
+		payload: UserInformationUpdatePayload,
+		tag: UpdateTags
+	): Promise<Result<undefined, APIError>> {
+		try {
+			const { id, ...updatePayload } = payload;
+			const user = await User.findById(id);
+			if (!user)
+				return Result.err(
+					new APIError("Failed to update user", {
+						code: StatusCodes.NOT_FOUND,
+					})
+				);
+
+			switch (tag) {
+				case "personal":
+					let d = updatePayload as IUserPersonalInformation;
+					if (d.password) {
+						const hashedPassword = await Auth.encryptPassword(d.password!);
+						d = Object.assign(d, { password: hashedPassword });
+					}
+					const pi = Object.assign({}, user, {
+						personalInformation: {
+							...user.personalInformation,
+							...d,
+						},
+					});
+					pi.save();
+					break;
+				case "profile":
+					const pr = Object.assign({}, user, {
+						profileInformation: {
+							...user.profileInformation,
+							...updatePayload,
+						},
+					});
+					pr.save();
+					break;
+				case "contact":
+					const contact = Object.assign({}, user, {
+						contactInformation: {
+							...user.contactInformation,
+							...updatePayload,
+						},
+					});
+					contact.save();
+					break;
+				case "academic":
+					const aca = Object.assign({}, user, {
+						academicInformation: {
+							...user.academicInformation,
+							...updatePayload,
+						},
+					});
+					aca.save();
+					break;
+				case "extra":
+					const extra = Object.assign({}, user, {
+						extracurricularInformation: {
+							...user.extracurricularInformation,
+							...updatePayload,
+						},
+					});
+					extra.save();
+					break;
+				case "goals":
+					const goals = Object.assign({}, user, {
+						academicGoals: {
+							...user.academicGoals,
+							...updatePayload,
+						},
+					});
+					goals.save();
+					break;
+				default:
+					throw new Error("Invalid action, unknown update payload");
+			}
+
+			return Result.ok(undefined);
 		} catch (err) {
 			logger.error(err);
 			return Result.err(
