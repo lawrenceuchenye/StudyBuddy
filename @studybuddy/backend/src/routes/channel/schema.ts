@@ -1,4 +1,4 @@
-import { fileSchema, transformMongoId } from "@studybuddy/backend/utils/validator"
+import { transformMongoId } from "@studybuddy/backend/utils/validator"
 import { z } from "zod"
 
 export const updateChannelSchema = z.object({
@@ -9,7 +9,7 @@ export const updateChannelSchema = z.object({
 
 export const postChannelMessageSchema = z.object({
   content: z.string(),
-  media: z.array(fileSchema),
+  mediaIds: z.array(z.string().transform(transformMongoId)),
 })
 
 export const updateChannelMessageSchema = z.object({

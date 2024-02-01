@@ -6,6 +6,7 @@ import { ulid } from "ulidx";
 import { File } from '@web-std/file'
 import UserRepository from "@studybuddy/backend/repositories/user";
 import UserSeeder from "../seeders/user";
+import MediaRepository from "@studybuddy/backend/repositories/media";
 
 describe("Channels unit test", async () => {
   await Database.start()
@@ -129,13 +130,19 @@ describe("Channels unit test", async () => {
   })
 
   test("that a user can now send a message to the channel", async () => {
+    const mediaIds = [
+      await MediaRepository
+        .createMedia(
+          new File(["content"], ulid(), { type: "text/plain" })
+        )
+    ]
+    .map(media => media._id)
+
     await ChannelRepository.sendMessage({
       senderId: memberId,
       channelId,
       content: ulid(),
-      media: [
-        new File(["content"], ulid(), { type: "text/plain" })
-      ]
+      mediaIds
     })
   })
 

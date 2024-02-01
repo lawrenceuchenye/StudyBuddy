@@ -109,9 +109,7 @@ namespace ChannelRepository {
       throw new APIError("Failed to delete channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })
   }
 
-  export type AddMessageToChannelPayload = Omit<IChannelMessage, "sentAt" | "deleted" | "mediaIds"> & {
-    media: File[]
-  }
+  export type AddMessageToChannelPayload = Omit<IChannelMessage, "sentAt" | "deleted">
 
   export async function sendMessage(payload: AddMessageToChannelPayload) {
     const sender = await ChannelMember.findOne({ _id: payload.senderId, channelId: payload.channelId })
@@ -119,18 +117,8 @@ namespace ChannelRepository {
     if (!sender)
       throw new APIError("User doesn't exist in channel", { code: StatusCodes.NOT_FOUND })
 
-    const mediaIds = await Promise.all(
-      payload
-        .media
-        .map(async (medium) => {
-          const uploadedMedium = await MediaRepository.createMedia(medium)
-          return uploadedMedium._id
-        })
-    )
-
     const message = await ChannelMessage.create({
       ...payload,
-      mediaIds,
       sentAt: new Date(),
     })
 

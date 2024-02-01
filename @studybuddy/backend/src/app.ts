@@ -3,6 +3,7 @@ import { logger } from "hono/logger";
 
 import { Router as channelsRouter } from "./routes/channel";
 import { Router as authRouter } from "./routes/auth";
+import { Router as mediaRouter } from "./routes/media";
 import { Router as studyGroupRouter } from "./routes/study-group";
 import { Router as resourcesRouter } from "./routes/resource";
 
@@ -29,6 +30,7 @@ process.on("SIGINT", gracefulShutdown)
 export const app = new Hono()
 	.use("*", logger())
 	.route("/auth", authRouter)
+	.route("/media", mediaRouter)
 	.route("/channels", channelsRouter)
 	.route("/study-group", studyGroupRouter)
 	.route("/resources", resourcesRouter)

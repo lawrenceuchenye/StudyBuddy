@@ -14,6 +14,10 @@ namespace MediaRepository {
     })
   }
 
+  export const getMedia = async (id: Types.ObjectId) => {
+    return await Media.findById(id)
+  }
+
   export const deleteMedia = async (id: Types.ObjectId) => {
     const { acknowledged } = await Media.deleteOne({ _id: id })
     if (!acknowledged)

@@ -176,13 +176,9 @@ export default new Hono()
     })
   .post("/:id/messages",
     JwtMiddleware.verify,
+    zValidator("json", postChannelMessageSchema),
     async (c) => {
-      const body = await c.req.parseBody()
-      const payload = postChannelMessageSchema
-        .parse({
-          content: body.content,
-          media: body["media[]"]
-        })
+      const payload = c.req.valid("json")
       const channelId = z.string()
         .transform(transformMongoId)
         .parse(c.req.param("id"))

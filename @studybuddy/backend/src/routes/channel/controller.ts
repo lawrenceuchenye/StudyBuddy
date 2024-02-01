@@ -7,6 +7,7 @@ import { StatusCodes } from "http-status-codes";
 import { HydratedDocument, Types } from "mongoose";
 import { z } from "zod";
 import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
+import MediaRepository from "@studybuddy/backend/repositories/media";
 
 export const getMember = async (userId: Types.ObjectId, channelId: Types.ObjectId) => {
   const channelMember = await ChannelRepository.getMember(userId, {
@@ -141,6 +142,12 @@ export const promoteChannelMember = async (channelId: Types.ObjectId, channelMem
 export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.infer<typeof postChannelMessageSchema>, sender: HydratedDocument<IUser>) => {
   const channelMember = await getMember(sender._id, channelId)
   const channel = await getChannel(channelId)
+
+  for (const mediaId of payload.mediaIds) {
+    const media = await MediaRepository.getMedia(mediaId)
+    if (!media)
+      throw new APIError("Media not found!", { code: StatusCodes.NOT_FOUND })
+  }
 
   if (
     PermissionsManager
