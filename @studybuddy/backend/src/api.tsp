@@ -43,6 +43,13 @@ model ChannelUpdate {
   subjects?: string[]
 }
 
+model ChannelMember {
+  id: string;
+  channelId: string;
+  role: "CREATOR" | null;
+  joinedAt: string
+}
+
 model ZodError {
   path: string[];
   message: string
@@ -63,20 +70,60 @@ model GenericError {
 }
 
 @error
+model NotFoundError {
+  @statusCode statusCode: 404,
+
+  message: string;
+}
+
+@error
 model BadRequestError {
   @statusCode statusCode: 400,
   
   error: ZodError[];
 }
 
+@error
+model PermissionsError {
+  @statusCode statusCode: 403;
+
+  error: string
+}
+
 alias Error = BadRequestError | GenericError;
 
 @route("/channels")
 @tag("Channels")
-interface Widgets {
+interface Channels {
   @post create(...ChannelCreate): Channel | Error;
   @get list(): PaginatedResource<Channel> | Error;
   @get read(@path id: string): SingleResource<Channel> | Error;
-  @patch update(...ChannelUpdate): Channel | Error;
-  @delete delete(@path id: string): GenericResponse<200> | Error;
+  @patch update(...ChannelUpdate): Channel | Error | PermissionsError;
+  @delete delete(@path id: string): GenericResponse<200> | Error | PermissionsError;
+
+  @route("/join")
+  @post join(@path id: string): GenericResponse<200>;
+
+  @route("/leave")
+  @post leave(@path id: string): GenericResponse<200>;
+}
+
+@route("/channels/{channelId}")
+@tag("Channels")
+interface ChannelMembers {
+  @route("/members")
+  @get read(@path channelId: string, @path memberId: string): ChannelMember | NotFoundError;
+
+  @route("/members")
+  @get list(@path channelId: string): PaginatedResource<ChannelMember> | Error;
+
+  @route("/profile")
+  @get getProfile(@path channelId: string): ChannelMember | Error;
+
+  @route("/members")
+  @delete remove(@path channelId: string, @path memberId: string): ChannelMember | PermissionsError | Error;
+
+  @route("/members")
+  @patch update(@path channelId: string, @path memberId: string, ...ChannelUserUpdate): ChannelMember | PermissionsError | Error;
+
 }
