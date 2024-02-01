@@ -28,9 +28,22 @@
   margin-top: 15px;
 }
 
+.card-header h1:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  border-radius: 5px;
+}
+
 .card-info {
   font-family: "Open Sans";
   padding: 20px;
+}
+
+.card-info p:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  border-radius: 5px;
+  padding: 3px;
 }
 
 @media (max-width: 750px) {

@@ -7,12 +7,18 @@ const index: FC = () => {
     <div className="fn-main-container">
       <div className="fn-info-container">
         <div className="fn-links-container">
-          <h1>UseFul Links</h1>
-          <h3>Home</h3>
-          <h3>Resources</h3>
-          <h3>Contact Us</h3>
+          <h1 tabindex="0">UseFul Links</h1>
+          <h3 tabindex="0" role="link">
+            Home
+          </h3>
+          <h3 tabindex="0" role="link">
+            Resources
+          </h3>
+          <h3 tabindex="0" role="link">
+            Contact Us
+          </h3>
         </div>
-        <div className="fn-logo-container">
+        <div tabindex="0" className="fn-logo-container">
           <i>
             <h1>
               <span>S</span>
@@ -23,7 +29,7 @@ const index: FC = () => {
       </div>
       <hr />
       <div className="tc-container">
-        <p>
+        <p tabindex="0">
           made with <i className="fa-brands fa-react"></i> and{" "}
           <i className="fa fa-heart"></i> studybud team.
         </p>

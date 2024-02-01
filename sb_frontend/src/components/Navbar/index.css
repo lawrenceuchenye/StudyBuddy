@@ -30,6 +30,11 @@
   }
 }
 
+.logo-container:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+}
+
 .logo-container h1 {
   color: var(--color-white);
   font-family: "Pacifico";
@@ -69,15 +74,24 @@
   margin: 0px 8px;
   transition: 0.3s;
   cursor: pointer;
+  padding: 3px;
+  border-radius: 5px;
 }
 
 .nav-links-container h3:hover {
   opacity: 1;
 }
 
+.navLink:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  padding: 3px;
+  border-radius: 5px;
+}
+
 .auth-container {}
 
-.auth-container button {
+.auth-container .navLink button {
   padding: 12px 18px;
   width: max-content;
   border-radius: 5px;
@@ -95,9 +109,16 @@
   margin-left: 8px;
 }
 
-.auth-container button:nth-child(1) {
+.auth-container .navLink:nth-child(1) button {
+
   background: var(--color-red);
   box-shadow: var(--box-shadow-red);
+}
+
+.auth-container .navLink button:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  border-radius: 5px;
 }
 
 .ham_parent_container {

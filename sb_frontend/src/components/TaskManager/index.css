@@ -1,0 +1,43 @@
+.task-manager-container {
+  background: var(--color-light-teal);
+  padding: 18px;
+  border-radius: 15px;
+  margin-top: 20px;
+  min-height: 150px;
+}
+
+.tasks-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0px;
+}
+
+.task-manager-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.task-manager-container h1 {
+  color: var(--color-teal);
+  font-family: "Roboto";
+  text-transform: capitalize;
+}
+
+.tasks-container p {
+  font-family: "Open Sans";
+}
+
+.add-task-btn {
+  background: var(--color-white);
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

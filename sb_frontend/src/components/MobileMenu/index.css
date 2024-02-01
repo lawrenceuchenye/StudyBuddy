@@ -13,14 +13,14 @@
 .mm-info-container {
   width: 320px;
   min-height: 400px;
-  border-radius: 15px;
+  border-radius: 5px;
   background: var(--color-white);
   padding: 28px 10px;
   position: relative;
 }
 
 .mm-info-container-nav h3 {
-  color: var(--color-orange);
+  color: var(--color-black);
   font-family: "Roboto";
   margin: 0px 8px;
   transition: 0.3s;
@@ -28,6 +28,9 @@
   text-transform: uppercase;
   font-weight: 400;
   margin-bottom: 30px;
+  padding: 10px 15px;
+  background: var(--color-light-orange);
+  border-radius: 8px;
 }
 
 .mm-auth-container {

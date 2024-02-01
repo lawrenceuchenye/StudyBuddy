@@ -9,7 +9,6 @@ import MobileMenu from "../../components/MobileMenu/";
 
 const index: FC = () => {
   const isTapped = useStudyBudStore((state) => state.isTapped);
-
   return (
     <div>
       <Navbar />

@@ -16,11 +16,15 @@
   --color-white: #fff;
   --color-black: #000;
   --color-slate: #e2e8f0;
+  --color-dark-grey: #6b7280;
   --color-light-green: #4ade80;
+  --color-light-teal: #bbf7d0;
+  --color-teal: #22c55e;
   --color-light-blue: #7dd3fc;
   --color-light-grey: #f3f4f6;
   --color-grey: #d1d5db;
   --color-light-orange: #fb923c;
+  --color-dark-orange: #ea580c;
 }
 
 * {

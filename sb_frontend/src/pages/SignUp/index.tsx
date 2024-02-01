@@ -1,7 +1,15 @@
 import "./index.css";
-import React from "react";
+import { FC, useEffect } from "react";
+import { useStudyBudStore } from "../../store/";
+import { NavLink } from "react-router-dom";
 
-const index = (props: {}) => {
+const index: FC = () => {
+  const setIsTapped = useStudyBudStore((state) => state.setIsTapped);
+
+  useEffect(() => {
+    setIsTapped(false);
+  }, []);
+
   return (
     <div className="form-auth-container">
       <div className="form-container">
@@ -17,6 +25,14 @@ const index = (props: {}) => {
             <input type="text" placeholder="@email address" />
             <input type="password" placeholder="password" />
             <input type="password" placeholder="confirm password " />
+            <div className="login-txt">
+              <p>
+                Have an account,
+                <NavLink to="/login" style={{ color: "var(--color-blue)" }}>
+                  <a>Login</a>
+                </NavLink>
+              </p>
+            </div>
             <button>Sign Up</button>
           </div>
         </div>
