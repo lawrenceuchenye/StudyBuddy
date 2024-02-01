@@ -22,34 +22,6 @@ model SingleResource<T> {
   data: T
 }
 
-model Channel {
-  id: string;
-  name: string;
-  description: string;
-  subjects: string[];
-  creatorId: string;
-  createdAt: string;
-}
-
-model ChannelCreate {
-  name: string;
-  description: string;
-  subjects: string[]
-}
-
-model ChannelUpdate {
-  name?: string;
-  description?: string;
-  subjects?: string[]
-}
-
-model ChannelMember {
-  id: string;
-  channelId: string;
-  role: "CREATOR" | null;
-  joinedAt: string
-}
-
 model ZodError {
   path: string[];
   message: string
@@ -92,6 +64,38 @@ model PermissionsError {
 
 alias Error = BadRequestError | GenericError;
 
+model Channel {
+  id: string;
+  name: string;
+  description: string;
+  subjects: string[];
+  creatorId: string;
+  createdAt: string;
+}
+
+model ChannelCreate {
+  name: string;
+  description: string;
+  subjects: string[]
+}
+
+model ChannelUpdate {
+  name?: string;
+  description?: string;
+  subjects?: string[]
+}
+
+model ChannelMember {
+  id: string;
+  channelId: string;
+  role: "CREATOR" | "TUTOR" | null;
+  joinedAt: string
+}
+
+model ChannelMemberUpdate {
+  role: "TUTOR" | null
+}
+
 @route("/channels")
 @tag("Channels")
 interface Channels {
@@ -100,30 +104,49 @@ interface Channels {
   @get read(@path id: string): SingleResource<Channel> | Error;
   @patch update(...ChannelUpdate): Channel | Error | PermissionsError;
   @delete delete(@path id: string): GenericResponse<200> | Error | PermissionsError;
-
-  @route("/join")
-  @post join(@path id: string): GenericResponse<200>;
-
-  @route("/leave")
-  @post leave(@path id: string): GenericResponse<200>;
 }
 
-@route("/channels/{channelId}")
+@route("/channels/{id}/members")
 @tag("Channels")
 interface ChannelMembers {
-  @route("/members")
-  @get read(@path channelId: string, @path memberId: string): ChannelMember | NotFoundError;
+  @route("/join")
+  @post join(@path id: string): GenericResponse<200> | NotFoundError | GenericError;
 
-  @route("/members")
-  @get list(@path channelId: string): PaginatedResource<ChannelMember> | Error;
+  @route("/leave")
+  @post leave(@path id: string): GenericResponse<200> | NotFoundError | GenericError;
+
+  @get read(@path id: string, @path memberId: string): ChannelMember | NotFoundError | GenericError;
+
+  @get list(@path id: string): PaginatedResource<ChannelMember> | Error;
 
   @route("/profile")
-  @get getProfile(@path channelId: string): ChannelMember | Error;
+  @get getProfile(@path id: string): ChannelMember | Error;
 
-  @route("/members")
-  @delete remove(@path channelId: string, @path memberId: string): ChannelMember | PermissionsError | Error;
+  @patch update(@path id: string, @path memberId: string, ...ChannelMemberUpdate): ChannelMember | PermissionsError | Error;
 
-  @route("/members")
-  @patch update(@path channelId: string, @path memberId: string, ...ChannelMemberUpdate): ChannelMember | PermissionsError | Error;
-
+  @delete remove(@path id: string, @path memberId: string): ChannelMember | PermissionsError | Error;
 }
+
+model ChannelMessageSend {
+  content: string;
+  mediaIds: string[]
+}
+
+model ChannelMessage {
+  id: string;
+  mediaIds: string;
+  senderId: string;
+  channelId: string;
+  deleted: boolean;
+  sentAt: string;
+}
+
+@route("/channels/{id}/messages")
+@tag("Channels")
+interface ChannelMessages {
+  @post send(@path id: string, ...ChannelMessageSend): GenericResponse<200> | NotFoundError | PermissionsError | GenericError;
+  @get list(@path id: string): PaginatedResource<ChannelMessage> | PermissionsError | GenericError;
+  @patch update(@path id: string, @path messageId: string): GenericResponse<200> | PermissionsError | GenericError;
+  @delete delete(@path id: string, @path messageId: string): GenericResponse<200> | PermissionsError | GenericError;
+}
+

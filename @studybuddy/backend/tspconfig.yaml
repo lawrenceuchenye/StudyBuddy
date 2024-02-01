@@ -1,3 +1,4 @@
 ---
 emit:
   - "@typespec/openapi3"
+output-dir: "{project-root}/build"

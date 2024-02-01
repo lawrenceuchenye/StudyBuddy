@@ -9,7 +9,7 @@
     "dev": "tsx --watch run.ts",
     "db:shell": "dotenv -- mongosh",
     "test": "vitest",
-    "build:api": "tsp "
+    "api:build": "tsp compile src/api"
   },
   "keywords": [],
   "author": "",
@@ -40,6 +40,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.11.0",
+    "@typespec/openapi": "^0.52.0",
     "mongosh": "^2.1.1",
     "tsx": "^4.7.0",
     "ulidx": "^2.2.1",

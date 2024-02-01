@@ -11,6 +11,7 @@
     "backend:test": "dotenv -- pnpm --filter @studybuddy/backend test",
     "backend:test:unit": "dotenv -- pnpm --filter @studybuddy/backend test tests/unit",
     "backend:test:integration": "dotenv -c -- pnpm --filter @studybuddy/backend test tests/integration",
+    "backend:api:build": "pnpm --filter @studybuddy/backend api:build",
     "frontend:dev": "dotenv -- pnpm --filter @studybuddy/frontend dev",
     "lint": "tsc --build --watch ./@studybuddy/tsconfig.json"
   },
