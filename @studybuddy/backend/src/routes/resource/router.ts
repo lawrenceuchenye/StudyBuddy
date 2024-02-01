@@ -8,7 +8,6 @@ import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
 import { createResourceSchema, updateResourceSchema } from "./schema";
 import { APIError } from "@studybuddy/backend/utils/error";
-import MediaRepository from "@studybuddy/backend/repositories/media";
 import PermissionsManager from "@studybuddy/backend/utils/permissions";
 import { Types } from "mongoose";
 
@@ -26,29 +25,13 @@ const getResource = async (resourceId: Types.ObjectId) => {
 export default new Hono()
   .post("/",
     JwtMiddleware.verify,
+    zValidator("json", createResourceSchema),
     async (c) => {
       const user = c.var.user
-      const body = await c.req.parseBody()
-      const payload = createResourceSchema.parse({
-        title: body.title,
-        shortDescription: body.shortDescription,
-        longDescription: body.longDescription,
-        subjects: body["subjects[]"],
-        media: body["media[]"]
-      })
-      const { media, ...rest } = payload
-
-      const mediaIds = await Promise.all(
-        media
-          .map(async (media) => {
-            const mediaId = await MediaRepository.createMedia(media)
-            return mediaId._id
-          })
-      )
+      const payload = c.req.valid("json")
 
       const resource = await ResourceRepository.createResource({
-        ...rest,
-        mediaIds,
+        ...payload,
         creatorId: user._id
       })
 

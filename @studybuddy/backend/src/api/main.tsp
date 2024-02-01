@@ -85,20 +85,13 @@ model ChannelUpdate {
   subjects?: string[]
 }
 
-model ChannelMember {
-  id: string;
-  channelId: string;
-  role: "CREATOR" | "TUTOR" | null;
-  joinedAt: string
-}
-
 model ChannelMemberUpdate {
   role: "TUTOR" | null
 }
 
 @route("/channels")
 @tag("Channels")
-interface Channels {
+interface ChannelCollection {
   @post create(...ChannelCreate): Channel | Error;
   @get list(): PaginatedResource<Channel> | Error;
   @get read(@path id: string): SingleResource<Channel> | Error;
@@ -106,9 +99,16 @@ interface Channels {
   @delete delete(@path id: string): GenericResponse<200> | Error | PermissionsError;
 }
 
+model ChannelMember {
+  id: string;
+  channelId: string;
+  role: "CREATOR" | "TUTOR" | null;
+  joinedAt: string
+}
+
 @route("/channels/{id}/members")
 @tag("Channels")
-interface ChannelMembers {
+interface ChannelMemberCollection {
   @route("/join")
   @post join(@path id: string): GenericResponse<200> | NotFoundError | GenericError;
 
@@ -143,10 +143,129 @@ model ChannelMessage {
 
 @route("/channels/{id}/messages")
 @tag("Channels")
-interface ChannelMessages {
+interface ChannelMessageCollection {
   @post send(@path id: string, ...ChannelMessageSend): GenericResponse<200> | NotFoundError | PermissionsError | GenericError;
   @get list(@path id: string): PaginatedResource<ChannelMessage> | PermissionsError | GenericError;
   @patch update(@path id: string, @path messageId: string): GenericResponse<200> | PermissionsError | GenericError;
   @delete delete(@path id: string, @path messageId: string): GenericResponse<200> | PermissionsError | GenericError;
 }
 
+model StudyGroupCreate {
+  name: string;
+  description: string;
+  subjects: string[]
+}
+
+model StudyGroup {
+  id: string;
+  name: string;
+  description: string;
+  subjects: string[];
+  creatorId: string;
+  createdAt: string;
+}
+
+@route("/study-groups/")
+@tag("StudyGroup")
+interface StudyGroupCollection {
+  @post create(...StudyGroupCreate): StudyGroup | Error;
+  @get list(): PaginatedResource<StudyGroup> | Error;
+  @get read(@path id: string): SingleResource<StudyGroup> | Error;
+  @patch update(...ChannelUpdate): StudyGroup | Error | PermissionsError;
+  @delete delete(@path id: string): GenericResponse<200> | Error | PermissionsError;
+}
+
+model StudyGroupMember {
+  id: string;
+  channelId: string;
+  role: "CREATOR" | null;
+  joinedAt: string
+}
+
+@route("/study-groups/{id}/members")
+@tag("StudyGroup")
+interface StudyGroupMemberCollection {
+  @post join(@path id: string): GenericResponse<200> | NotFoundError | GenericError;
+
+  @route("/leave")
+  @post leave(@path id: string): GenericResponse<200> | NotFoundError | GenericError;
+
+  @get read(@path id: string, @path memberId: string): StudyGroupMember | NotFoundError | GenericError;
+
+  @get list(@path id: string): PaginatedResource<StudyGroupMember> | Error;
+
+  @route("/profile")
+  @get getProfile(@path id: string): StudyGroupMember | Error;
+  
+  @delete remove(@path id: string, @path memberId: string): StudyGroupMember | PermissionsError | Error;
+}
+
+model StudyGroupMessageSend {
+  content: string;
+  mediaIds: string[]
+}
+
+model StudyGroupMessage {
+  id: string;
+  mediaIds: string;
+  senderId: string;
+  channelId: string;
+  deleted: boolean;
+  sentAt: string;
+}
+
+@route("/study-groups/{id}/messages")
+@tag("StudyGroup")
+interface StudyGroupMessageCollection {
+  @post send(@path id: string, ...StudyGroupMessageSend): GenericResponse<200> | NotFoundError | PermissionsError | GenericError;
+  @get list(@path id: string): PaginatedResource<StudyGroupMessage> | PermissionsError | GenericError;
+  @patch update(@path id: string, @path messageId: string): GenericResponse<200> | PermissionsError | GenericError;
+  @delete delete(@path id: string, @path messageId: string): GenericResponse<200> | PermissionsError | GenericError;
+}
+
+model MediaCreatedResponse {
+  id: string
+}
+
+model MediaMeta {
+  name: string;
+  type: string;
+  size: int64;
+  uploadedAt: string;
+}
+
+model Media {}
+
+@route("/media")
+@tag("Media")
+interface MediaCollection {
+  @post create(): MediaCreatedResponse | GenericError;
+
+  @get download(@path id: string): Media | GenericError;
+
+  @route("/{id}/meta")
+  @get readMeta(@path id: string): MediaMeta | NotFoundError | GenericError;
+}
+
+model ResourceCreate {
+  title: string;
+  shortDescription: string;
+  longDescription: string;
+  subjects: string[];
+  mediaIds: string[];
+}
+
+model Resource extends ResourceCreate {
+  creatorId: string;
+  createdAt: string;
+}
+
+@route("/resources")
+@tag("Resources")
+interface ResourceCollection {
+  @post create(...ResourceCreate): SingleResource<Resource> | Error;
+  @get read(@path id: string): SingleResource<Resource> | GenericError;
+  @get list(): PaginatedResource<Resource> | GenericError;
+  @patch update(@path id: string): SingleResource<Resource> | PermissionsError | NotFoundError | Error;
+  @delete delete(@path id: string): GenericResponse<200> | PermissionsError | NotFoundError | Error;
+}

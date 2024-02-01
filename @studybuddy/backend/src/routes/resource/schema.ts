@@ -1,4 +1,4 @@
-import { fileSchema } from "@studybuddy/backend/utils/validator"
+import { transformMongoId } from "@studybuddy/backend/utils/validator"
 import { z } from "zod"
 
 export const createResourceSchema = z.object({
@@ -6,7 +6,7 @@ export const createResourceSchema = z.object({
   shortDescription: z.string().min(3),
   longDescription: z.string().min(3),
   subjects: z.array(z.string().min(3)),
-  media: z.array(fileSchema),
+  mediaIds: z.array(z.string().transform(transformMongoId)),
 })
 
 export const updateResourceSchema = createResourceSchema.partial()
