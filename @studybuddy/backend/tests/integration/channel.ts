@@ -131,9 +131,9 @@ describe("Channels integration test", async () => {
 
   test("that users can be added to a channel by the creator", async () => {
     for (const member of members) {
-      const res = await client.channels[":channelId"].members.join.$post({
+      const res = await client.channels[":id"].members.join.$post({
         param: {
-          channelId
+          id: channelId
         }
       }, {
         headers: member.headers
@@ -177,9 +177,9 @@ describe("Channels integration test", async () => {
 
   test("that users can be gotten from the channel", async () => {
     for (const member of members) {
-      const res = await client.channels[":channelId"].members[":memberId"].$get({
+      const res = await client.channels[":id"].members[":memberId"].$get({
         param: {
-          channelId,
+          id: channelId,
           memberId: member.data._id.toString()
         }
       })
@@ -192,9 +192,9 @@ describe("Channels integration test", async () => {
   })
 
   test("that a random user cannot be gotten from the channel", async () => {
-    const res = await client.channels[":channelId"].members[":memberId"].$get({
+    const res = await client.channels[":id"].members[":memberId"].$get({
       param: {
-        channelId,
+        id: channelId,
         memberId: new Types.ObjectId().toString()
       }
     })
@@ -204,9 +204,9 @@ describe("Channels integration test", async () => {
 
   test("that members can be removed from a channel by the creator", async () => {
     for (const member of members.splice(0, MEMBERS_REMOVED_BY_CREATOR)) {
-      const res = await client.channels[":channelId"].members.leave.$post({
+      const res = await client.channels[":id"].members.leave.$post({
         param: {
-          channelId
+          id: channelId
         }
       }, {
         headers: member.headers
@@ -233,9 +233,9 @@ describe("Channels integration test", async () => {
 
   test("that members can leave a channel by themselves", async () => {
     for (const member of members.splice(0, MEMBERS_LEFT_BY_THEMSELVES)) {
-      const res = await client.channels[":channelId"].members.leave.$post({
+      const res = await client.channels[":id"].members.leave.$post({
         param: {
-          channelId
+          id: channelId
         }
       }, {
         headers: member.headers
@@ -283,9 +283,9 @@ describe("Channels integration test", async () => {
   })
 
   test("that a member can be promoted by the creator", async () => {
-    const res = await client.channels[":channelId"].members[":memberId"].$patch({
+    const res = await client.channels[":id"].members[":memberId"].$patch({
       param: {
-        channelId,
+        id: channelId,
         memberId: members[0].data._id.toString()
       },
       json: {
@@ -321,9 +321,9 @@ describe("Channels integration test", async () => {
   })
 
   test("that a promoted member can be demoted by the creator", async () => {
-    const res = await client.channels[":channelId"].members[":memberId"].$patch({
+    const res = await client.channels[":id"].members[":memberId"].$patch({
       param: {
-        channelId,
+        id: channelId,
         memberId: members[0].data._id.toString()
       },
       json: {
