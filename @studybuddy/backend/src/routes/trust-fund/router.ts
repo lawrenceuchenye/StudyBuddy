@@ -8,7 +8,7 @@ import Pagination from "@studybuddy/backend/utils/pagination";
 import { zValidator } from "@hono/zod-validator";
 import { createSchema, depositSchema, filterSchema, updateSchema } from "./schema";
 import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
-import PermissionsManager from "@studybuddy/backend/utils/permissions";
+import PermissionsService from "@studybuddy/backend/services/permissions";
 import { Types } from "mongoose";
 
 const getTrustFund = async (id: Types.ObjectId) => {
@@ -79,7 +79,7 @@ export default new Hono()
         throw new APIError("Trust fund not found!", { code: StatusCodes.NOT_FOUND })
 
       if (
-        PermissionsManager
+        PermissionsService
           .TrustFund({
             user,
             trustFund,
@@ -105,7 +105,7 @@ export default new Hono()
         throw new APIError("Trust fund not found!", { code: StatusCodes.NOT_FOUND })
 
       if (
-        PermissionsManager
+        PermissionsService
           .TrustFund({
             user,
             trustFund,

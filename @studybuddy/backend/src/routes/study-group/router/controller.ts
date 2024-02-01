@@ -1,7 +1,7 @@
 import { IUser } from "@studybuddy/backend/models/user";
 import StudyGroupRepository from "@studybuddy/backend/repositories/study-group";
 import { APIError } from "@studybuddy/backend/utils/error";
-import PermissionsManager from "@studybuddy/backend/utils/permissions";
+import PermissionsService from "@studybuddy/backend/services/permissions";
 import { StatusCodes } from "http-status-codes";
 import { HydratedDocument, Types } from "mongoose";
 import { z } from "zod";
@@ -30,12 +30,12 @@ export const updateStudyGroupById = async (studyGroupId: Types.ObjectId, payload
   const studyGroup = await getStudyGroup(studyGroupId)
 
   if (
-    PermissionsManager
+    PermissionsService
       .StudyGroup({
         user: studyGroupUser,
         studyGroup
       })
-      .cannot("update", PermissionsManager.subject("StudyGroup", studyGroup))
+      .cannot("update", PermissionsService.subject("StudyGroup", studyGroup))
   )
     throw new APIError("You do not have permission to update this study group!", { code: StatusCodes.FORBIDDEN })
 
@@ -51,7 +51,7 @@ export const deleteStudyGroupById = async (studyGroupId: Types.ObjectId, user: H
   const studyGroup = await getStudyGroup(studyGroupId)
 
   if (
-    PermissionsManager
+    PermissionsService
       .StudyGroup({
         user: studyGroupUser,
         studyGroup
@@ -78,7 +78,7 @@ export const addUserToStudyGroup = async (studyGroupId: Types.ObjectId, userId: 
     throw new APIError("You are already in this study group!", { code: StatusCodes.BAD_REQUEST })
 
   if (
-    PermissionsManager
+    PermissionsService
       .StudyGroup({
         user: groupCreatorProfile,
         studyGroup
@@ -112,12 +112,12 @@ export const removeUserFromStudyGroup = async (studyGroupId: Types.ObjectId, stu
   const studyGroupUser = await getMember(studyGroupUserId, studyGroupId)
 
   if (
-    PermissionsManager
+    PermissionsService
       .StudyGroup({
         user: removerUser,
         studyGroup
       })
-      .cannot("remove", PermissionsManager.subject("StudyGroupUser", studyGroupUser))
+      .cannot("remove", PermissionsService.subject("StudyGroupUser", studyGroupUser))
   )
     throw new APIError("You do not have permission to remove this user from the study group!", { code: StatusCodes.FORBIDDEN })
 
@@ -132,7 +132,7 @@ export const postStudyGroupMessage = async (studyGroupId: Types.ObjectId, payloa
   const studyGroup = await getStudyGroup(studyGroupId)
 
   if (
-    PermissionsManager
+    PermissionsService
       .StudyGroup({
         user: studyGroupUser,
         studyGroup
@@ -161,12 +161,12 @@ export const updateStudyGroupMessage = async (studyGroupId: Types.ObjectId, mess
     throw new APIError("Message not found in studyGroup!", { code: StatusCodes.NOT_FOUND })
 
   if (
-    PermissionsManager
+    PermissionsService
       .StudyGroup({
         user: studyGroupUser,
         studyGroup
       })
-      .cannot("update", PermissionsManager.subject("StudyGroupMessage", studyGroupMessage))
+      .cannot("update", PermissionsService.subject("StudyGroupMessage", studyGroupMessage))
   )
     throw new APIError("You do not have permission to update this message!", { code: StatusCodes.FORBIDDEN })
 
@@ -190,12 +190,12 @@ export const deleteStudyGroupMessage = async (studyGroupId: Types.ObjectId, mess
     throw new APIError("Message not found in studyGroup!", { code: StatusCodes.NOT_FOUND })
 
   if (
-    PermissionsManager
+    PermissionsService
       .StudyGroup({
         user: studyGroupUser,
         studyGroup
       })
-      .cannot("update", PermissionsManager.subject("StudyGroupMessage", studyGroupMessage))
+      .cannot("update", PermissionsService.subject("StudyGroupMessage", studyGroupMessage))
   )
     throw new APIError("You do not have permission to delete this message!", { code: StatusCodes.FORBIDDEN })
 

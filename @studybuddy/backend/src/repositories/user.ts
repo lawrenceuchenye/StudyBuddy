@@ -1,12 +1,12 @@
 import { HydratedDocument, Query, Types } from "mongoose";
 import { User, IUser } from "@studybuddy/backend/models/user";
 import Pagination from "../utils/pagination";
-import PermissionsManager from "../utils/permissions";
+import PermissionsService from "../services/permissions";
 import { Result, Maybe } from "true-myth";
 import { APIError } from "../utils/error";
 import { StatusCodes } from "http-status-codes";
 import GlobalLogger from "../utils/logger";
-import Auth from "../utils/auth";
+import AuthService from "../services/auth";
 
 namespace UserRepository {
 	const logger = GlobalLogger.getSubLogger({ name: "UserRepository" });
@@ -15,7 +15,7 @@ namespace UserRepository {
 		payload: IUser
 	): Promise<Result<HydratedDocument<IUser>, APIError>> {
 		try {
-			const hashedPassword = await Auth.encryptPassword(payload.password);
+			const hashedPassword = await AuthService.encryptPassword(payload.password);
 			const user = await User.create(
 				Object.assign(payload, { password: hashedPassword })
 			);

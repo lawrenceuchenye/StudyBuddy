@@ -8,7 +8,7 @@ import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
 import { createResourceSchema, updateResourceSchema } from "./schema";
 import { APIError } from "@studybuddy/backend/utils/error";
-import PermissionsManager from "@studybuddy/backend/utils/permissions";
+import PermissionsService from "@studybuddy/backend/services/permissions";
 import { Types } from "mongoose";
 
 const getResource = async (resourceId: Types.ObjectId) => {
@@ -81,12 +81,12 @@ export default new Hono()
       const user = c.var.user
 
       if (
-        PermissionsManager
+        PermissionsService
           .Resource({
             user,
             resource
           })
-          .cannot("update", PermissionsManager.subject("Resource", resource))
+          .cannot("update", PermissionsService.subject("Resource", resource))
       )
         throw new APIError("You do not have permission to update this resource!", { code: StatusCodes.FORBIDDEN })
 
@@ -108,12 +108,12 @@ export default new Hono()
       const user = c.var.user
 
       if (
-        PermissionsManager
+        PermissionsService
           .Resource({
             user,
             resource
           })
-          .cannot("delete", PermissionsManager.subject("Resource", resource))
+          .cannot("delete", PermissionsService.subject("Resource", resource))
       )
         throw new APIError("You do not have permission to delete this resource!", { code: StatusCodes.FORBIDDEN })
 

@@ -7,7 +7,7 @@ import { StatusCodes } from "http-status-codes";
 import Pagination from "@studybuddy/backend/utils/pagination";
 import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import { Maybe } from "true-myth";
-import Auth from "@studybuddy/backend/utils/auth";
+import AuthService from "@studybuddy/backend/services/auth";
 import TokenServive from "@studybuddy/backend/services/token";
 
 export default new Hono()
@@ -74,7 +74,7 @@ export default new Hono()
 			if (maybeUserByEmail.isJust) {
 				const user = maybeUserByEmail.value;
 				//check password
-				if (!(await Auth.validatePassword(payload.password, user.password)))
+				if (!(await AuthService.validatePassword(payload.password, user.password)))
 					return c.json(
 						{ message: "Invalid credentials" },
 						StatusCodes.UNAUTHORIZED

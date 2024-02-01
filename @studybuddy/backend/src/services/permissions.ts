@@ -1,12 +1,12 @@
 import { defineAbility, subject as caslAbility } from '@casl/ability';
-import { IChannel, IChannelMessage, IChannelMember } from '../models/channel';
+import { IChannel, IChannelMember } from '../models/channel';
 import { HydratedDocument } from 'mongoose';
 import { IStudyGroup, IStudyGroupUser } from '../models/study-group';
 import { IUser } from '../models/user';
 import { IResource } from '../models/resource';
 import { ITrustFund } from '../models/trust-fund';
 
-namespace PermissionsManager {
+namespace PermissionsService {
   export const subject = caslAbility
 
   type ChannelProps = {
@@ -80,4 +80,4 @@ namespace PermissionsManager {
   })
 }
 
-export default PermissionsManager
+export default PermissionsService
