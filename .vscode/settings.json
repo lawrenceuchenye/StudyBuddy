@@ -1,3 +1,4 @@
 {
-    "typescript.tsdk": "node_modules/typescript/lib"
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typespec.tsp-server.path": "${workspaceFolder}/@studybuddy/backend/node_modules/@typespec/compiler"      
 }
