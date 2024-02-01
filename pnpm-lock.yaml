@@ -99,6 +99,9 @@ importers:
       '@types/node':
         specifier: ^20.11.0
         version: 20.11.0
+      '@typespec/best-practices':
+        specifier: 0.46.0-dev.0
+        version: 0.46.0-dev.0(@typespec/compiler@0.52.0)
       '@typespec/openapi':
         specifier: ^0.52.0
         version: 0.52.0(@typespec/compiler@0.52.0)(@typespec/http@0.52.1)
@@ -2292,6 +2295,15 @@ packages:
       '@types/node': 20.11.0
       '@types/webidl-conversions': 7.0.3
     dev: false
+
+  /@typespec/best-practices@0.46.0-dev.0(@typespec/compiler@0.52.0):
+    resolution: {integrity: sha512-jgmHisamuyskmkuQcWdsyVuow7DGlVlX1LFAnwUvd9tZQgYe62tlad+4EvpfacklFvCKyLdrS8oAEEESBfpy1g==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@typespec/compiler': ~0.52.0 || >=0.53.0-dev <0.53.0
+    dependencies:
+      '@typespec/compiler': 0.52.0
+    dev: true
 
   /@typespec/compiler@0.52.0:
     resolution: {integrity: sha512-36cZ5RWxRjL4SUe41KjPh3j3RQibpUoOzHcSllQJ3ByTSZdXv1zckMHLiRfaAbTXUADSAn2GMs4ZO3s8GdOGIQ==}

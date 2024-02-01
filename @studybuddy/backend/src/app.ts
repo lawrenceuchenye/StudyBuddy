@@ -31,7 +31,7 @@ process.on("SIGINT", gracefulShutdown)
 
 export const app = new Hono()
 	.use("*", logger())
-	.use('/static/*', serveStatic({ root: './static' }))
+	.get('/static/*', serveStatic({ root: './' }))
 	.get('/ui', swaggerUI({ url: '/static/openapi.yaml' }))
 	.route("/auth", authRouter)
 	.route("/media", mediaRouter)

@@ -14,7 +14,8 @@
     "backend:api:build": "pnpm --filter @studybuddy/backend api:build",
     "backend:api:dev": "pnpm --filter @studybuddy/backend api:dev",
     "frontend:dev": "dotenv -- pnpm --filter @studybuddy/frontend dev",
-    "lint": "tsc --build --watch ./@studybuddy/tsconfig.json"
+    "lint": "tsc --build --watch ./@studybuddy/tsconfig.json",
+    "postinstall": "pnpm backend:api:build"
   },
   "dependencies": {
     "typescript": "^5.3.3"
