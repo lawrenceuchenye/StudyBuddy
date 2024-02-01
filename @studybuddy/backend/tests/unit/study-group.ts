@@ -5,6 +5,7 @@ import Database from "@studybuddy/backend/utils/database";
 import { ulid } from "ulidx";
 import { File } from '@web-std/file'
 import UserSeeder from "../seeders/user";
+import MediaRepository from "@studybuddy/backend/repositories/media";
 
 describe("Study groups unit test", async () => {
   await Database.start()
@@ -122,13 +123,23 @@ describe("Study groups unit test", async () => {
   })
 
   test("that a member send a message to the study group", async () => {
+    const mediaIds = [
+      await MediaRepository
+        .createMedia(
+          new File(["content"], ulid(), { type: "text/plain" }),
+        ),
+      await MediaRepository
+        .createMedia(
+          new File(["content"], ulid(), { type: "text/plain" })
+        )
+    ]
+      .map(media => media._id)
+
     await StudyGroupRepository.sendMessage({
       senderId: memberId,
       studyGroupId,
       content: ulid(),
-      media: [
-        new File(["content"], ulid(), { type: "text/plain" })
-      ]
+      mediaIds
     })
   })
 

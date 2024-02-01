@@ -8,6 +8,7 @@ import { Types } from "mongoose";
 import Database from "@studybuddy/backend/utils/database";
 import { ulid } from "ulidx";
 import { File } from "@web-std/file";
+import MediaRepository from "@studybuddy/backend/repositories/media";
 
 describe("Study groups integration test", async () => {
   await Database.start()
@@ -47,7 +48,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that a study group can be created", async () => {
-    const res = await client["study-group"].$post({
+    const res = await client["study-groups"].$post({
       json: studyGroupPayload.old,
     }, {
       headers: creator.headers
@@ -61,7 +62,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that a study group can be retrieved", async () => {
-    const res = await client["study-group"].$get()
+    const res = await client["study-groups"].$get()
 
     const json = await res.json()
 
@@ -70,7 +71,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that a study group cannot be updated by a random user", async () => {
-    const res = await client["study-group"][":id"].$patch({
+    const res = await client["study-groups"][":id"].$patch({
       param: {
         id: studyGroupId
       },
@@ -84,7 +85,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that a study group can be updated by the creator", async () => {
-    const res = await client["study-group"][":id"].$patch({
+    const res = await client["study-groups"][":id"].$patch({
       param: {
         id: studyGroupId
       },
@@ -97,7 +98,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that the study group has been updated", async () => {
-    const res = await client["study-group"][":id"].$get({
+    const res = await client["study-groups"][":id"].$get({
       param: {
         id: studyGroupId
       }
@@ -110,7 +111,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that the list of members can be gotten for a study group", async () => {
-    const res = await client["study-group"][":id"].members.$get({
+    const res = await client["study-groups"][":id"].members.$get({
       param: {
         id: studyGroupId
       }
@@ -127,9 +128,9 @@ describe("Study groups integration test", async () => {
 
   test("that users can be added to a study group by the creator", async () => {
     for (const member of members) {
-      const res = await client["study-group"][":studyGroupId"].members[":memberId"].$post({
+      const res = await client["study-groups"][":id"].members[":memberId"].$post({
         param: {
-          studyGroupId,
+          id: studyGroupId,
           memberId: member.data._id.toString()
         }
       }, {
@@ -144,7 +145,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that a study group cannot be updated by a random user/member", async () => {
-    const res = await client["study-group"][":id"].$patch({
+    const res = await client["study-groups"][":id"].$patch({
       param: {
         id: studyGroupId
       },
@@ -158,7 +159,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that the number of study group members has gone up", async () => {
-    const res = await client["study-group"][":id"].members.$get({
+    const res = await client["study-groups"][":id"].members.$get({
       param: {
         id: studyGroupId,
       }
@@ -174,7 +175,7 @@ describe("Study groups integration test", async () => {
 
   test("that users can be gotten from the study group", async () => {
     for (const member of members) {
-      const res = await client["study-group"].$get({
+      const res = await client["study-groups"].$get({
         param: {
           studyGroupId,
           memberId: member.data._id.toString()
@@ -189,9 +190,9 @@ describe("Study groups integration test", async () => {
   })
 
   test("that a random user cannot be gotten from the study group", async () => {
-    const res = await client["study-group"][":studyGroupId"].members[":memberId"].$get({
+    const res = await client["study-groups"][":id"].members[":memberId"].$get({
       param: {
-        studyGroupId,
+        id: studyGroupId,
         memberId: new Types.ObjectId().toString()
       }
     })
@@ -201,9 +202,9 @@ describe("Study groups integration test", async () => {
 
   test("that members can be removed from a study group by the creator", async () => {
     for (const member of members.splice(0, MEMBERS_REMOVED_BY_CREATOR)) {
-      const res = await client["study-group"][":studyGroupId"].members[":memberId"].$delete({
+      const res = await client["study-groups"][":id"].members[":memberId"].$delete({
         param: {
-          studyGroupId,
+          id: studyGroupId,
           memberId: member.data._id.toString()
         }
       }, {
@@ -215,7 +216,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that the number of study group members has gone down", async () => {
-    const res = await client["study-group"][":id"].members.$get({
+    const res = await client["study-groups"][":id"].members.$get({
       param: {
         id: studyGroupId,
       }
@@ -231,7 +232,7 @@ describe("Study groups integration test", async () => {
 
   test("that members can leave a study group by themselves", async () => {
     for (const member of members.splice(0, MEMBERS_LEFT_BY_THEMSELVES)) {
-      const res = await client["study-group"][":id"].leave.$post({
+      const res = await client["study-groups"][":id"].members.leave.$post({
         param: {
           id: studyGroupId
         }
@@ -244,7 +245,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that the number of study group members has gone down", async () => {
-    const res = await client["study-group"][":id"].members.$get({
+    const res = await client["study-groups"][":id"].members.$get({
       param: {
         id: studyGroupId,
       }
@@ -259,21 +260,27 @@ describe("Study groups integration test", async () => {
   })
 
   test("that a member can post to the study group", async () => {
-    const url = client["study-group"][":id"].messages.$url({
+    const mediaIds = [
+      await MediaRepository
+        .createMedia(
+          new File(["content"], ulid(), { type: "text/plain" }),
+        ),
+      await MediaRepository
+        .createMedia(
+          new File(["content"], ulid(), { type: "text/plain" })
+        )
+    ]
+      .map(media => media._id.toString())
+
+    const res = await client["study-groups"][":id"].messages.$post({
       param: {
         id: studyGroupId
+      },
+      json: {
+        content: ulid(),
+        mediaIds
       }
-    })
-
-    const formData = new FormData()
-
-    formData.append("content", ulid())
-    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
-    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
-
-    const res = await fetch(url, {
-      method: "POST",
-      body: formData,
+    }, {
       headers: members[1].headers
     })
 
@@ -281,7 +288,7 @@ describe("Study groups integration test", async () => {
   })
 
   test("that a study group can be deleted", async () => {
-    const res = await client["study-group"][":id"].$delete({
+    const res = await client["study-groups"][":id"].$delete({
       param: {
         id: studyGroupId
       }

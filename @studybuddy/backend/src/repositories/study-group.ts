@@ -108,9 +108,7 @@ namespace StudyGroupRepository {
       throw new APIError("Failed to delete studyGroup", { code: StatusCodes.INTERNAL_SERVER_ERROR })
   }
 
-  export type AddMessageToStudyGroupPayload = Omit<IStudyGroupMessage, "sentAt" | "deleted" | "mediaIds"> & {
-    media: File[]
-  }
+  export type AddMessageToStudyGroupPayload = Omit<IStudyGroupMessage, "sentAt" | "deleted"> 
 
   export async function sendMessage(payload: AddMessageToStudyGroupPayload) {
     const sender = await StudyGroupUser.findOne({ _id: payload.senderId, studyGroupId: payload.studyGroupId })
@@ -118,18 +116,8 @@ namespace StudyGroupRepository {
     if (!sender)
       throw new APIError("User doesn't exist in studyGroup", { code: StatusCodes.NOT_FOUND })
 
-    const mediaIds = await Promise.all(
-      payload
-        .media
-        .map(async (medium) => {
-          const uploadedMedium = await MediaRepository.createMedia(medium)
-          return uploadedMedium._id
-        })
-    )
-
     const message = await StudyGroupMessage.create({
       ...payload,
-      mediaIds,
       sentAt: new Date(),
     })
 
