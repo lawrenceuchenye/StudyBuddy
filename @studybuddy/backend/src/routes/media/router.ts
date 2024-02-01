@@ -5,7 +5,7 @@ import { Hono } from "hono";
 import { stream } from "hono/streaming";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
-import { omit } from "lodash"
+import omit from "lodash/omit"
 import Pagination from "@studybuddy/backend/utils/pagination";
 import logger from "@studybuddy/backend/utils/logger";
 
