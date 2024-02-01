@@ -1,7 +1,7 @@
 import { MiddlewareHandler } from "hono"
 import { StatusCodes } from "http-status-codes"
 import { IUser } from "../models/user"
-import Token from "../utils/token"
+import TokenServive from "../services/token"
 import UserRepository from "../repositories/user"
 import { HydratedDocument } from "mongoose"
 import { APIError } from "../utils/error"
@@ -21,7 +21,7 @@ namespace JwtMiddleware {
       throw new APIError("Invalid token2", { code: StatusCodes.UNAUTHORIZED })
 
     const verifiedAccessToken =
-      await Token.verifyAccessToken(suppliedAccessToken)
+      await TokenServive.verifyAccessToken(suppliedAccessToken)
     if (!verifiedAccessToken)
       throw new APIError("Invalid token3", { code: StatusCodes.UNAUTHORIZED })
 

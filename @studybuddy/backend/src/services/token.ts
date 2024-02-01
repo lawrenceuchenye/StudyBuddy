@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { IUser } from "../models/user";
 import config from "../config";
 
-namespace Token {
+namespace TokenServive {
 	export type Token = {
 		email: string;
 		userName: string;
@@ -21,4 +21,4 @@ namespace Token {
 	}
 }
 
-export default Token;
+export default TokenServive;

@@ -8,7 +8,7 @@ import Pagination from "@studybuddy/backend/utils/pagination";
 import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import { Maybe } from "true-myth";
 import Auth from "@studybuddy/backend/utils/auth";
-import Token from "@studybuddy/backend/utils/token";
+import TokenServive from "@studybuddy/backend/services/token";
 
 export default new Hono()
 	.post(
@@ -80,7 +80,7 @@ export default new Hono()
 						StatusCodes.UNAUTHORIZED
 					);
 				//generate access token
-				const accessToken = await Token.generateAccessToken(user);
+				const accessToken = await TokenServive.generateAccessToken(user);
 				return c.json({
 					message: "Login successful",
 					accessToken: accessToken,
