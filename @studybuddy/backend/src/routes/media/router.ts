@@ -16,7 +16,7 @@ export default new Hono()
 
     const media = await MediaRepository.createMedia(mediaPayload)
 
-    return c.json(Pagination.createSingleResource({ id: media.id }))
+    return c.json(Pagination.createSingleResource(omit(media, "data")))
   })
   .get("/:id", async (c) => {
     const mediaId = z.string().transform(transformMongoId).parse(c.req.param("id"))

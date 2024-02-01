@@ -4,6 +4,7 @@ import { HydratedDocument } from 'mongoose';
 import { IStudyGroup, IStudyGroupUser } from '../models/study-group';
 import { IUser } from '../models/user';
 import { IResource } from '../models/resource';
+import { ITrustFund } from '../models/trust-fund';
 
 namespace PermissionsManager {
   export const subject = caslAbility
@@ -63,6 +64,18 @@ namespace PermissionsManager {
   export const Resource = ({ user, resource }: ResourceProps) => defineAbility(can => {
     if (resource.creatorId.equals(user._id)) {
       can<IResource>("update", "Resource")
+    }
+  })
+
+  type TrustFundProps = {
+    user: HydratedDocument<IUser>
+    trustFund: HydratedDocument<ITrustFund>
+  }
+
+  export const TrustFund = ({ user, trustFund }: TrustFundProps) => defineAbility(can => {
+    if (user._id.equals(trustFund.creatorId)) {
+      can("update", "TrustFund")
+      can("delete", "TrustFund")
     }
   })
 }
