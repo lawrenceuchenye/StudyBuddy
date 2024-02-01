@@ -4,12 +4,15 @@ info:
   version: 0.0.1
 tags:
   - name: Channels
+  - name: StudyGroup
+  - name: Media
+  - name: Resources
 paths:
   /channels:
     post:
       tags:
         - Channels
-      operationId: Channels_create
+      operationId: ChannelCollection_create
       parameters: []
       responses:
         '200':
@@ -39,7 +42,7 @@ paths:
     get:
       tags:
         - Channels
-      operationId: Channels_list
+      operationId: ChannelCollection_list
       parameters: []
       responses:
         '200':
@@ -83,7 +86,7 @@ paths:
     patch:
       tags:
         - Channels
-      operationId: Channels_update
+      operationId: ChannelCollection_update
       parameters: []
       responses:
         '200':
@@ -120,7 +123,7 @@ paths:
     get:
       tags:
         - Channels
-      operationId: Channels_read
+      operationId: ChannelCollection_read
       parameters:
         - name: id
           in: path
@@ -154,7 +157,7 @@ paths:
     delete:
       tags:
         - Channels
-      operationId: Channels_delete
+      operationId: ChannelCollection_delete
       parameters:
         - name: id
           in: path
@@ -195,7 +198,7 @@ paths:
     get:
       tags:
         - Channels
-      operationId: ChannelMembers_list
+      operationId: ChannelMemberCollection_list
       parameters:
         - name: id
           in: path
@@ -245,7 +248,7 @@ paths:
     post:
       tags:
         - Channels
-      operationId: ChannelMembers_join
+      operationId: ChannelMemberCollection_join
       parameters:
         - name: id
           in: path
@@ -280,7 +283,7 @@ paths:
     post:
       tags:
         - Channels
-      operationId: ChannelMembers_leave
+      operationId: ChannelMemberCollection_leave
       parameters:
         - name: id
           in: path
@@ -315,7 +318,7 @@ paths:
     get:
       tags:
         - Channels
-      operationId: ChannelMembers_getProfile
+      operationId: ChannelMemberCollection_getProfile
       parameters:
         - name: id
           in: path
@@ -345,7 +348,7 @@ paths:
     get:
       tags:
         - Channels
-      operationId: ChannelMembers_read
+      operationId: ChannelMemberCollection_read
       parameters:
         - name: id
           in: path
@@ -379,7 +382,7 @@ paths:
     patch:
       tags:
         - Channels
-      operationId: ChannelMembers_update
+      operationId: ChannelMemberCollection_update
       parameters:
         - name: id
           in: path
@@ -425,7 +428,7 @@ paths:
     delete:
       tags:
         - Channels
-      operationId: ChannelMembers_remove
+      operationId: ChannelMemberCollection_remove
       parameters:
         - name: id
           in: path
@@ -466,7 +469,7 @@ paths:
     post:
       tags:
         - Channels
-      operationId: ChannelMessages_send
+      operationId: ChannelMessageCollection_send
       parameters:
         - name: id
           in: path
@@ -512,7 +515,7 @@ paths:
     get:
       tags:
         - Channels
-      operationId: ChannelMessages_list
+      operationId: ChannelMessageCollection_list
       parameters:
         - name: id
           in: path
@@ -562,7 +565,7 @@ paths:
     patch:
       tags:
         - Channels
-      operationId: ChannelMessages_update
+      operationId: ChannelMessageCollection_update
       parameters:
         - name: id
           in: path
@@ -601,7 +604,860 @@ paths:
     delete:
       tags:
         - Channels
-      operationId: ChannelMessages_delete
+      operationId: ChannelMessageCollection_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /media:
+    post:
+      tags:
+        - Media
+      operationId: MediaCollection_create
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaCreatedResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /media/{id}:
+    get:
+      tags:
+        - Media
+      operationId: MediaCollection_download
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /media/{id}/meta:
+    get:
+      tags:
+        - Media
+      operationId: MediaCollection_readMeta
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaMeta'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /resources:
+    post:
+      tags:
+        - Resources
+      operationId: ResourceCollection_create
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Resource'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResourceCreate'
+    get:
+      tags:
+        - Resources
+      operationId: ResourceCollection_list
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Resource'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        format: int64
+                      perPage:
+                        type: integer
+                        format: int64
+                    required:
+                      - page
+                      - perPage
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /resources/{id}:
+    get:
+      tags:
+        - Resources
+      operationId: ResourceCollection_read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Resource'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    patch:
+      tags:
+        - Resources
+      operationId: ResourceCollection_update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Resource'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    delete:
+      tags:
+        - Resources
+      operationId: ResourceCollection_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /study-groups:
+    post:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupCollection_create
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroup'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyGroupCreate'
+    get:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupCollection_list
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StudyGroup'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        format: int64
+                      perPage:
+                        type: integer
+                        format: int64
+                    required:
+                      - page
+                      - perPage
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    patch:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupCollection_update
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroup'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelUpdate'
+  /study-groups/{id}:
+    get:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupCollection_read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/StudyGroup'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    delete:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupCollection_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /study-groups/{id}/members:
+    post:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupMemberCollection_join
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    get:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupMemberCollection_list
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StudyGroupMember'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        format: int64
+                      perPage:
+                        type: integer
+                        format: int64
+                    required:
+                      - page
+                      - perPage
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /study-groups/{id}/members/leave:
+    post:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupMemberCollection_leave
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /study-groups/{id}/members/profile:
+    get:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupMemberCollection_getProfile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroupMember'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /study-groups/{id}/members/{memberId}:
+    get:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupMemberCollection_read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroupMember'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    delete:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupMemberCollection_remove
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudyGroupMember'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /study-groups/{id}/messages:
+    post:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupMessageCollection_send
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudyGroupMessageSend'
+    get:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupMessageCollection_list
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StudyGroupMessage'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        format: int64
+                      perPage:
+                        type: integer
+                        format: int64
+                    required:
+                      - page
+                      - perPage
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /study-groups/{id}/messages/{messageId}:
+    patch:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupMessageCollection_update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    delete:
+      tags:
+        - StudyGroup
+      operationId: StudyGroupMessageCollection_delete
       parameters:
         - name: id
           in: path
@@ -771,6 +1627,32 @@ components:
         message:
           type: string
         error: {}
+    Media:
+      type: object
+    MediaCreatedResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    MediaMeta:
+      type: object
+      required:
+        - name
+        - type
+        - size
+        - uploadedAt
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        size:
+          type: integer
+          format: int64
+        uploadedAt:
+          type: string
     NotFoundError:
       type: object
       required:
@@ -785,6 +1667,134 @@ components:
       properties:
         error:
           type: string
+    Resource:
+      type: object
+      required:
+        - creatorId
+        - createdAt
+      properties:
+        creatorId:
+          type: string
+        createdAt:
+          type: string
+      allOf:
+        - $ref: '#/components/schemas/ResourceCreate'
+    ResourceCreate:
+      type: object
+      required:
+        - title
+        - shortDescription
+        - longDescription
+        - subjects
+        - mediaIds
+      properties:
+        title:
+          type: string
+        shortDescription:
+          type: string
+        longDescription:
+          type: string
+        subjects:
+          type: array
+          items:
+            type: string
+        mediaIds:
+          type: array
+          items:
+            type: string
+    StudyGroup:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - subjects
+        - creatorId
+        - createdAt
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        subjects:
+          type: array
+          items:
+            type: string
+        creatorId:
+          type: string
+        createdAt:
+          type: string
+    StudyGroupCreate:
+      type: object
+      required:
+        - name
+        - description
+        - subjects
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        subjects:
+          type: array
+          items:
+            type: string
+    StudyGroupMember:
+      type: object
+      required:
+        - id
+        - channelId
+        - role
+        - joinedAt
+      properties:
+        id:
+          type: string
+        channelId:
+          type: string
+        role:
+          type: string
+          enum:
+            - CREATOR
+            - TUTOR
+          nullable: true
+        joinedAt:
+          type: string
+    StudyGroupMessage:
+      type: object
+      required:
+        - id
+        - mediaIds
+        - senderId
+        - channelId
+        - deleted
+        - sentAt
+      properties:
+        id:
+          type: string
+        mediaIds:
+          type: string
+        senderId:
+          type: string
+        channelId:
+          type: string
+        deleted:
+          type: boolean
+        sentAt:
+          type: string
+    StudyGroupMessageSend:
+      type: object
+      required:
+        - content
+        - mediaIds
+      properties:
+        content:
+          type: string
+        mediaIds:
+          type: array
+          items:
+            type: string
     ZodError:
       type: object
       required:
