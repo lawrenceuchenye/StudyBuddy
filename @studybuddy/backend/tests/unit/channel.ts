@@ -97,29 +97,29 @@ describe("Channels unit test", async () => {
   })
 
   test("that members of a channel can be fetched", async () => {
-    const channelUsers = await ChannelRepository.getMembers({
+    const channelMembers = await ChannelRepository.getMembers({
       id: channelId,
     }, { page: 1, perPage: 10 })
 
-    expect(channelUsers.data).to.have.lengthOf(1)
-    expect(channelUsers.meta.total).to.equal(1)
+    expect(channelMembers.data).to.have.lengthOf(1)
+    expect(channelMembers.meta.total).to.equal(1)
   })
 
   test("that a user can be added to a channel", async () => {
-    const channelUser = await ChannelRepository.addMember(user2._id, {
+    const channelMember = await ChannelRepository.addMember(user2._id, {
       channelId,
     })
 
-    memberId = channelUser._id
+    memberId = channelMember._id
   })
 
   test("that number of channel members has increased", async () => {
-    const channelUsers = await ChannelRepository.getMembers({
+    const channelMembers = await ChannelRepository.getMembers({
       id: channelId,
     }, { page: 1, perPage: 10 })
 
-    expect(channelUsers.data).to.have.lengthOf(2)
-    expect(channelUsers.meta.total).to.equal(2)
+    expect(channelMembers.data).to.have.lengthOf(2)
+    expect(channelMembers.meta.total).to.equal(2)
   })
 
   test("that a user can be promoted to tutor", async () => {
@@ -147,12 +147,12 @@ describe("Channels unit test", async () => {
   })
 
   test("that number of channel members has decreased", async () => {
-    const channelUsers = await ChannelRepository.getMembers({
+    const channelMembers = await ChannelRepository.getMembers({
       id: channelId
     }, { page: 1, perPage: 10 })
 
-    expect(channelUsers.data).to.have.lengthOf(1)
-    expect(channelUsers.meta.total).to.equal(1)
+    expect(channelMembers.data).to.have.lengthOf(1)
+    expect(channelMembers.meta.total).to.equal(1)
   })
 
   test("that a channel can be deleted", async () => {

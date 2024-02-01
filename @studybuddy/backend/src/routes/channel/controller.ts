@@ -1,4 +1,4 @@
-import { ChannelUserRole, IChannel, IChannelUser } from "@studybuddy/backend/models/channel";
+import { ChannelMemberRole, IChannel, IChannelMember } from "@studybuddy/backend/models/channel";
 import { IUser } from "@studybuddy/backend/models/user";
 import ChannelRepository from "@studybuddy/backend/repositories/channel";
 import { APIError } from "@studybuddy/backend/utils/error";
@@ -9,12 +9,12 @@ import { z } from "zod";
 import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
 
 export const getMember = async (userId: Types.ObjectId, channelId: Types.ObjectId) => {
-  const channelUser = await ChannelRepository.getMember(userId, {
+  const channelMember = await ChannelRepository.getMember(userId, {
     channelId
   })
-  if (!channelUser)
+  if (!channelMember)
     throw new APIError("User not found in channel!", { code: StatusCodes.NOT_FOUND })
-  return channelUser
+  return channelMember
 }
 
 export const getChannel = async (channelId: Types.ObjectId) => {
@@ -27,13 +27,13 @@ export const getChannel = async (channelId: Types.ObjectId) => {
 }
 
 export const updateChannelById = async (channelId: Types.ObjectId, payload: z.infer<typeof updateChannelSchema>, user: HydratedDocument<IUser>) => {
-  const channelUser = await getMember(user._id, channelId)
+  const channelMember = await getMember(user._id, channelId)
   const channel = await getChannel(channelId)
 
   if (
     PermissionsManager
       .Channel({
-        user: channelUser,
+        user: channelMember,
         channel
       })
       .cannot("update", PermissionsManager.subject("Channel", channel))
@@ -48,13 +48,13 @@ export const updateChannelById = async (channelId: Types.ObjectId, payload: z.in
 }
 
 export const deleteChannelById = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>) => {
-  const channelUser = await getMember(user._id, channelId)
+  const channelMember = await getMember(user._id, channelId)
   const channel = await getChannel(channelId)
 
   if (
     PermissionsManager
       .Channel({
-        user: channelUser,
+        user: channelMember,
         channel
       })
       .cannot("delete", "Channel")
@@ -68,11 +68,11 @@ export const deleteChannelById = async (channelId: Types.ObjectId, user: Hydrate
 }
 
 export const joinChannel = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>) => {
-  const channelUser = await ChannelRepository.getMember(user._id, {
+  const channelMember = await ChannelRepository.getMember(user._id, {
     channelId
   })
 
-  if (channelUser)
+  if (channelMember)
     throw new APIError("You are already in this channel!", { code: StatusCodes.BAD_REQUEST })
 
   return ChannelRepository.addMember(user._id, {
@@ -81,23 +81,23 @@ export const joinChannel = async (channelId: Types.ObjectId, user: HydratedDocum
 }
 
 export const leaveChannel = async (channelId: Types.ObjectId, user: HydratedDocument<IUser>) => {
-  const channelUser = await ChannelRepository.getMember(user._id, {
+  const channelMember = await ChannelRepository.getMember(user._id, {
     channelId
   })
 
-  if (!channelUser)
+  if (!channelMember)
     throw new APIError("You are not in this channel!", { code: StatusCodes.BAD_REQUEST })
 
   return ChannelRepository.removeMember({
     channelId,
-    userId: channelUser._id
+    userId: channelMember._id
   })
 }
 
-export const removeUserFromChannel = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, remover: HydratedDocument<IUser>) => {
+export const removeUserFromChannel = async (channelId: Types.ObjectId, channelMemberId: Types.ObjectId, remover: HydratedDocument<IUser>) => {
   const removerUser = await getMember(remover._id, channelId)
   const channel = await getChannel(channelId)
-  const channelUser = await getMember(channelUserId, channelId)
+  const channelMember = await getMember(channelMemberId, channelId)
 
   if (
     PermissionsManager
@@ -105,19 +105,19 @@ export const removeUserFromChannel = async (channelId: Types.ObjectId, channelUs
         user: removerUser,
         channel
       })
-      .cannot("remove", PermissionsManager.subject("ChannelUser", channelUser))
+      .cannot("remove", PermissionsManager.subject("ChannelMember", channelMember))
   )
     throw new APIError("You do not have permission to remove this user from the channel!", { code: StatusCodes.FORBIDDEN })
 
   return ChannelRepository.removeMember({
     channelId,
-    userId: channelUser._id
+    userId: channelMember._id
   })
 }
 
-export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserId: Types.ObjectId, role: ChannelUserRole, promoter: HydratedDocument<IUser>) => {
+export const promoteChannelMember = async (channelId: Types.ObjectId, channelMemberId: Types.ObjectId, role: ChannelMemberRole, promoter: HydratedDocument<IUser>) => {
   const promoterUser = await getMember(promoter._id, channelId)
-  const channelUser = await getMember(channelUserId, channelId)
+  const channelMember = await getMember(channelMemberId, channelId)
   const channel = await getChannel(channelId)
 
   if (
@@ -126,26 +126,26 @@ export const promoteChannelUser = async (channelId: Types.ObjectId, channelUserI
         user: promoterUser,
         channel
       })
-      .cannot("promote", PermissionsManager.subject("ChannelUser", channelUser))
+      .cannot("promote", PermissionsManager.subject("ChannelMember", channelMember))
   )
     throw new APIError("You do not have permission to promote this user!", { code: StatusCodes.FORBIDDEN })
 
-  if (promoterUser._id.equals(channelUser._id))
+  if (promoterUser._id.equals(channelMember._id))
     throw new APIError("You cannot promote yourself!", { code: StatusCodes.BAD_REQUEST })
 
-  return ChannelRepository.updateMember(channelUser._id, {
+  return ChannelRepository.updateMember(channelMember._id, {
     role
   })
 }
 
 export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.infer<typeof postChannelMessageSchema>, sender: HydratedDocument<IUser>) => {
-  const channelUser = await getMember(sender._id, channelId)
+  const channelMember = await getMember(sender._id, channelId)
   const channel = await getChannel(channelId)
 
   if (
     PermissionsManager
       .Channel({
-        user: channelUser,
+        user: channelMember,
         channel
       })
       .cannot("post", "ChannelMessage")
@@ -154,13 +154,13 @@ export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.i
 
   return ChannelRepository.sendMessage({
     ...payload,
-    senderId: channelUser._id,
+    senderId: channelMember._id,
     channelId,
   })
 }
 
 export const updateChannelMessage = async (channelId: Types.ObjectId, messageId: Types.ObjectId, payload: z.infer<typeof updateChannelMessageSchema>, sender: HydratedDocument<IUser>) => {
-  const channelUser = await getMember(sender._id, channelId)
+  const channelMember = await getMember(sender._id, channelId)
   const channel = await getChannel(channelId)
 
   const channelMessage = await ChannelRepository.getMessage({
@@ -174,7 +174,7 @@ export const updateChannelMessage = async (channelId: Types.ObjectId, messageId:
   if (
     PermissionsManager
       .Channel({
-        user: channelUser,
+        user: channelMember,
         channel
       })
       .cannot("update", PermissionsManager.subject("ChannelMessage", channelMessage))
@@ -189,7 +189,7 @@ export const updateChannelMessage = async (channelId: Types.ObjectId, messageId:
 }
 
 export const deleteChannelMessage = async (channelId: Types.ObjectId, messageId: Types.ObjectId, sender: HydratedDocument<IUser>) => {
-  const channelUser = await getMember(sender._id, channelId)
+  const channelMember = await getMember(sender._id, channelId)
   const channel = await getChannel(channelId)
 
   const channelMessage = await ChannelRepository.getMessage({
@@ -203,7 +203,7 @@ export const deleteChannelMessage = async (channelId: Types.ObjectId, messageId:
   if (
     PermissionsManager
       .Channel({
-        user: channelUser,
+        user: channelMember,
         channel
       })
       .cannot("update", PermissionsManager.subject("ChannelMessage", channelMessage))

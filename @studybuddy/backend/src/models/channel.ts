@@ -17,26 +17,26 @@ export interface IChannelMessage {
   sentAt: Date
 }
 
-export type ChannelUserRole = "CREATOR" | "TUTOR" | null
+export type ChannelMemberRole = "CREATOR" | "TUTOR" | null
 
-export interface IChannelUser {
+export interface IChannelMember {
   channelId: Types.ObjectId
-  role: ChannelUserRole
+  role: ChannelMemberRole
   joinedAt: Date
 }
 
-const channelUserSchema = new Schema<IChannelUser>({
+const channelMemberSchema = new Schema<IChannelMember>({
   channelId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   role: { type: String, required: false, default: null },
   joinedAt: { type: Date, required: true },
 });
 
-export const ChannelUser = model<IChannelUser>('ChannelUser', channelUserSchema);
+export const ChannelMember = model<IChannelMember>('ChannelMember', channelMemberSchema);
 
 const channelMessageSchema = new Schema<IChannelMessage>({
   content: { type: String, required: true },
   mediaIds: { type: [Schema.Types.ObjectId], ref: "Media", required: true },
-  senderId: { type: Schema.Types.ObjectId, ref: "ChannelUser", required: true },
+  senderId: { type: Schema.Types.ObjectId, ref: "ChannelMember", required: true },
   channelId: { type: Schema.Types.ObjectId, ref: "Channel", required: true },
   sentAt: { type: Date, required: true },
 });
@@ -47,7 +47,7 @@ const channelSchema = new Schema<IChannel>({
   name: { type: String, required: true },
   description: { type: String, required: true },
   subjects: { type: [String], required: true },
-  creatorId: { type: Schema.Types.ObjectId, ref: "ChannelUser", required: true },
+  creatorId: { type: Schema.Types.ObjectId, ref: "ChannelMember", required: true },
   createdAt: { type: Date, required: true },
 });
 

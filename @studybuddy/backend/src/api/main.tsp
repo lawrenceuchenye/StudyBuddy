@@ -124,6 +124,6 @@ interface ChannelMembers {
   @delete remove(@path channelId: string, @path memberId: string): ChannelMember | PermissionsError | Error;
 
   @route("/members")
-  @patch update(@path channelId: string, @path memberId: string, ...ChannelUserUpdate): ChannelMember | PermissionsError | Error;
+  @patch update(@path channelId: string, @path memberId: string, ...ChannelMemberUpdate): ChannelMember | PermissionsError | Error;
 
 }

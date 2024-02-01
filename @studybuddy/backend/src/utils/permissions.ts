@@ -1,5 +1,5 @@
 import { defineAbility, subject as caslAbility } from '@casl/ability';
-import { IChannel, IChannelMessage, IChannelUser } from '../models/channel';
+import { IChannel, IChannelMessage, IChannelMember } from '../models/channel';
 import { HydratedDocument } from 'mongoose';
 import { IStudyGroup, IStudyGroupUser } from '../models/study-group';
 import { IUser } from '../models/user';
@@ -9,15 +9,15 @@ namespace PermissionsManager {
   export const subject = caslAbility
 
   type ChannelProps = {
-    user: HydratedDocument<IChannelUser>
+    user: HydratedDocument<IChannelMember>
     channel: HydratedDocument<IChannel>
   }
 
   export const Channel = ({ user, channel }: ChannelProps) => defineAbility(can => {
     if (user.channelId.equals(channel._id)) {
       if (user.role === "CREATOR") {
-        can<IChannelUser>('promote', 'ChannelUser', { channelId: channel._id })
-        can<IChannelUser>('remove', 'ChannelUser', { channelId: channel._id })
+        can<IChannelMember>('promote', 'ChannelMember', { channelId: channel._id })
+        can<IChannelMember>('remove', 'ChannelMember', { channelId: channel._id })
 
         can('update', 'Channel')
         can('delete', 'Channel')

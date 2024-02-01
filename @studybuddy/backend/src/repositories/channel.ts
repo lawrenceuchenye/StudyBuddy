@@ -1,5 +1,5 @@
 import { HydratedDocument, Types } from "mongoose"
-import { Channel, ChannelMessage, ChannelUser, IChannel, IChannelMessage, IChannelUser } from "@studybuddy/backend/models/channel"
+import { Channel, ChannelMessage, ChannelMember, IChannel, IChannelMessage, IChannelMember } from "@studybuddy/backend/models/channel"
 import Pagination from "../utils/pagination"
 import { APIError } from "../utils/error"
 import { StatusCodes } from "http-status-codes"
@@ -9,7 +9,7 @@ namespace ChannelRepository {
   export type CreateChannelPayload = Omit<IChannel, "createdAt">
 
   export async function createChannel(payload: CreateChannelPayload) {
-    const creator = await ChannelUser.create({
+    const creator = await ChannelMember.create({
       _id: payload.creatorId,
       channelId: new Types.ObjectId(),
       role: "CREATOR",
@@ -103,7 +103,7 @@ namespace ChannelRepository {
 
   export async function deleteChannel(payload: DeleteChannelPayload) {
     const { acknowledged } = await Channel.deleteOne({ _id: payload.id })
-    await ChannelUser.deleteMany({ channelId: payload.id })
+    await ChannelMember.deleteMany({ channelId: payload.id })
 
     if (!acknowledged)
       throw new APIError("Failed to delete channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })
@@ -114,7 +114,7 @@ namespace ChannelRepository {
   }
 
   export async function sendMessage(payload: AddMessageToChannelPayload) {
-    const sender = await ChannelUser.findOne({ _id: payload.senderId, channelId: payload.channelId })
+    const sender = await ChannelMember.findOne({ _id: payload.senderId, channelId: payload.channelId })
 
     if (!sender)
       throw new APIError("User doesn't exist in channel", { code: StatusCodes.NOT_FOUND })
@@ -229,10 +229,10 @@ namespace ChannelRepository {
       throw new APIError("Failed to delete message in channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })
   }
 
-  export type AddMemberPayload = Omit<IChannelUser, "role" | "joinedAt">
+  export type AddMemberPayload = Omit<IChannelMember, "role" | "joinedAt">
 
   export async function addMember(userId: Types.ObjectId, payload: AddMemberPayload) {
-    return ChannelUser.create({
+    return ChannelMember.create({
       ...payload,
       _id: userId,
       role: null,
@@ -244,13 +244,13 @@ namespace ChannelRepository {
     id: Types.ObjectId
   }
 
-  export type ChannelUserQueryFilter = {
+  export type ChannelMemberQueryFilter = {
     username?: string
     name?: string
   }
 
-  export async function getMembers(payload: GetMembersPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelUserQueryFilter = {}) {
-    const query = ChannelUser.find({
+  export async function getMembers(payload: GetMembersPayload, paginationOptions: Pagination.QueryOptions, filters: ChannelMemberQueryFilter = {}) {
+    const query = ChannelMember.find({
       channelId: payload.id
     })
 
@@ -272,14 +272,14 @@ namespace ChannelRepository {
       })
     }
 
-    const channelUsers = await query
+    const channelMembers = await query
       .clone()
       .limit(paginationOptions.perPage)
       .skip(paginationOptions.perPage * (paginationOptions.page - 1))
       .exec()
 
     const total = await query.countDocuments()
-    return Pagination.createPaginatedResource(channelUsers.map(cu => cu.toJSON()), { ...paginationOptions, total })
+    return Pagination.createPaginatedResource(channelMembers.map(cu => cu.toJSON()), { ...paginationOptions, total })
   }
 
   export type GetMemberPayload = {
@@ -287,19 +287,19 @@ namespace ChannelRepository {
   }
 
   export async function getMember(id: Types.ObjectId, payload: GetMemberPayload) {
-    return ChannelUser.findOne({
+    return ChannelMember.findOne({
       _id: id,
       ...payload
     }).exec()
   }
 
-  export type UpdateMemberPayload = Omit<IChannelUser, "joinedAt" | "channelId" | "userId">
+  export type UpdateMemberPayload = Omit<IChannelMember, "joinedAt" | "channelId" | "userId">
 
   export async function updateMember(id: Types.ObjectId, payload: UpdateMemberPayload) {
     if (payload.role === "CREATOR")
       throw new APIError("Cannot promote user to creator", { code: StatusCodes.INTERNAL_SERVER_ERROR })
 
-    const { acknowledged } = await ChannelUser.updateOne({ _id: id }, payload)
+    const { acknowledged } = await ChannelMember.updateOne({ _id: id }, payload)
 
     if (!acknowledged)
       throw new APIError("Failed to update user in channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })
@@ -312,7 +312,7 @@ namespace ChannelRepository {
 
   export async function removeMember(payload: RemoveMemberPayload) {
     const { userId, channelId } = payload
-    const { acknowledged } = await ChannelUser.deleteOne({ _id: userId, channelId })
+    const { acknowledged } = await ChannelMember.deleteOne({ _id: userId, channelId })
 
     if (!acknowledged)
       throw new APIError("Failed to remove user from channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })

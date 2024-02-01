@@ -7,7 +7,7 @@ import Pagination from "@studybuddy/backend/utils/pagination";
 import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
 import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
-import { deleteChannelById, deleteChannelMessage, getMember, joinChannel, leaveChannel, postChannelMessage, promoteChannelUser, removeUserFromChannel, updateChannelById, updateChannelMessage } from "./controller";
+import { deleteChannelById, deleteChannelMessage, getMember, joinChannel, leaveChannel, postChannelMessage, promoteChannelMember, removeUserFromChannel, updateChannelById, updateChannelMessage } from "./controller";
 import { APIError } from "@studybuddy/backend/utils/error";
 import JWTConfig from "@studybuddy/backend/config/jwt";
 
@@ -147,25 +147,25 @@ export default new Hono()
 
       const user = c.var.user
 
-      await promoteChannelUser(channelId, memberId, role, user)
+      await promoteChannelMember(channelId, memberId, role, user)
 
       return c.json({ message: "Updated user successfully!" })
     })
-  .post("/:id/join",
+  .post("/:channelId/members/join",
     JwtMiddleware.verify,
     async (c) => {
       const user = c.var.user
-      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("channelId"))
 
-      const channelUser = await joinChannel(channelId, user)
+      const channelMember = await joinChannel(channelId, user)
 
-      return c.json({ message: "Channel joined successfully!", data: channelUser.toJSON() })
+      return c.json({ message: "Channel joined successfully!", data: channelMember.toJSON() })
     })
-  .post("/:id/leave",
+  .post("/:channelId/members/leave",
     JwtMiddleware.verify,
     async (c) => {
       const user = c.var.user
-      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("channelId"))
 
       await leaveChannel(channelId, user)
 

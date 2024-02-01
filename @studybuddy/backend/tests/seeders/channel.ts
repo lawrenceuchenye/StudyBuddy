@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { ulid } from "ulidx"
-import { IChannel, IChannelUser } from "@studybuddy/backend/models/channel"
+import { IChannel, IChannelMember } from "@studybuddy/backend/models/channel"
 import ChannelRepository from "@studybuddy/backend/repositories/channel"
 import { HydratedDocument } from "mongoose"
 
@@ -12,7 +12,7 @@ namespace ChannelSeeder {
     ...payload
   })
 
-  export const generate = async (user: HydratedDocument<IChannelUser>, payload?: Partial<IChannel>) => {
+  export const generate = async (user: HydratedDocument<IChannelMember>, payload?: Partial<IChannel>) => {
     const channel = await ChannelRepository
       .createChannel({
         ...seed(payload),
