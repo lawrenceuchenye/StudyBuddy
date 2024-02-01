@@ -1,5 +1,7 @@
 import { Hono } from "hono";
 import { logger } from "hono/logger";
+import { swaggerUI } from '@hono/swagger-ui'
+import { serveStatic } from '@hono/node-server/serve-static'
 
 import { Router as channelsRouter } from "./routes/channel";
 import { Router as authRouter } from "./routes/auth";
@@ -29,6 +31,8 @@ process.on("SIGINT", gracefulShutdown)
 
 export const app = new Hono()
 	.use("*", logger())
+	.use('/static/*', serveStatic({ root: './static' }))
+	.get('/ui', swaggerUI({ url: '/static/openapi.yaml' }))
 	.route("/auth", authRouter)
 	.route("/media", mediaRouter)
 	.route("/channels", channelsRouter)

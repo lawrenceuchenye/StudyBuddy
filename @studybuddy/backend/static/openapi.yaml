@@ -1,0 +1,807 @@
+openapi: 3.0.0
+info:
+  title: Studybuddy
+  version: 0.0.1
+tags:
+  - name: Channels
+paths:
+  /channels:
+    post:
+      tags:
+        - Channels
+      operationId: Channels_create
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelCreate'
+    get:
+      tags:
+        - Channels
+      operationId: Channels_list
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Channel'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        format: int64
+                      perPage:
+                        type: integer
+                        format: int64
+                    required:
+                      - page
+                      - perPage
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    patch:
+      tags:
+        - Channels
+      operationId: Channels_update
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelUpdate'
+  /channels/{id}:
+    get:
+      tags:
+        - Channels
+      operationId: Channels_read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Channel'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    delete:
+      tags:
+        - Channels
+      operationId: Channels_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /channels/{id}/members:
+    get:
+      tags:
+        - Channels
+      operationId: ChannelMembers_list
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChannelMember'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        format: int64
+                      perPage:
+                        type: integer
+                        format: int64
+                    required:
+                      - page
+                      - perPage
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /channels/{id}/members/join:
+    post:
+      tags:
+        - Channels
+      operationId: ChannelMembers_join
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /channels/{id}/members/leave:
+    post:
+      tags:
+        - Channels
+      operationId: ChannelMembers_leave
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /channels/{id}/members/profile:
+    get:
+      tags:
+        - Channels
+      operationId: ChannelMembers_getProfile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelMember'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /channels/{id}/members/{memberId}:
+    get:
+      tags:
+        - Channels
+      operationId: ChannelMembers_read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelMember'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    patch:
+      tags:
+        - Channels
+      operationId: ChannelMembers_update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelMember'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelMemberUpdate'
+    delete:
+      tags:
+        - Channels
+      operationId: ChannelMembers_remove
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelMember'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /channels/{id}/messages:
+    post:
+      tags:
+        - Channels
+      operationId: ChannelMessages_send
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelMessageSend'
+    get:
+      tags:
+        - Channels
+      operationId: ChannelMessages_list
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChannelMessage'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        format: int64
+                      perPage:
+                        type: integer
+                        format: int64
+                    required:
+                      - page
+                      - perPage
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /channels/{id}/messages/{messageId}:
+    patch:
+      tags:
+        - Channels
+      operationId: ChannelMessages_update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    delete:
+      tags:
+        - Channels
+      operationId: ChannelMessages_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+security:
+  - BearerAuth: []
+components:
+  schemas:
+    BadRequestError:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: array
+          items:
+            $ref: '#/components/schemas/ZodError'
+    Channel:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - subjects
+        - creatorId
+        - createdAt
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        subjects:
+          type: array
+          items:
+            type: string
+        creatorId:
+          type: string
+        createdAt:
+          type: string
+    ChannelCreate:
+      type: object
+      required:
+        - name
+        - description
+        - subjects
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        subjects:
+          type: array
+          items:
+            type: string
+    ChannelMember:
+      type: object
+      required:
+        - id
+        - channelId
+        - role
+        - joinedAt
+      properties:
+        id:
+          type: string
+        channelId:
+          type: string
+        role:
+          type: string
+          enum:
+            - CREATOR
+            - TUTOR
+          nullable: true
+        joinedAt:
+          type: string
+    ChannelMemberUpdate:
+      type: object
+      properties:
+        role:
+          type: string
+          enum:
+            - TUTOR
+          nullable: true
+    ChannelMessage:
+      type: object
+      required:
+        - id
+        - mediaIds
+        - senderId
+        - channelId
+        - deleted
+        - sentAt
+      properties:
+        id:
+          type: string
+        mediaIds:
+          type: string
+        senderId:
+          type: string
+        channelId:
+          type: string
+        deleted:
+          type: boolean
+        sentAt:
+          type: string
+    ChannelMessageSend:
+      type: object
+      required:
+        - content
+        - mediaIds
+      properties:
+        content:
+          type: string
+        mediaIds:
+          type: array
+          items:
+            type: string
+    ChannelUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        subjects:
+          type: array
+          items:
+            type: string
+    GenericError:
+      type: object
+      required:
+        - message
+        - error
+      properties:
+        message:
+          type: string
+        error: {}
+    NotFoundError:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    PermissionsError:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+    ZodError:
+      type: object
+      required:
+        - path
+        - message
+      properties:
+        path:
+          type: array
+          items:
+            type: string
+        message:
+          type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://studybuddy.com
+    description: Studybuddy server endpoint
+    variables: {}
