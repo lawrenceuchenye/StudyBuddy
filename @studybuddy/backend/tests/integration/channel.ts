@@ -350,21 +350,27 @@ describe("Channels integration test", async () => {
   })
 
   test("that a demoted member cannot post to the channel", async () => {
-    const url = client.channels[":id"].messages.$url({
+    const mediaIds = [
+      await MediaRepository
+        .createMedia(
+          new File(["content"], ulid(), { type: "text/plain" }),
+        ),
+      await MediaRepository
+        .createMedia(
+          new File(["content"], ulid(), { type: "text/plain" })
+        )
+    ]
+      .map(media => media._id.toString())
+
+    const res = await client.channels[":id"].messages.$post({
       param: {
         id: channelId
+      },
+      json: {
+        content: ulid(),
+        mediaIds
       }
-    })
-
-    const formData = new FormData()
-
-    formData.append("content", ulid())
-    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
-    formData.append("media[]", new File(["content"], ulid(), { type: "text/plain" }))
-
-    const res = await fetch(url, {
-      method: "POST",
-      body: formData,
+    }, {
       headers: members[1].headers
     })
 
