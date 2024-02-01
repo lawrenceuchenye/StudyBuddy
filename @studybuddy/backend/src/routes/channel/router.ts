@@ -105,19 +105,15 @@ export default new Hono()
     return c.json(paginatedMembers)
   })
   .get("/:id/members/profile", JwtMiddleware.verify, async (c) => {
-    const {
-      id,
-    } = z.object({
-      id: z.string().transform(transformMongoId),
-    }).parse(c.req.param())
+    const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
 
     const user = c.var.user
 
-    const member = await getMember(user._id, id)
+    const member = await getMember(user._id, channelId)
 
     return c.json(member)
   })
-  .get("/:channelId/members/:memberId", async (c) => {
+  .get("/:id/members/:memberId", async (c) => {
     const {
       channelId,
       memberId
@@ -130,19 +126,14 @@ export default new Hono()
 
     return c.json({ message: "Fetched member successfully", data: member.toJSON() })
   })
-  .patch("/:channelId/members/:memberId",
+  .patch("/:id/members/:memberId",
     JwtMiddleware.verify,
     zValidator("json", z.object({
       role: z.enum(["TUTOR"]).nullable()
     })),
     async (c) => {
-      const {
-        channelId,
-        memberId
-      } = z.object({
-        channelId: z.string().transform(transformMongoId),
-        memberId: z.string().transform(transformMongoId)
-      }).parse(c.req.param())
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+      const memberId = z.string().transform(transformMongoId).parse(c.req.param("memberId"))
       const { role } = c.req.valid("json")
 
       const user = c.var.user
@@ -151,36 +142,31 @@ export default new Hono()
 
       return c.json({ message: "Updated user successfully!" })
     })
-  .post("/:channelId/members/join",
+  .post("/:id/members/join",
     JwtMiddleware.verify,
     async (c) => {
       const user = c.var.user
-      const channelId = z.string().transform(transformMongoId).parse(c.req.param("channelId"))
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
 
       const channelMember = await joinChannel(channelId, user)
 
       return c.json({ message: "Channel joined successfully!", data: channelMember.toJSON() })
     })
-  .post("/:channelId/members/leave",
+  .post("/:id/members/leave",
     JwtMiddleware.verify,
     async (c) => {
       const user = c.var.user
-      const channelId = z.string().transform(transformMongoId).parse(c.req.param("channelId"))
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
 
       await leaveChannel(channelId, user)
 
       return c.json({ message: "Left channel successfully!" })
     })
-  .delete("/:channelId/members/:memberId",
+  .delete("/:id/members/:memberId",
     JwtMiddleware.verify,
     async (c) => {
-      const {
-        channelId,
-        memberId
-      } = z.object({
-        channelId: z.string().transform(transformMongoId),
-        memberId: z.string().transform(transformMongoId)
-      }).parse(c.req.param())
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+      const memberId = z.string().transform(transformMongoId).parse(c.req.param("memberId"))
 
       const user = c.var.user
 
@@ -226,16 +212,11 @@ export default new Hono()
 
     return c.json(paginatedMessages)
   })
-  .patch("/:channelId/messages/:messageId",
+  .patch("/:id/messages/:messageId",
     zValidator("json", updateChannelMessageSchema),
     async (c) => {
-      const {
-        channelId,
-        messageId
-      } = z.object({
-        channelId: z.string().transform(transformMongoId),
-        messageId: z.string().transform(transformMongoId),
-      }).parse(c.req.param())
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+      const messageId = z.string().transform(transformMongoId).parse(c.req.param("messageId"))
       const payload = c.req.valid("json")
 
       const user = c.var.user
@@ -244,16 +225,11 @@ export default new Hono()
 
       return c.json({ message: "Message updated successfully!" })
     })
-  .delete("/:channelId/messages/:messageId",
+  .delete("/:id/messages/:messageId",
     JwtMiddleware.verify,
     async (c) => {
-      const {
-        channelId,
-        messageId
-      } = z.object({
-        channelId: z.string().transform(transformMongoId),
-        messageId: z.string().transform(transformMongoId),
-      }).parse(c.req.param())
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+      const messageId = z.string().transform(transformMongoId).parse(c.req.param("messageId"))
 
       const user = c.var.user
 

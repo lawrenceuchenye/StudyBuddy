@@ -131,9 +131,9 @@ describe("Channels integration test", async () => {
 
   test("that users can be added to a channel by the creator", async () => {
     for (const member of members) {
-      const res = await client.channels[":id"].join.$post({
+      const res = await client.channels[":channelId"].members.join.$post({
         param: {
-          id: channelId
+          channelId
         }
       }, {
         headers: member.headers
@@ -204,9 +204,9 @@ describe("Channels integration test", async () => {
 
   test("that members can be removed from a channel by the creator", async () => {
     for (const member of members.splice(0, MEMBERS_REMOVED_BY_CREATOR)) {
-      const res = await client.channels[":id"].leave.$post({
+      const res = await client.channels[":channelId"].members.leave.$post({
         param: {
-          id: channelId
+          channelId
         }
       }, {
         headers: member.headers
@@ -233,9 +233,9 @@ describe("Channels integration test", async () => {
 
   test("that members can leave a channel by themselves", async () => {
     for (const member of members.splice(0, MEMBERS_LEFT_BY_THEMSELVES)) {
-      const res = await client.channels[":id"].leave.$post({
+      const res = await client.channels[":channelId"].members.leave.$post({
         param: {
-          id: channelId
+          channelId
         }
       }, {
         headers: member.headers
