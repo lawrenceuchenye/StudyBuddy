@@ -14,6 +14,9 @@ importers:
       '@studybuddy/backend':
         specifier: workspace:^
         version: link:@studybuddy/backend
+      jsonwebtoken:
+        specifier: ^9.0.2
+        version: 9.0.2
       typescript:
         specifier: ^5.3.3
         version: 5.3.3

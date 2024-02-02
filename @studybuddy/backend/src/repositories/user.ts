@@ -61,8 +61,10 @@ namespace UserRepository {
 			const user = payload.id
 				? await User.findById({ _id: payload.id })
 				: payload.email
-				? await User.findOne({ email: payload.email })
-				: await User.findOne({ userName: payload.userName });
+				? await User.findOne({ "personalInformation.email": payload.email })
+				: await User.findOne({
+						"personalInformation.userName": payload.userName,
+				  });
 			return Result.ok(Maybe.of(user));
 		} catch (err) {
 			logger.error(err);
@@ -186,6 +188,7 @@ namespace UserRepository {
 	): Promise<Result<undefined, APIError>> {
 		try {
 			const { id, ...updatePayload } = payload;
+
 			const user = await User.findById(id);
 			if (!user)
 				return Result.err(
@@ -201,7 +204,7 @@ namespace UserRepository {
 						const hashedPassword = await Auth.encryptPassword(d.password!);
 						d = Object.assign(d, { password: hashedPassword });
 					}
-					const pi = Object.assign({}, user, {
+					const pi = Object.assign(user, {
 						personalInformation: {
 							...user.personalInformation,
 							...d,
@@ -210,7 +213,7 @@ namespace UserRepository {
 					pi.save();
 					break;
 				case "profile":
-					const pr = Object.assign({}, user, {
+					const pr = Object.assign(user, {
 						profileInformation: {
 							...user.profileInformation,
 							...updatePayload,
@@ -219,38 +222,82 @@ namespace UserRepository {
 					pr.save();
 					break;
 				case "contact":
-					const contact = Object.assign({}, user, {
+					const nPayload = updatePayload as IUserContactInformation;
+					const contact = Object.assign(user, {
 						contactInformation: {
 							...user.contactInformation,
-							...updatePayload,
+							...nPayload,
+							social: {
+								...user.contactInformation?.social,
+								...nPayload.social,
+							},
 						},
 					});
 					contact.save();
 					break;
 				case "academic":
-					const aca = Object.assign({}, user, {
+					const acaInfo = updatePayload as IUserAcademicInformation;
+					const nDups = user.academicInformation?.coursesEnrolled?.filter(
+						(item) =>
+							item.year != acaInfo.coursesEnrolled?.[0].year &&
+							item.semester != acaInfo.coursesEnrolled?.[0].semester
+					);
+					const courses = [...nDups!, ...acaInfo.coursesEnrolled!];
+
+					const aca = Object.assign(user, {
 						academicInformation: {
 							...user.academicInformation,
-							...updatePayload,
+							...acaInfo,
+							coursesEnrolled: courses,
 						},
 					});
 					aca.save();
 					break;
 				case "extra":
-					const extra = Object.assign({}, user, {
+					const nExtra =
+						updatePayload as IUserExtracurricularInterestInformation;
+
+					const extra = Object.assign(user, {
 						extracurricularInformation: {
 							...user.extracurricularInformation,
-							...updatePayload,
+							...nExtra,
+							clubsOrOrganizations: [
+								...new Set([
+									...user.extracurricularInformation?.clubsOrOrganizations!,
+									...(nExtra?.clubsOrOrganizations! || []),
+								]),
+							],
+							hobbies: [
+								...new Set([
+									...user.extracurricularInformation?.hobbies!,
+									...(nExtra?.hobbies! || []),
+								]),
+							],
+							skills: [
+								...new Set([
+									...user.extracurricularInformation?.skills!,
+									...(nExtra?.skills! || []),
+								]),
+							],
+							interests: [
+								...new Set([
+									...user.extracurricularInformation?.interests!,
+									...(nExtra?.interests! || []),
+								]),
+							],
 						},
 					});
 					extra.save();
 					break;
 				case "goals":
-					const goals = Object.assign({}, user, {
-						academicGoals: {
-							...user.academicGoals,
-							...updatePayload,
-						},
+					const nGoal = updatePayload as IUserGoals;
+					const goals = Object.assign(user, {
+						academicGoals: [
+							...user?.academicGoals!,
+							{
+								...updatePayload,
+							},
+						],
 					});
 					goals.save();
 					break;

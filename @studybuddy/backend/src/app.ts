@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { Router as channelsRouter } from "./routes/channel";
 import { Router as authRouter } from "./routes/auth";
+import { Router as systemRouter } from "./routes/system";
 import Database from "./utils/database";
 import { fromZodError } from "zod-validation-error";
 import { ZodError } from "zod";
@@ -17,6 +18,7 @@ export const app = new Hono()
 	.use("/api/v1", swaggerUI({ url: "/doc" }))
 	.route("/channels", channelsRouter)
 	.route("/auth", authRouter)
+	.route("/system", systemRouter)
 	.onError((err, c) => {
 		if (err instanceof ZodError) {
 			return c.json({ error: fromZodError(err) }, 400);

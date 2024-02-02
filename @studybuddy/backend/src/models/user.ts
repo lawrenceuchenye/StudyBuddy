@@ -25,7 +25,14 @@ export interface IUserProfileInformation {
 export type IUserContactInformation = {
 	phoneNumber?: string;
 	address?: string;
-	social?: string[];
+	social?: {
+		instagram?: string;
+		facebook?: string;
+		twitter?: string;
+		tiktok?: string;
+		twitch?: string;
+		discord?: string;
+	};
 };
 
 export type IUserGoals = {
@@ -74,7 +81,14 @@ const userSchema = new Schema<IUser>(
 		},
 		contactInformation: {
 			phoneNumber: { type: String, required: false },
-			social: [{ type: String, required: false }],
+			social: {
+				twitch: { type: String, required: false },
+				twitter: { type: String, required: false },
+				tiktok: { type: String, required: false },
+				facebook: { type: String, required: false },
+				discord: { type: String, required: false },
+				instagram: { type: String, required: false },
+			},
 			address: { type: String, required: false },
 		},
 		academicInformation: {
@@ -133,7 +147,14 @@ export const InitialFields: IUser = {
 	},
 	contactInformation: {
 		phoneNumber: "",
-		social: [],
+		social: {
+			instagram: "",
+			facebook: "",
+			twitter: "",
+			tiktok: "",
+			twitch: "",
+			discord: "",
+		},
 		address: "",
 	},
 	academicInformation: {
