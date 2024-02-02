@@ -1,0 +1,47 @@
+.main-task-container {
+  background: var(--color-white);
+  padding: 10px;
+  border-radius: 8px;
+  margin: 12px;
+}
+
+.main-task-container h2 {
+  color: var(--color-black);
+  margin-bottom: 15px;
+  text-transform: capitalize;
+  font-family: "Open Sans";
+}
+
+.main-task-container p {
+  font-family: "Open Sans";
+}
+
+.main-task-container p i {
+  margin-left: 5px;
+}
+
+.utils-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-dark-grey);
+}
+
+.icons i {
+  margin: 0px 10px;
+  opacity: 0.5;
+  color: var(--color-black);
+  cursor: pointer;
+}
+
+.icons i:hover {
+  opacity: 1;
+}
+
+.icons i:nth-child(2) {
+  color: var(--color-red);
+}
+
+.icons i:nth-child(3) {
+  color: var(--color-green);
+}

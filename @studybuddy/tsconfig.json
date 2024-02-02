@@ -3,24 +3,23 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@studybuddy/frontend/*": [
-        "./@studybuddy/frontend/src/*"
+      "@studybuddyfrontend/*": [
+        "./frontend/src/*"
       ],
       "@studybuddy/backend/*": [
-        "./@studybuddy/backend/src/*"
+        "./backend/src/*"
       ]
     },
-    "rootDir": ".",
+    "noEmit": true,
     "strict": true,
     "skipLibCheck": true,
-    "noEmit": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
     "module": "ES2022",
     "moduleResolution": "node",
-    "target": "ES2020",
+    "target": "ES2022",
     "incremental": true
   }
 }

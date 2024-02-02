@@ -36,7 +36,6 @@ namespace UserRepository {
 					},
 				})
 			);
-
 			return Result.ok(user);
 		} catch (err) {
 			logger.error(err);

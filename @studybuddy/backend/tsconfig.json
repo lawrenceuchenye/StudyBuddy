@@ -4,15 +4,22 @@
     "noEmit": true,
     "noImplicitAny": true,
     "allowUnreachableCode": false,
+    "rootDir": ".",
+    "outDir": "./build",
+    "declarationDir": "./types"
   },
   "include": [
-    "./src/**/*.ts",
+    "src",
     "run.ts"
+  ],
+  "exclude": [
+    "./build",
+    "./types"
   ],
   "references": [
     {
-      "path": "../../tsconfig.json"
+      "path": "../tsconfig.json"
     }
   ],
-  "extends": "../../tsconfig.json"
+  "extends": "../tsconfig.json"
 }

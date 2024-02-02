@@ -171,9 +171,9 @@ namespace SystemRepository {
 						skills
 					)
 			);
-			score += commonInterests?.length! * 5;
-			score += commonHobbies?.length! * 5;
-			score += commonClubs?.length! * 5;
+			score += commonInterests?.length! * 7;
+			score += commonHobbies?.length! * 7;
+			score += commonClubs?.length! * 8;
 			score += commonSkills?.length! * 5;
 		})();
 

@@ -17,44 +17,26 @@ export interface IChannelMessage {
   sentAt: Date
 }
 
-export interface IChannelMedia {
-  data: String
-  type: string
-  size: number
-  uploadedAt: Date
-}
+export type ChannelMemberRole = "CREATOR" | "TUTOR" | null
 
-export type ChannelUserRole = "CREATOR" | "MODERATOR" | "MEMBER" | "POSTER"
-
-export interface IChannelUser {
+export interface IChannelMember {
   channelId: Types.ObjectId
-  userId: Types.ObjectId
-  role: ChannelUserRole
+  role: ChannelMemberRole
   joinedAt: Date
 }
 
-const channelUserSchema = new Schema<IChannelUser>({
+const channelMemberSchema = new Schema<IChannelMember>({
   channelId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  role: { type: String, required: true },
+  role: { type: String, required: false, default: null },
   joinedAt: { type: Date, required: true },
 });
 
-export const ChannelUser = model<IChannelUser>('ChannelUser', channelUserSchema);
-
-const channelMediaSchema = new Schema<IChannelMedia>({
-  data: { type: String, required: true },
-  type: { type: String, required: true },
-  size: { type: Number, required: true },
-  uploadedAt: { type: Date, required: true },
-})
-
-export const ChannelMedia = model<IChannelMedia>('ChannelMedia', channelMediaSchema);
+export const ChannelMember = model<IChannelMember>('ChannelMember', channelMemberSchema);
 
 const channelMessageSchema = new Schema<IChannelMessage>({
   content: { type: String, required: true },
-  mediaIds: { type: [Schema.Types.ObjectId], ref: "ChannelMedia", required: true },
-  senderId: { type: Schema.Types.ObjectId, ref: "ChannelUser", required: true },
+  mediaIds: { type: [Schema.Types.ObjectId], ref: "Media", required: true },
+  senderId: { type: Schema.Types.ObjectId, ref: "ChannelMember", required: true },
   channelId: { type: Schema.Types.ObjectId, ref: "Channel", required: true },
   sentAt: { type: Date, required: true },
 });
@@ -65,7 +47,7 @@ const channelSchema = new Schema<IChannel>({
   name: { type: String, required: true },
   description: { type: String, required: true },
   subjects: { type: [String], required: true },
-  creatorId: { type: Schema.Types.ObjectId, ref: "ChannelUser", required: true },
+  creatorId: { type: Schema.Types.ObjectId, ref: "ChannelMember", required: true },
   createdAt: { type: Date, required: true },
 });
 

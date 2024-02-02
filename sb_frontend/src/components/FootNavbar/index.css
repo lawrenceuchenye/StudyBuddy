@@ -1,0 +1,116 @@
+.fn-main-container {
+  background: var(--color-black);
+  color: var(--color-white);
+  padding: var(--padding-desktop);
+}
+
+.fn-main-container hr {
+  margin: 15px auto;
+  width: 70%;
+}
+
+.fn-info-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@keyframes morph {
+
+  0%,
+  100% {
+    border-radius: 70% 30% 41% 59% / 47% 73% 27% 53%;
+  }
+
+  34% {
+    border-radius: 70% 30% 41% 59% / 29% 45% 55% 71%;
+  }
+
+  60% {
+    border-radius: 55% 45% 56% 44% / 57% 23% 77% 43%;
+  }
+
+  80% {
+    border-radius: 55% 45% 39% 61% / 25% 50% 50% 75%;
+  }
+}
+
+.fn-logo-container h1 {
+  color: var(--color-white);
+  font-family: "Pacifico";
+  text-transform: capitalize;
+  position: relative;
+}
+
+.fn-logo-container:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  border-radius: 5px;
+}
+
+.fn-logo-container h1 span:nth-child(1) {
+  position: relative;
+  top: -10px;
+}
+
+.fn-logo-container {
+  background: var(--color-orange);
+  width: max-content;
+  padding: 8px 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  width: 60px;
+  height: 80px;
+  border-radius: 61% 39% 56% 44% / 44% 61% 39% 56%;
+  animation: morph 3s linear infinite;
+}
+
+.fn-links-container {
+  text-align: left;
+}
+
+.fn-links-container h1 {
+  font-family: "Roboto";
+  text-transform: uppercase;
+  color: var(--color-orange);
+  margin-bottom: 20px;
+}
+
+.fn-links-container h1:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  border-radius: 5px;
+}
+
+.fn-links-container h3 {
+  font-family: "Open Sans";
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-bottom: 5px;
+}
+
+.fn-links-container h3:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  border-radius: 5px;
+}
+
+.tc-container {
+  font-family: "Pacifico";
+  text-align: center;
+}
+
+.tc-container p:focus {
+  outline: none;
+  border: 2px solid var(--color-blue);
+  border-radius: 5px;
+}
+
+@media (max-width: 750px) {
+  .fn-main-container {
+    padding: var(--padding-mobile);
+  }
+}
