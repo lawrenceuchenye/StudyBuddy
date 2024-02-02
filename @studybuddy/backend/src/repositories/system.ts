@@ -216,7 +216,11 @@ namespace SystemRepository {
 						code: StatusCodes.NOT_FOUND,
 					})
 				);
-			const allUsers = await User.find({}).select("-password");
+			const allUsers = await User.find({})
+				.select("-password")
+				.limit(paginationOptions.perPage)
+				.skip(paginationOptions.perPage * (paginationOptions.page - 1))
+				.exec();
 
 			//create matches
 			const matches = findMatchingUsers(user, allUsers, 15);
