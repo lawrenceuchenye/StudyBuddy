@@ -1,7 +1,6 @@
 import { HydratedDocument, Query, Types } from "mongoose";
 import { User, IUser } from "@studybuddy/backend/models/user";
 import Pagination from "../utils/pagination";
-import PermissionsService from "../services/permissions";
 import { Result, Maybe } from "true-myth";
 import { APIError } from "../utils/error";
 import { StatusCodes } from "http-status-codes";

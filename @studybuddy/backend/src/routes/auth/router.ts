@@ -2,11 +2,7 @@ import { Hono } from "hono";
 import UserRepository from "@studybuddy/backend/repositories/user";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { Types } from "mongoose";
 import { StatusCodes } from "http-status-codes";
-import Pagination from "@studybuddy/backend/utils/pagination";
-import { transformMongoId } from "@studybuddy/backend/utils/validator";
-import { Maybe } from "true-myth";
 import AuthService from "@studybuddy/backend/services/auth";
 import TokenServive from "@studybuddy/backend/services/token";
 
