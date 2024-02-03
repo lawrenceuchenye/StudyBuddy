@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 
-namespace Auth {
+namespace AuthService {
 	export const encryptPassword = async (password: string): Promise<string> => {
 		return bcrypt.hash(password, 10);
 	};
@@ -13,4 +13,4 @@ namespace Auth {
 	};
 }
 
-export default Auth;
+export default AuthService;

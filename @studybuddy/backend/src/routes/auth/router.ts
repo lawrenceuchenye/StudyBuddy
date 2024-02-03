@@ -7,8 +7,8 @@ import { StatusCodes } from "http-status-codes";
 import Pagination from "@studybuddy/backend/utils/pagination";
 import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import { Maybe } from "true-myth";
-import Auth from "@studybuddy/backend/utils/auth";
-import Token from "@studybuddy/backend/utils/token";
+import AuthService from "@studybuddy/backend/services/auth";
+import TokenService from "@studybuddy/backend/services/token";
 import {
 	IUser,
 	IUserGoals,
@@ -95,7 +95,7 @@ export default new Hono()
 				const user = maybeUserByEmail.value;
 				//check password
 				if (
-					!(await Auth.validatePassword(
+					!(await AuthService.validatePassword(
 						payload.password,
 						user.personalInformation?.password!
 					))
@@ -105,7 +105,7 @@ export default new Hono()
 						StatusCodes.UNAUTHORIZED
 					);
 				//generate access token
-				const accessToken = await Token.generateAccessToken(user);
+				const accessToken = await TokenService.generateAccessToken(user);
 				return c.json({
 					message: "Login successful",
 					accessToken: accessToken,

@@ -2,7 +2,7 @@ import { afterAll, describe, expect, test } from "vitest";
 import UserSeeder from "../seeders/user";
 import { client } from "../setup";
 import ChannelSeeder from "../seeders/channel";
-import Token from "@studybuddy/backend/utils/token";
+import TokenServive from "@studybuddy/backend/services/token";
 import { StatusCodes } from "http-status-codes";
 import { Types } from "mongoose";
 import Database from "@studybuddy/backend/utils/database";
@@ -21,7 +21,7 @@ describe("Channels integration test", async () => {
     .fill(null)
     .map(async (_) => {
       const member = await UserSeeder.generate()
-      const token = await Token.generateAccessToken(member)
+      const token = await TokenServive.generateAccessToken(member)
 
       return {
         data: member,

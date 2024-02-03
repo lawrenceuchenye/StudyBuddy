@@ -2,7 +2,7 @@ import { ChannelMemberRole, IChannel, IChannelMember } from "@studybuddy/backend
 import { IUser } from "@studybuddy/backend/models/user";
 import ChannelRepository from "@studybuddy/backend/repositories/channel";
 import { APIError } from "@studybuddy/backend/utils/error";
-import PermissionsManager from "@studybuddy/backend/utils/permissions";
+import PermissionsService from "@studybuddy/backend/services/permissions";
 import { StatusCodes } from "http-status-codes";
 import { HydratedDocument, Types } from "mongoose";
 import { z } from "zod";
@@ -32,12 +32,12 @@ export const updateChannelById = async (channelId: Types.ObjectId, payload: z.in
   const channel = await getChannel(channelId)
 
   if (
-    PermissionsManager
+    PermissionsService
       .Channel({
         user: channelMember,
         channel
       })
-      .cannot("update", PermissionsManager.subject("Channel", channel))
+      .cannot("update", PermissionsService.subject("Channel", channel))
   )
     throw new APIError("You do not have permission to update this channel!", { code: StatusCodes.FORBIDDEN })
 
@@ -53,7 +53,7 @@ export const deleteChannelById = async (channelId: Types.ObjectId, user: Hydrate
   const channel = await getChannel(channelId)
 
   if (
-    PermissionsManager
+    PermissionsService
       .Channel({
         user: channelMember,
         channel
@@ -101,12 +101,12 @@ export const removeUserFromChannel = async (channelId: Types.ObjectId, channelMe
   const channelMember = await getMember(channelMemberId, channelId)
 
   if (
-    PermissionsManager
+    PermissionsService
       .Channel({
         user: removerUser,
         channel
       })
-      .cannot("remove", PermissionsManager.subject("ChannelMember", channelMember))
+      .cannot("remove", PermissionsService.subject("ChannelMember", channelMember))
   )
     throw new APIError("You do not have permission to remove this user from the channel!", { code: StatusCodes.FORBIDDEN })
 
@@ -122,12 +122,12 @@ export const promoteChannelMember = async (channelId: Types.ObjectId, channelMem
   const channel = await getChannel(channelId)
 
   if (
-    PermissionsManager
+    PermissionsService
       .Channel({
         user: promoterUser,
         channel
       })
-      .cannot("promote", PermissionsManager.subject("ChannelMember", channelMember))
+      .cannot("promote", PermissionsService.subject("ChannelMember", channelMember))
   )
     throw new APIError("You do not have permission to promote this user!", { code: StatusCodes.FORBIDDEN })
 
@@ -150,7 +150,7 @@ export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.i
   }
 
   if (
-    PermissionsManager
+    PermissionsService
       .Channel({
         user: channelMember,
         channel
@@ -179,12 +179,12 @@ export const updateChannelMessage = async (channelId: Types.ObjectId, messageId:
     throw new APIError("Message not found in channel!", { code: StatusCodes.NOT_FOUND })
 
   if (
-    PermissionsManager
+    PermissionsService
       .Channel({
         user: channelMember,
         channel
       })
-      .cannot("update", PermissionsManager.subject("ChannelMessage", channelMessage))
+      .cannot("update", PermissionsService.subject("ChannelMessage", channelMessage))
   )
     throw new APIError("You do not have permission to update this message!", { code: StatusCodes.FORBIDDEN })
 
@@ -208,12 +208,12 @@ export const deleteChannelMessage = async (channelId: Types.ObjectId, messageId:
     throw new APIError("Message not found in channel!", { code: StatusCodes.NOT_FOUND })
 
   if (
-    PermissionsManager
+    PermissionsService
       .Channel({
         user: channelMember,
         channel
       })
-      .cannot("update", PermissionsManager.subject("ChannelMessage", channelMessage))
+      .cannot("update", PermissionsService.subject("ChannelMessage", channelMessage))
   )
     throw new APIError("You do not have permission to delete this message!", { code: StatusCodes.FORBIDDEN })
 

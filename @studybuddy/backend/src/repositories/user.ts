@@ -10,12 +10,11 @@ import {
 	IUserGoals,
 } from "@studybuddy/backend/models/user";
 import Pagination from "../utils/pagination";
-import PermissionsManager from "../utils/permissions";
 import { Result, Maybe } from "true-myth";
 import { APIError } from "../utils/error";
 import { StatusCodes } from "http-status-codes";
 import GlobalLogger from "../utils/logger";
-import Auth from "../utils/auth";
+import AuthService from "../services/auth";
 
 namespace UserRepository {
 	const logger = GlobalLogger.getSubLogger({ name: "UserRepository" });
@@ -24,7 +23,7 @@ namespace UserRepository {
 		payload: IUser
 	): Promise<Result<HydratedDocument<IUser>, APIError>> {
 		try {
-			const hashedPassword = await Auth.encryptPassword(
+			const hashedPassword = await AuthService.encryptPassword(
 				payload.personalInformation?.password!
 			);
 
@@ -227,7 +226,7 @@ namespace UserRepository {
 				case "personal":
 					let d = updatePayload as IUserPersonalInformation;
 					if (d.password) {
-						const hashedPassword = await Auth.encryptPassword(d.password!);
+						const hashedPassword = await AuthService.encryptPassword(d.password!);
 						d = Object.assign(d, { password: hashedPassword });
 					}
 					const pi = Object.assign(user, {
