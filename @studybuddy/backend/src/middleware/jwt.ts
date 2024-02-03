@@ -14,16 +14,16 @@ namespace JwtMiddleware {
   }> = async (c, next) => {
     const authHeader = c.req.header("authorization")
     if (!authHeader)
-      throw new APIError("Invalid token1", { code: StatusCodes.UNAUTHORIZED })
+      throw new APIError("Invalid token!", { code: StatusCodes.UNAUTHORIZED })
 
     const [, suppliedAccessToken] = authHeader.split(" ")
     if (!suppliedAccessToken)
-      throw new APIError("Invalid token2", { code: StatusCodes.UNAUTHORIZED })
+      throw new APIError("Invalid token!", { code: StatusCodes.UNAUTHORIZED })
 
     const verifiedAccessToken =
       await TokenServive.verifyAccessToken(suppliedAccessToken)
     if (!verifiedAccessToken)
-      throw new APIError("Invalid token3", { code: StatusCodes.UNAUTHORIZED })
+      throw new APIError("Invalid token!", { code: StatusCodes.UNAUTHORIZED })
 
     const userFetchResult = await UserRepository.getUser({
       email: verifiedAccessToken.email
@@ -35,7 +35,7 @@ namespace JwtMiddleware {
     const maybeUser = userFetchResult.value
 
     if (maybeUser.isNothing)
-      throw new APIError("Invalid token4", { code: StatusCodes.UNAUTHORIZED })
+      throw new APIError("Invalid token!", { code: StatusCodes.UNAUTHORIZED })
 
     c.set('user', maybeUser.value)
 

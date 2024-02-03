@@ -10,6 +10,8 @@ import { Router as userRouter } from "./routes/users";
 import { Router as mediaRouter } from "./routes/media";
 import { Router as studyGroupRouter } from "./routes/study-group";
 import { Router as resourcesRouter } from "./routes/resource";
+import { Router as trustFundsRouter } from "./routes/trust-fund";
+import { Router as webhooksRouter } from "./routes/webhooks";
 
 import Database from "./utils/database";
 import { fromZodError } from "zod-validation-error";
@@ -43,6 +45,8 @@ export const app = new Hono()
 	.route("/auth", authRouter)
 	.route("/media", mediaRouter)
 	.route("/channels", channelsRouter)
+	.route("/trust-fund", trustFundsRouter)
+	.route("/webhooks", webhooksRouter)
 	.route("/study-groups", studyGroupRouter)
 	.route("/resources", resourcesRouter)
 	.onError((err, c) => {

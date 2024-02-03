@@ -31,6 +31,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mongoose": "^8.0.0",
+    "paystack-sdk": "^2.5.11",
     "true-myth": "5",
     "tslog": "^4.9.2",
     "zod": "^3.22.4",

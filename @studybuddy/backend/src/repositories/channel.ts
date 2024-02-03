@@ -94,7 +94,7 @@ namespace ChannelRepository {
     const { acknowledged } = await Channel.updateOne({ _id: id }, updatePayload)
 
     if (!acknowledged)
-      throw new APIError("Failed to update channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })
+      throw new APIError("Failed to update channel!", { code: StatusCodes.INTERNAL_SERVER_ERROR })
   }
 
   export type DeleteChannelPayload = {

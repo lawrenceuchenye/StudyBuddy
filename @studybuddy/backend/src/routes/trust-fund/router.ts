@@ -10,6 +10,7 @@ import { createSchema, depositSchema, filterSchema, updateSchema } from "./schem
 import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
 import PermissionsService from "@studybuddy/backend/services/permissions";
 import { Types } from "mongoose";
+import TrustFundService from "@studybuddy/backend/services/trust-fund";
 
 const getTrustFund = async (id: Types.ObjectId) => {
   const trustFund = await TrustRepository.getTrustFund(id)
@@ -62,7 +63,12 @@ export default new Hono()
 
       const trustFund = await getTrustFund(trustFundId)
 
-      return c.json(Pagination.createSingleResource({ url: "" }))
+      const paymentLink = await TrustFundService.getPaymentLink(trustFund, payload.amount, user)
+
+      if (!paymentLink)
+        throw new APIError("Failed to create payment link!", { code: StatusCodes.INTERNAL_SERVER_ERROR })
+
+      return c.json(Pagination.createSingleResource({ url: paymentLink }))
     })
   .patch("/:id",
     JwtMiddleware.verify,
