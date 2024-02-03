@@ -15,6 +15,7 @@ import {
 
 export default new Hono()
 	.get("/", async (c) => {
+		console.log("authorization headers: ", c);
 		const filterSchema = z
 			.object({
 				name: z.string(),
