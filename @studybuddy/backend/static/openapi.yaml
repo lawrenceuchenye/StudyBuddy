@@ -737,6 +737,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
   /media/{id}:
     get:
       tags:
@@ -752,9 +759,10 @@ paths:
         '200':
           description: The request has succeeded.
           content:
-            application/json:
+            application/octet-stream:
               schema:
-                $ref: '#/components/schemas/Media'
+                type: string
+                format: binary
         '500':
           description: Server error
           content:
@@ -1898,8 +1906,6 @@ components:
         message:
           type: string
         error: {}
-    Media:
-      type: object
     MediaCreatedResponse:
       type: object
       required:

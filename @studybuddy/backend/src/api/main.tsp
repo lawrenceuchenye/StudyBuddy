@@ -241,12 +241,15 @@ model MediaMeta {
   uploadedAt: string;
 }
 
-model Media {}
+model Media {
+  @header contentType: "application/octet-stream";
+  @body _: bytes;
+}
 
 @route("/media")
 @tag("Media")
 interface MediaCollection {
-  @post create(): MediaCreatedResponse | GenericError;
+  @post create(@header contentType: "application/octet-stream", @body media: bytes): MediaCreatedResponse | GenericError;
 
   @get download(@path id: string): Media | GenericError;
 
