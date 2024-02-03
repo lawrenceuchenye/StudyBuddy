@@ -276,3 +276,30 @@ interface ResourceCollection {
   @patch update(@path id: string): SingleResource<Resource> | PermissionsError | NotFoundError | Error;
   @delete delete(@path id: string): GenericResponse<200> | PermissionsError | NotFoundError | Error;
 }
+
+model TrustFundCreate {
+  name: string;
+  shortDescription: string;
+  longDescription: string;
+  balance: int64;
+  logoId: string;
+  accountDetails: {
+    bankCode: string;
+    number: string;
+  };
+}
+
+model TrustFund extends TrustFundCreate {
+  creatorId: string;
+  createdAt: string;
+}
+
+@route("/trust-funds")
+@tag("TrustFunds")
+interface TrustFundCollection {
+  @post create(...TrustFundCreate): SingleResource<TrustFund> | Error;
+  @get read(@path id: string): SingleResource<TrustFund> | GenericError;
+  @get list(): PaginatedResource<TrustFund> | GenericError;
+  @patch update(@path id: string): SingleResource<TrustFund> | PermissionsError | NotFoundError | Error;
+  @delete delete(@path id: string): GenericResponse<200> | PermissionsError | NotFoundError | Error;
+}
