@@ -113,32 +113,40 @@ namespace SystemRepository {
 
 		// Academic Goals
 		(function () {
-			const commonGoalsTitle = user1.academicGoals?.filter((goal1) =>
-				user2.academicGoals?.some((goal2) => goal1.title === goal2.title)
+			const commonGoalsTitle = user1.academicGoals?.filter(
+				(goal1) =>
+					user2.academicGoals?.some((goal2) => goal1.title === goal2.title)
 			);
-			const commonGoalsDes = user1.academicGoals?.filter((goal1) =>
-				user2.academicGoals?.some(
-					(goal2) => goal1.description === goal2.description
-				)
+			const commonGoalsDes = user1.academicGoals?.filter(
+				(goal1) =>
+					user2.academicGoals?.some(
+						(goal2) => goal1.description === goal2.description
+					)
 			);
-			const commonGoalsType = user1.academicGoals?.filter((goal1) =>
-				user2.academicGoals?.some(
-					(goal2) => goal1.typeOfGoal === goal2.typeOfGoal
-				)
+			const commonGoalsType = user1.academicGoals?.filter(
+				(goal1) =>
+					user2.academicGoals?.some(
+						(goal2) => goal1.typeOfGoal === goal2.typeOfGoal
+					)
 			);
-			const commonGoalsAchieved = user1.academicGoals?.filter((goal1) =>
-				user2.academicGoals?.some((goal2) => goal1.achieved === goal2.achieved)
+			const commonGoalsAchieved = user1.academicGoals?.filter(
+				(goal1) =>
+					user2.academicGoals?.some(
+						(goal2) => goal1.achieved === goal2.achieved
+					)
 			);
-			const commonGoalsEstAc = user1.academicGoals?.filter((goal1) =>
-				user2.academicGoals?.some(
-					(goal2) =>
-						goal1.estimatedAchieventDate === goal2.estimatedAchieventDate
-				)
+			const commonGoalsEstAc = user1.academicGoals?.filter(
+				(goal1) =>
+					user2.academicGoals?.some(
+						(goal2) =>
+							goal1.estimatedAchieventDate === goal2.estimatedAchieventDate
+					)
 			);
-			const commonGoalsAc = user1.academicGoals?.filter((goal1) =>
-				user2.academicGoals?.some(
-					(goal2) => goal1.achieventDate === goal2.achieventDate
-				)
+			const commonGoalsAc = user1.academicGoals?.filter(
+				(goal1) =>
+					user2.academicGoals?.some(
+						(goal2) => goal1.achieventDate === goal2.achieventDate
+					)
 			);
 			score += commonGoalsTitle?.length! * 5;
 			score += commonGoalsDes?.length! * 5;
@@ -151,8 +159,9 @@ namespace SystemRepository {
 		// Extracurricular Information
 		(function () {
 			const commonInterests =
-				user1.extracurricularInformation?.interests?.filter((interest1) =>
-					user2.extracurricularInformation?.interests?.includes(interest1)
+				user1.extracurricularInformation?.interests?.filter(
+					(interest1) =>
+						user2.extracurricularInformation?.interests?.includes(interest1)
 				);
 			const commonHobbies = user1.extracurricularInformation?.hobbies?.filter(
 				(hobbies) =>
@@ -209,7 +218,9 @@ namespace SystemRepository {
 		Result<Maybe<{ user: IUser; similarityScore: number }[]>, APIError>
 	> {
 		try {
-			const user = await User.findById(id).select("-password");
+			const user = await User.findById(id).select(
+				"-personalInformation.password"
+			);
 			if (!user)
 				return Result.err(
 					new APIError("User not found", {
@@ -217,7 +228,7 @@ namespace SystemRepository {
 					})
 				);
 			const allUsers = await User.find({})
-				.select("-password")
+				.select("-personalInformation.password")
 				.limit(paginationOptions.perPage)
 				.skip(paginationOptions.perPage * (paginationOptions.page - 1))
 				.exec();

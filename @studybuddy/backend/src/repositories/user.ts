@@ -60,10 +60,10 @@ namespace UserRepository {
 			const user = payload.id
 				? await User.findById({ _id: payload.id })
 				: payload.email
-				? await User.findOne({ "personalInformation.email": payload.email })
-				: await User.findOne({
-						"personalInformation.userName": payload.userName,
-				  });
+					? await User.findOne({ "personalInformation.email": payload.email })
+					: await User.findOne({
+							"personalInformation.userName": payload.userName,
+						});
 			return Result.ok(Maybe.of(user));
 		} catch (err) {
 			logger.error(err);
@@ -79,7 +79,7 @@ namespace UserRepository {
 		name: string;
 	};
 
-	export async function getUsers(
+	export async function searchUsers(
 		paginationOptions: Pagination.QueryOptions,
 		filters: UserQueryFilters
 	): Promise<
@@ -94,6 +94,33 @@ namespace UserRepository {
 				.exec();
 
 			const total = await query.countDocuments();
+			return Result.ok(
+				Pagination.createPaginatedResource(users, {
+					...paginationOptions,
+					total,
+				})
+			);
+		} catch (err) {
+			logger.error(err);
+			return Result.err(
+				new APIError((err as Error).message, {
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				})
+			);
+		}
+	}
+	export async function getUsers(
+		paginationOptions: Pagination.QueryOptions
+	): Promise<
+		Result<Pagination.PaginatedResource<HydratedDocument<IUser>>, APIError>
+	> {
+		try {
+			const users = await User.find({})
+				.select("-personalInformation.password")
+				.limit(paginationOptions.perPage * (paginationOptions.page - 1))
+				.exec();
+
+			const total = users.length;
 			return Result.ok(
 				Pagination.createPaginatedResource(users, {
 					...paginationOptions,

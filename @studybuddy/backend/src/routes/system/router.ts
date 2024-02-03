@@ -10,7 +10,6 @@ import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import { Maybe } from "true-myth";
 
 export default new Hono().get("/matches/:id", async (c) => {
-	console.log("matches", c);
 	const id = z.string().transform(transformMongoId).parse(c.req.param("id"));
 	const paginate = Pagination.schema.parse(c.req.query());
 

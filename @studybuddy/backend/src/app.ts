@@ -6,6 +6,7 @@ import { serveStatic } from "@hono/node-server/serve-static";
 import { Router as channelsRouter } from "./routes/channel";
 import { Router as authRouter } from "./routes/auth";
 import { Router as systemRouter } from "./routes/system";
+import { Router as userRouter } from "./routes/users";
 import { Router as mediaRouter } from "./routes/media";
 import { Router as studyGroupRouter } from "./routes/study-group";
 import { Router as resourcesRouter } from "./routes/resource";
@@ -36,6 +37,7 @@ export const app = new Hono()
 	.route("/channels", channelsRouter)
 	.route("/auth", authRouter)
 	.route("/system", systemRouter)
+	.route("/users", userRouter)
 	.get("/static/*", serveStatic({ root: "./" }))
 	.get("/ui", swaggerUI({ url: "/static/openapi.yaml" }))
 	.route("/auth", authRouter)
