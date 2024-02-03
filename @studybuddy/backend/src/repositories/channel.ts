@@ -281,7 +281,7 @@ namespace ChannelRepository {
     }).exec()
   }
 
-  export type UpdateMemberPayload = Omit<IChannelMember, "joinedAt" | "channelId" | "userId">
+  export type UpdateMemberPayload = Partial<Omit<IChannelMember, "joinedAt" | "channelId" | "userId">>
 
   export async function updateMember(id: Types.ObjectId, payload: UpdateMemberPayload) {
     if (payload.role === "CREATOR")

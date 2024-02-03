@@ -86,7 +86,7 @@ model ChannelUpdate {
 }
 
 model ChannelMemberUpdate {
-  role: "TUTOR" | null
+  trustFundId?: string | null
 }
 
 @route("/channels")
@@ -122,7 +122,14 @@ interface ChannelMemberCollection {
   @route("/profile")
   @get getProfile(@path id: string): ChannelMember | Error;
 
-  @patch update(@path id: string, @path memberId: string, ...ChannelMemberUpdate): ChannelMember | PermissionsError | Error;
+  @route("/{memberId}/promote")
+  @post promote(@path id: string, @path memberId: string): ChannelMember | PermissionsError | Error;
+
+  @route("/{memberId}/demote")
+  @post demote(@path id: string, @path memberId: string): ChannelMember | PermissionsError | Error;
+
+  @route("/profile")
+  @patch update(@path id: string, ...ChannelMemberUpdate): ChannelMember | PermissionsError | Error;
 
   @delete remove(@path id: string, @path memberId: string): ChannelMember | PermissionsError | Error;
 }

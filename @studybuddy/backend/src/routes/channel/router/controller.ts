@@ -116,7 +116,7 @@ export const removeUserFromChannel = async (channelId: Types.ObjectId, channelMe
   })
 }
 
-export const promoteChannelMember = async (channelId: Types.ObjectId, channelMemberId: Types.ObjectId, role: ChannelMemberRole, promoter: HydratedDocument<IUser>) => {
+export const promoteChannelMember = async (channelId: Types.ObjectId, channelMemberId: Types.ObjectId, promoter: HydratedDocument<IUser>) => {
   const promoterUser = await getMember(promoter._id, channelId)
   const channelMember = await getMember(channelMemberId, channelId)
   const channel = await getChannel(channelId)
@@ -134,9 +134,40 @@ export const promoteChannelMember = async (channelId: Types.ObjectId, channelMem
   if (promoterUser._id.equals(channelMember._id))
     throw new APIError("You cannot promote yourself!", { code: StatusCodes.BAD_REQUEST })
 
-  return ChannelRepository.updateMember(channelMember._id, {
-    role
+  await ChannelRepository.updateMember(channelMember._id, {
+    role: "TUTOR"
   })
+}
+
+export const demoteChannelMember = async (channelId: Types.ObjectId, channelMemberId: Types.ObjectId, demoter: HydratedDocument<IUser>) => {
+  const promoterUser = await getMember(demoter._id, channelId)
+  const channelMember = await getMember(channelMemberId, channelId)
+  const channel = await getChannel(channelId)
+
+  if (
+    PermissionsService
+      .Channel({
+        user: promoterUser,
+        channel
+      })
+      .cannot("demote", PermissionsService.subject("ChannelMember", channelMember))
+  )
+    throw new APIError("You do not have permission to promote this user!", { code: StatusCodes.FORBIDDEN })
+
+  if (promoterUser._id.equals(channelMember._id))
+    throw new APIError("You cannot promote yourself!", { code: StatusCodes.BAD_REQUEST })
+
+  await ChannelRepository.updateMember(channelMember._id, {
+    role: null
+  })
+}
+
+type UpdateChannelMemberPayload = Omit<IChannelMember, "channelId" | "role" | "joinedAt">
+
+export const updateChannelMember = async (channelId: Types.ObjectId, channelMemberId: Types.ObjectId, payload: UpdateChannelMemberPayload) => {
+  const channelMember = await getMember(channelMemberId, channelId)
+
+  await ChannelRepository.updateMember(channelMember._id, payload)
 }
 
 export const postChannelMessage = async (channelId: Types.ObjectId, payload: z.infer<typeof postChannelMessageSchema>, sender: HydratedDocument<IUser>) => {

@@ -344,6 +344,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericError'
+    patch:
+      tags:
+        - Channels
+      operationId: ChannelMemberCollection_update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelMember'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelMemberUpdate'
   /channels/{id}/members/{memberId}:
     get:
       tags:
@@ -379,10 +420,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericError'
-    patch:
+    delete:
       tags:
         - Channels
-      operationId: ChannelMemberCollection_update
+      operationId: ChannelMemberCollection_remove
       parameters:
         - name: id
           in: path
@@ -419,16 +460,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericError'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ChannelMemberUpdate'
-    delete:
+  /channels/{id}/members/{memberId}/demote:
+    post:
       tags:
         - Channels
-      operationId: ChannelMemberCollection_remove
+      operationId: ChannelMemberCollection_demote
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelMember'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /channels/{id}/members/{memberId}/promote:
+    post:
+      tags:
+        - Channels
+      operationId: ChannelMemberCollection_promote
       parameters:
         - name: id
           in: path
@@ -1568,10 +1645,8 @@ components:
     ChannelMemberUpdate:
       type: object
       properties:
-        role:
+        trustFundId:
           type: string
-          enum:
-            - TUTOR
           nullable: true
     ChannelMessage:
       type: object
