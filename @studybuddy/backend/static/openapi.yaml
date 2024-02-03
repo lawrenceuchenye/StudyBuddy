@@ -6,8 +6,8 @@ tags:
   - name: Channels
   - name: StudyGroup
   - name: Media
-  - name: Resources
-  - name: TrustFunds
+  - name: Resource
+  - name: TrustFund
 paths:
   /channels:
     post:
@@ -794,7 +794,7 @@ paths:
   /resources:
     post:
       tags:
-        - Resources
+        - Resource
       operationId: ResourceCollection_create
       parameters: []
       responses:
@@ -829,7 +829,7 @@ paths:
               $ref: '#/components/schemas/ResourceCreate'
     get:
       tags:
-        - Resources
+        - Resource
       operationId: ResourceCollection_list
       parameters: []
       responses:
@@ -868,7 +868,7 @@ paths:
   /resources/{id}:
     get:
       tags:
-        - Resources
+        - Resource
       operationId: ResourceCollection_read
       parameters:
         - name: id
@@ -896,7 +896,7 @@ paths:
                 $ref: '#/components/schemas/GenericError'
     patch:
       tags:
-        - Resources
+        - Resource
       operationId: ResourceCollection_update
       parameters:
         - name: id
@@ -942,7 +942,7 @@ paths:
                 $ref: '#/components/schemas/GenericError'
     delete:
       tags:
-        - Resources
+        - Resource
       operationId: ResourceCollection_delete
       parameters:
         - name: id
@@ -1574,7 +1574,7 @@ paths:
   /trust-funds:
     post:
       tags:
-        - TrustFunds
+        - TrustFund
       operationId: TrustFundCollection_create
       parameters: []
       responses:
@@ -1609,7 +1609,7 @@ paths:
               $ref: '#/components/schemas/TrustFundCreate'
     get:
       tags:
-        - TrustFunds
+        - TrustFund
       operationId: TrustFundCollection_list
       parameters: []
       responses:
@@ -1648,7 +1648,7 @@ paths:
   /trust-funds/{id}:
     get:
       tags:
-        - TrustFunds
+        - TrustFund
       operationId: TrustFundCollection_read
       parameters:
         - name: id
@@ -1676,7 +1676,7 @@ paths:
                 $ref: '#/components/schemas/GenericError'
     patch:
       tags:
-        - TrustFunds
+        - TrustFund
       operationId: TrustFundCollection_update
       parameters:
         - name: id
@@ -1722,7 +1722,7 @@ paths:
                 $ref: '#/components/schemas/GenericError'
     delete:
       tags:
-        - TrustFunds
+        - TrustFund
       operationId: TrustFundCollection_delete
       parameters:
         - name: id

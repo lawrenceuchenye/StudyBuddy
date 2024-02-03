@@ -268,7 +268,7 @@ model Resource extends ResourceCreate {
 }
 
 @route("/resources")
-@tag("Resources")
+@tag("Resource")
 interface ResourceCollection {
   @post create(...ResourceCreate): SingleResource<Resource> | Error;
   @get read(@path id: string): SingleResource<Resource> | GenericError;
@@ -295,7 +295,7 @@ model TrustFund extends TrustFundCreate {
 }
 
 @route("/trust-funds")
-@tag("TrustFunds")
+@tag("TrustFund")
 interface TrustFundCollection {
   @post create(...TrustFundCreate): SingleResource<TrustFund> | Error;
   @get read(@path id: string): SingleResource<TrustFund> | GenericError;
