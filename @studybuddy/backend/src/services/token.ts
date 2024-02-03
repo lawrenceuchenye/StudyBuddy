@@ -10,7 +10,10 @@ namespace TokenServive {
 
 	export async function generateAccessToken(user: IUser) {
 		return jwt.sign(
-			{ email: user.email, userName: user.userName },
+			{
+				email: user.personalInformation?.email,
+				userName: user.personalInformation?.userName,
+			},
 			config.jwt.secret.accessToken,
 			{ expiresIn: config.jwt.validity.accessToken }
 		);

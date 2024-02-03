@@ -13,10 +13,10 @@ export const index: FC<CardProp> = ({ icon, title, desc }) => {
     <div className="card-container">
       <div className="card-header">
         <i className={icon}></i>
-        <h1 tabindex="0">{title}</h1>
+        <h1 tabIndex={0}>{title}</h1>
       </div>
       <div className="card-info">
-        <p tabindex="0">{desc}</p>
+        <p tabIndex={0}>{desc}</p>
       </div>
     </div>
   );

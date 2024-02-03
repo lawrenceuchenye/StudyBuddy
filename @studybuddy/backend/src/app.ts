@@ -1,10 +1,12 @@
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { swaggerUI } from '@hono/swagger-ui'
-import { serveStatic } from '@hono/node-server/serve-static'
+import { swaggerUI } from "@hono/swagger-ui";
+import { serveStatic } from "@hono/node-server/serve-static";
 
 import { Router as channelsRouter } from "./routes/channel";
 import { Router as authRouter } from "./routes/auth";
+import { Router as systemRouter } from "./routes/system";
+import { Router as userRouter } from "./routes/users";
 import { Router as mediaRouter } from "./routes/media";
 import { Router as studyGroupRouter } from "./routes/study-group";
 import { Router as resourcesRouter } from "./routes/resource";
@@ -20,19 +22,24 @@ const errorLogger = GlobalLogger.getSubLogger({ name: "ErrorLogger" });
 const stopDatabase = await Database.start();
 
 const gracefulShutdown = async () => {
-	stopDatabase()
-	process.exit()
-}
+	stopDatabase();
+	process.exit();
+};
 
-process.on("uncaughtException", gracefulShutdown)
-process.on("exit", gracefulShutdown)
-process.on("unhandledRejection", gracefulShutdown)
-process.on("SIGINT", gracefulShutdown)
+process.on("uncaughtException", gracefulShutdown);
+process.on("exit", gracefulShutdown);
+process.on("unhandledRejection", gracefulShutdown);
+process.on("SIGINT", gracefulShutdown);
 
 export const app = new Hono()
 	.use("*", logger())
-	.get('/static/*', serveStatic({ root: './' }))
-	.get('/ui', swaggerUI({ url: '/static/openapi.yaml' }))
+	.use("/api/v1", swaggerUI({ url: "/doc" }))
+	.route("/channels", channelsRouter)
+	.route("/auth", authRouter)
+	.route("/system", systemRouter)
+	.route("/users", userRouter)
+	.get("/static/*", serveStatic({ root: "./" }))
+	.get("/ui", swaggerUI({ url: "/static/openapi.yaml" }))
 	.route("/auth", authRouter)
 	.route("/media", mediaRouter)
 	.route("/channels", channelsRouter)
@@ -44,7 +51,7 @@ export const app = new Hono()
 		}
 
 		if (err instanceof APIError) {
-			return c.json({ error: err.message }, err.code)
+			return c.json({ error: err.message }, err.code);
 		}
 
 		errorLogger.error(err);

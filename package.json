@@ -18,6 +18,9 @@
     "postinstall": "pnpm backend:api:build"
   },
   "dependencies": {
+    "@hono/swagger-ui": "^0.2.1",
+    "@studybuddy/backend": "workspace:^",
+    "jsonwebtoken": "^9.0.2",
     "typescript": "^5.3.3"
   },
   "keywords": [],
