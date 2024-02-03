@@ -10,12 +10,12 @@ import {
 	IUserGoals,
 } from "@studybuddy/backend/models/user";
 import Pagination from "../utils/pagination";
-import PermissionsManager from "../utils/permissions";
+import PermissionsService from "../services/permissions";
 import { Result, Maybe } from "true-myth";
 import { APIError } from "../utils/error";
 import { StatusCodes } from "http-status-codes";
 import GlobalLogger from "../utils/logger";
-import Auth from "../utils/auth";
+import AuthService from "../services/auth";
 
 namespace SystemRepository {
 	const logger = GlobalLogger.getSubLogger({ name: "SystemRepository" });
