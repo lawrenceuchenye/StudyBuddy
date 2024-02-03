@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose"
 
 export interface IMedia {
   name: string
-  data: string
+  data: Buffer
   type: string
   size: number
   uploadedAt: Date
@@ -10,7 +10,7 @@ export interface IMedia {
 
 const mediaSchema = new Schema<IMedia>({
   name: { type: String, required: true },
-  data: { type: String, required: true },
+  data: { type: Buffer, required: true },
   type: { type: String, required: true },
   size: { type: Number, required: true },
   uploadedAt: { type: Date, required: true },
