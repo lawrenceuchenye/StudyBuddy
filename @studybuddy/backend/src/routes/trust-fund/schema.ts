@@ -6,7 +6,10 @@ export const createSchema = z.object({
   shortDescription: z.string(),
   longDescription: z.string(),
   logoId: z.string().transform(transformMongoId),
-  accountDetailsId: z.string().transform(transformMongoId),
+  accountDetails: z.object({
+    bankCode: z.string(),
+    number: z.string()
+  })
 })
 
 export const filterSchema = z.object({

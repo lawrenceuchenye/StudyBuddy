@@ -70,6 +70,31 @@ export default new Hono()
 
       return c.json(Pagination.createSingleResource({ url: paymentLink }))
     })
+  .post("/:id/withdraw",
+    JwtMiddleware.verify,
+    async (c) => {
+      const user = c.var.user
+      const trustFundId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+
+      const trustFund = await getTrustFund(trustFundId)
+
+      if (
+        PermissionsService
+          .TrustFund({
+            trustFund,
+            user
+          })
+          .cannot("withdraw", "TrustFund")
+      )
+        throw new APIError("You are not allowed to withdraw from this trust fund!", { code: StatusCodes.FORBIDDEN })
+
+      const success = await TrustFundService.withdrawFromTrustFund(trustFund)
+
+      if (!success)
+        throw new APIError("Failed to withdraw from trust fund!", { code: StatusCodes.INTERNAL_SERVER_ERROR })
+
+      return c.json({ message: "Your funds are on their way to your account." })
+    })
   .patch("/:id",
     JwtMiddleware.verify,
     zValidator("json", updateSchema),

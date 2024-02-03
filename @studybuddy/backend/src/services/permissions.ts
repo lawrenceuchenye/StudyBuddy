@@ -75,6 +75,7 @@ namespace PermissionsService {
   export const TrustFund = ({ user, trustFund }: TrustFundProps) => defineAbility(can => {
     if (user._id.equals(trustFund.creatorId)) {
       can("update", "TrustFund")
+      can("withdraw", "TrustFund")
       can("delete", "TrustFund")
     }
   })

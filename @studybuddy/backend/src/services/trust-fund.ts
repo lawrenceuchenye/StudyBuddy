@@ -24,6 +24,18 @@ namespace TrustFundService {
 
     return paymentLink
   }
+
+  export const withdrawFromTrustFund = async (trustFund: HydratedDocument<ITrustFund>) => {
+    const recipientId = trustFund.accountDetails.recipientId
+
+    if (!recipientId)
+      return false
+
+    return PaymentService.withdrawAmount({
+      amount: trustFund.balance,
+      recipient: recipientId
+    })
+  }
 }
 
 export default TrustFundService

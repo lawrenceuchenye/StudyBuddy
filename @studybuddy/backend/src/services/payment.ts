@@ -35,6 +35,25 @@ namespace PaymentService {
 
     return null
   }
+
+  type WithdrawPayload = {
+    amount: number
+    recipient: string
+  }
+
+  export const withdrawAmount = async ({ amount, recipient }: WithdrawPayload) => {
+    const res = await paystack.transfer.initiate({
+      amount: amount * 100,
+      recipient,
+      source: "balance",
+    })
+
+    if (res.status === 200) {
+      return true
+    }
+
+    return false
+  }
 }
 
 export default PaymentService
