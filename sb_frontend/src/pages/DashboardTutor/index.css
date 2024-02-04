@@ -148,8 +148,6 @@
   min-width: 65%;
 }
 
-.text-editor-container {}
-
 @media (max-width: 750px) {
   .dashboard-main-container {
     display: block;
