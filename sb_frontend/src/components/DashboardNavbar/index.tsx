@@ -102,7 +102,7 @@ const index: FC = () => {
         </div>
       </NavLink>
       <NavLink
-        to="/dashboard"
+        to="/dashboard/tutor/"
         style={{ color: "var(--color-white)", textDecoration: "none" }}
       >
         <div className="link" onClick={(e) => e.stopPropagation()}>

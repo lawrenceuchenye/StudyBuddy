@@ -7,8 +7,6 @@ import { Data } from "./data.tsx";
 import { Line } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import { Chart as ChartJS } from "chart.js/auto";
-import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 ChartJS.register(CategoryScale);
 
@@ -39,7 +37,6 @@ const index: FC = () => {
     },
   ])[0];
 
-  const [editorState, setEditorState] = useState<String>("");
   useEffect(() => {
     console.log(isDashboardNavActive);
   }, []);
@@ -68,15 +65,7 @@ const index: FC = () => {
             </div>
           </div>
         </div>
-        <h1>Let us goo</h1>
-        <div>
-          <div className="text-editor-container">
-            <Editor />
-            <input type="text" placeholder={editorState} />
-            <textarea placeholder="Write an article or more ..."></textarea>
-          </div>
-        </div>
-      </div>
+     </div>
     </div>
   );
 };
