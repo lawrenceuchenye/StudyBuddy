@@ -8,7 +8,7 @@ export default defineConfig({
     bail: 1,
     testTimeout: 10000,
     include: [
-      "./tests/unit/*.ts"
+      "./tests/{integration,unit}/*.ts"
     ]
   },
 });

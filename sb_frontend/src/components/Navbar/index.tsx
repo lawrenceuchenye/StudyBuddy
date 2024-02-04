@@ -10,7 +10,11 @@ const index: FC = () => {
 
   return (
     <div className="main-nav-container">
-      <div tabindex="0" aria-label="study buddy logo initials" className="logo-container">
+      <div
+        tabIndex={0}
+        aria-label="study buddy logo initials"
+        className="logo-container"
+      >
         <i>
           <h1>
             <span>S</span>
@@ -20,7 +24,7 @@ const index: FC = () => {
       </div>
       <div className="nav-links-container">
         <NavLink
-          tabindex="0"
+          tabIndex={0}
           to="/"
           className="navLink"
           style={{ color: "var(--color-orange)", textDecoration: "none" }}
@@ -28,11 +32,11 @@ const index: FC = () => {
           <h3> Home</h3>
         </NavLink>
 
-        <h3 tabindex="0">Resources</h3>
-        <h3 tabindex="0">About</h3>
+        <h3 tabIndex={0}>Resources</h3>
+        <h3 tabIndex={0}>About</h3>
 
         <NavLink
-          tabindex="0"
+          tabIndex={0}
           className="navLink"
           to="/dashboard"
           style={{ color: "var(--color-orange)", textDecoration: "none" }}
@@ -43,7 +47,7 @@ const index: FC = () => {
       <div className="auth-container">
         <NavLink
           className="navLink"
-          tabindex="0"
+          tabIndex={0}
           role="button"
           to="login/"
           style={{ color: "var(--color-white)", textDecoration: "none" }}
@@ -56,7 +60,7 @@ const index: FC = () => {
         </NavLink>
         <NavLink
           to="signup/"
-          tabindex="0"
+          tabIndex={0}
           role="button"
           className="navLink"
           style={{ color: "var(--color-white)", textDecoration: "none" }}
@@ -69,7 +73,7 @@ const index: FC = () => {
         </NavLink>
       </div>
       <div
-        tabindex="0"
+        tabIndex={0}
         className="ham_parent_container"
         onClick={toggleIsTapped}
       >

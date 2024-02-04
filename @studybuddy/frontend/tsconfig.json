@@ -22,8 +22,8 @@
   ],
   "references": [
     {
-      "path": "../../tsconfig.json"
+      "path": "../tsconfig.json"
     }
   ],
-  "extends": "../../tsconfig.json"
+  "extends": "../tsconfig.json"
 }

@@ -49,16 +49,16 @@ const index: FC = () => {
     <div className="main-container">
       <div className="hero-container">
         <div className="hero-info-container">
-          <h1 tabindex="0">
+          <h1 tabIndex={0}>
             Find <span>a buddie on your course</span> adventure.
           </h1>
-          <p tabindex="0">
+          <p tabIndex={0}>
             StudyBuddy is a revolutionary app designed to enhance your academic
             journey by connecting you with the perfect study buddy. Seamlessly
             blending technology with collaboration,simplifying the process of
             finding like-minded peers to study with.
           </p>
-          <button tabindex="0" role="button">
+          <button tabIndex={0} role="button">
             Join us<i className="fa fa-fire"></i>
           </button>
         </div>
@@ -79,7 +79,7 @@ const index: FC = () => {
         ></path>
       </svg>
       <div className="features-container">
-        <h1 tabindex="0">Features</h1>
+        <h1 tabIndex={0}>Features</h1>
         <div className="cards-container">
           {cardData.map((card) => {
             return (
@@ -100,33 +100,41 @@ const index: FC = () => {
         ></path>
       </svg>
       <div className="info-m-container">
-        <div tabindex="0" aria-label="library image" className="img-2-container"></div>
+        <div
+          tabIndex={0}
+          aria-label="library image"
+          className="img-2-container"
+        ></div>
 
         <div className="info-container">
-          <h1 tabindex="0">
+          <h1 tabIndex={0}>
             Our <span>"Goal"</span>
           </h1>
-          <p tabindex="0">
+          <p tabIndex={0}>
             Providing quality service for your all your education needs to get
             you up and running for hitting those gaols while on your grind.
           </p>
         </div>
       </div>
       <div className="testimonials-container">
-        <h1 tabindex="0">Testimonials</h1>
+        <h1 tabIndex={0}>Testimonials</h1>
         <div className="t-container">
           <div className="testimonial">
             <i className="fa fa-user"></i>
-            <h1 tabindex="0" aria-label="testimonial">Dave</h1>
-            <p tabindex="0">
+            <h1 tabIndex={0} aria-label="testimonial">
+              Dave
+            </h1>
+            <p tabIndex={0}>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
               sint cillum sint consectetur cupidatat.
             </p>
           </div>
           <div className="testimonial">
             <i className="fa fa-user"></i>
-            <h1 tabindex="0" aria-label="testimonial">Harvey</h1>
-            <p tabindex="0">
+            <h1 tabIndex={0} aria-label="testimonial">
+              Harvey
+            </h1>
+            <p tabIndex={0}>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
               sint cillum sint consectetur cupidatat.
             </p>
@@ -134,16 +142,20 @@ const index: FC = () => {
 
           <div className="testimonial">
             <i className="fa fa-user"></i>
-            <h1 tabindex="0" aria-label="testimonial">Greg</h1>
-            <p tabindex="0">
+            <h1 tabIndex={0} aria-label="testimonial">
+              Greg
+            </h1>
+            <p tabIndex={0}>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
               sint cillum sint consectetur cupidatat.
             </p>
           </div>
           <div className="testimonial">
             <i className="fa fa-user"></i>
-            <h1 tabindex="0" aria-label="testimonial">Kris</h1>
-            <p tabindex="0">
+            <h1 tabIndex={0} aria-label="testimonial">
+              Kris
+            </h1>
+            <p tabIndex={0}>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
               sint cillum sint consectetur cupidatat.
             </p>
