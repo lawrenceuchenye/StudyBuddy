@@ -2,7 +2,7 @@ import { afterAll, describe, expect, test } from "vitest";
 import UserSeeder from "../seeders/user";
 import { client } from "../setup";
 import ResourceSeeder from "../seeders/resource";
-import Token from "@studybuddy/backend/utils/token";
+import TokenServive from "@studybuddy/backend/services/token";
 import { StatusCodes } from "http-status-codes";
 import Database from "@studybuddy/backend/utils/database";
 
@@ -14,7 +14,7 @@ describe("Resources integration test", async () => {
       .fill(null)
       .map(async () => {
         const user = await UserSeeder.generate()
-        const token = await Token.generateAccessToken(user)
+        const token = await TokenServive.generateAccessToken(user)
 
         return {
           data: user,

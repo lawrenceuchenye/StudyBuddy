@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { IUser } from "../models/user";
 import config from "../config";
 
-namespace Token {
+namespace TokenServive {
 	export type Token = {
 		email: string;
 		userName: string;
@@ -10,7 +10,10 @@ namespace Token {
 
 	export async function generateAccessToken(user: IUser) {
 		return jwt.sign(
-			{ email: user.email, userName: user.userName },
+			{
+				email: user.personalInformation?.email,
+				userName: user.personalInformation?.userName,
+			},
 			config.jwt.secret.accessToken,
 			{ expiresIn: config.jwt.validity.accessToken }
 		);
@@ -21,4 +24,4 @@ namespace Token {
 	}
 }
 
-export default Token;
+export default TokenServive;
