@@ -1,3 +1,4 @@
 ---
 packages:
   - '@studybuddy/*'
+  - 'sb_frontend'
