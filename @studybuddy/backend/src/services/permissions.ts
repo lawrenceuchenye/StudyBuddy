@@ -5,6 +5,7 @@ import { IStudyGroup, IStudyGroupUser } from '../models/study-group';
 import { IUser } from '../models/user';
 import { IResource } from '../models/resource';
 import { ITrustFund } from '../models/trust-fund';
+import { ITutorProfile } from '../models/tutor-profile';
 
 namespace PermissionsService {
   export const subject = caslAbility
@@ -77,6 +78,15 @@ namespace PermissionsService {
       can("update", "TrustFund")
       can("withdraw", "TrustFund")
       can("delete", "TrustFund")
+  type TutorProfileProps = {
+    user: HydratedDocument<IUser>
+    tutorProfile: HydratedDocument<ITutorProfile>
+  }
+
+  export const TutorProfile = ({ user, tutorProfile }: TutorProfileProps) => defineAbility(can => {
+    if (tutorProfile._id.equals(user._id)) {
+      can("update", "TutorProfile")
+      can("delete", "TutorProfile")
     }
   })
 }
