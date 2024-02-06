@@ -297,12 +297,94 @@ model TrustFund extends TrustFundCreate {
   createdAt: string;
 }
 
+model TrustFundUpdate is OptionalProperties<TrustFundCreate>;
+
+model TrustFundPayment {
+  url: url
+}
+
 @route("/trust-funds")
 @tag("TrustFund")
 interface TrustFundCollection {
   @post create(...TrustFundCreate): SingleResource<TrustFund> | Error;
-  @get read(@path id: string): SingleResource<TrustFund> | GenericError;
+  @get read(@path id: string): SingleResource<TrustFund> | NotFoundError | GenericError;
   @get list(): PaginatedResource<TrustFund> | GenericError;
-  @patch update(@path id: string): SingleResource<TrustFund> | PermissionsError | NotFoundError | Error;
+
+  @route("/{id}/deposit")
+  @post deposit(@path id: string, amount: int64): SingleResource<TrustFundPayment> | NotFoundError | Error;
+
+  @route("/{id}/withdraw")
+  @post withdraw(@path id: string): SingleResource<TrustFundPayment> | NotFoundError | PermissionsError | GenericError;
+
+  @patch update(@path id: string, ...TrustFundUpdate): GenericResponse<200> | PermissionsError | NotFoundError | Error;
   @delete delete(@path id: string): GenericResponse<200> | PermissionsError | NotFoundError | Error;
+}
+
+model TutorProfileCreate {
+  name: string;
+  trustFundId: string;
+}
+
+model TutorProfileUpdate is OptionalProperties<TutorProfileCreate>;
+
+model ListTutorsFilters {
+  @query page: int64;
+  @query perPage: int64;
+  @query name?: string;
+}
+
+model TutorProfile extends TutorProfileCreate {
+  joinedAt: string
+}
+
+@route("/tutors")
+@tag("Tutor")
+interface TutorCollection {
+  @post create(...TutorProfileCreate): SingleResource<TutorProfile> | Error;
+
+  @get read(@path id: string): SingleResource<TutorProfile> | NotFoundError | GenericError;
+  @get list(...ListTutorsFilters): PaginatedResource<TutorProfile> | GenericError;
+
+  @patch update(@path id: string, ...TutorProfileUpdate): GenericResponse<200> | PermissionsError | Error;
+  @delete delete(@path id: string): GenericResponse<200> | PermissionsError | Error;
+}
+
+
+model PostCreate {
+  title: string;
+  tags: string[];
+  content: string;
+}
+
+model PostUpdate is OptionalProperties<PostCreate>;
+
+model ListPostsFilters {
+  @query page: int64;
+  @query perPage: int64;
+  @query name?: string;
+  @query title?: string;
+  @query({ format: "multi" }) tags?: string[];
+  @query content?: string;
+  @query authorId?: string;
+  @query isPublished?: boolean;
+  @query createdBefore?: string;
+  @query createdAfter?: string;
+  @query publishedBefore?: string;
+  @query publishedAfter?: string;
+}
+
+model Post extends PostCreate {
+  joinedAt: string;
+}
+
+@route("/posts")
+@tag("Post")
+interface PostCollection {
+  @post create(...PostCreate): SingleResource<Post> | Error;
+
+  @get read(@path id: string): SingleResource<Post> | NotFoundError | GenericError;
+  @get list(...ListPostsFilters): PaginatedResource<Post> | GenericError;
+
+  @patch update(@path id: string, ...PostUpdate): GenericResponse<200> | PermissionsError | Error;
+  @delete delete(@path id: string): GenericResponse<200> | PermissionsError | Error;
 }
