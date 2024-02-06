@@ -45,7 +45,9 @@ namespace TutorProfileRepository {
   type UpdateTutorProfilePayload = Partial<Omit<ITutorProfile, "joinedAt" | "userId">>
 
   export const updateTutorProfile = async (id: Types.ObjectId, payload: UpdateTutorProfilePayload) => {
-    return TutorProfile.updateOne({ _id: id }, payload)
+    const { acknowledged } = await TutorProfile.updateOne({ _id: id }, payload)
+    if (!acknowledged)
+      throw new APIError("Failed to update tutor", { code: StatusCodes.INTERNAL_SERVER_ERROR })
   }
 
   export const deleteTutorProfile = async (id: Types.ObjectId) => {

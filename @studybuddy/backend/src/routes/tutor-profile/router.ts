@@ -7,7 +7,7 @@ import { APIError } from "@studybuddy/backend/utils/error"
 import { StatusCodes } from "http-status-codes"
 import Pagination from "@studybuddy/backend/utils/pagination"
 import { Types } from "mongoose"
-import PermissionsManager from "@studybuddy/backend/utils/permissions"
+import PermissionsService from "@studybuddy/backend/services/permissions"
 
 export const getTutorProfile = async (id: Types.ObjectId) => TutorProfileRepository.getTutorProfile(id)
   .then(tutorProfile => {
@@ -28,7 +28,7 @@ export default new Hono()
       const existitngTutorProfile = await TutorProfileRepository.getTutorProfile(user._id)
 
       if (!existitngTutorProfile)
-        throw new APIError("Tutor profile already exists", { code: StatusCodes.CONFLICT })
+        throw new APIError("You can only have one tutor profile at a time!", { code: StatusCodes.CONFLICT })
 
       const tutorProfile = await TutorProfileRepository.createTutorProfile({
         ...payload,
@@ -61,7 +61,7 @@ export default new Hono()
       const tutorProfile = await getTutorProfile(user._id)
 
       if (
-        PermissionsManager
+        PermissionsService
           .TutorProfile({ user, tutorProfile })
           .cannot("update", "TutorProfile")
       )
@@ -76,7 +76,7 @@ export default new Hono()
     const tutorProfile = await getTutorProfile(user._id)
 
     if (
-      PermissionsManager
+      PermissionsService
         .TutorProfile({ user, tutorProfile })
         .cannot("delete", "TutorProfile")
     )

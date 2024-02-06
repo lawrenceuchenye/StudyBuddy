@@ -78,6 +78,9 @@ namespace PermissionsService {
       can("update", "TrustFund")
       can("withdraw", "TrustFund")
       can("delete", "TrustFund")
+    }
+  })
+
   type TutorProfileProps = {
     user: HydratedDocument<IUser>
     tutorProfile: HydratedDocument<ITutorProfile>

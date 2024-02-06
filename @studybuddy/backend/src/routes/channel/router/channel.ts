@@ -6,10 +6,10 @@ import { StatusCodes } from "http-status-codes";
 import Pagination from "@studybuddy/backend/utils/pagination";
 import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
-import { postChannelMessageSchema, updateChannelMessageSchema, updateChannelSchema } from "./schema";
-import { deleteChannelById, deleteChannelMessage, getMember, joinChannel, leaveChannel, postChannelMessage, promoteChannelMember, removeUserFromChannel, updateChannelById, updateChannelMessage } from "./controller";
+import { updateChannelSchema } from "./schema";
+import { deleteChannelById, updateChannelById } from "./controller";
 import { APIError } from "@studybuddy/backend/utils/error";
-import JWTConfig from "@studybuddy/backend/config/jwt";
+import TutorProfileRepository from "@studybuddy/backend/repositories/tutor-profile";
 
 export default new Hono()
   .post("/",
@@ -22,6 +22,11 @@ export default new Hono()
     async (c) => {
       const user = c.var.user
       const { name, description, subjects } = c.req.valid("json")
+
+      const tutorProfile = await TutorProfileRepository.getTutorProfile(user._id)
+      if (!tutorProfile)
+        throw new APIError("Only tutors can create channels!", { code: StatusCodes.FORBIDDEN })
+
       const channel = await ChannelRepository.createChannel({
         name,
         description,
