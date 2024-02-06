@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "tsx run.ts",
+    "start:prod": "node build/run.js",
+    "build": "esbuild --bundle --platform=node --format=esm --target=node20 --outdir=build run.ts",
     "dev": "tsx --watch run.ts",
     "db:shell": "dotenv -- mongosh",
     "test": "vitest",
