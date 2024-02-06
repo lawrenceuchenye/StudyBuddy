@@ -2,14 +2,20 @@ import { z } from "zod"
 
 namespace Pagination {
   export const schema = z.object({
-    page: z.coerce.number()
-      .int({ message: "Invalid page number" })
-      .positive({ message: "Invalid page number" })
-      .default(1),
-    perPage: z.coerce.number()
-      .int({ message: "Invalid per page number" })
-      .positive({ message: "Invalid per page number" })
-      .default(10),
+    page: z.string()
+      .pipe(
+        z.coerce.number()
+          .int({ message: "Invalid page number" })
+          .positive({ message: "Invalid page number" })
+      )
+      .default("1"),
+    perPage: z.string()
+      .pipe(
+        z.coerce.number()
+          .int({ message: "Invalid per page number" })
+          .positive({ message: "Invalid per page number" })
+      )
+      .default("10"),
   })
 
   export type Options = z.infer<typeof schema> & {
