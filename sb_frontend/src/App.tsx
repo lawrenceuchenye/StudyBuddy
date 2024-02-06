@@ -7,6 +7,7 @@ import Login from "./pages/Login/";
 import Dashboard from "./pages/Dashboard/";
 import DashboardGoals from "./pages/DashboardGoals/";
 import DashboardFindBuddies from "./pages/DashboardFindBuddies/";
+import DashboardTutor from "./pages/DashboardTutor/";
 
 import SharedLayout from "./pages/SharedLayout/";
 
@@ -25,6 +26,7 @@ const App: FC = () => {
               path="dashboard/find-match-buddies/"
               element={<DashboardFindBuddies />}
             />
+            <Route path="dashboard/tutor/" element={<DashboardTutor />} />
           </Route>
         </Routes>
       </BrowserRouter>

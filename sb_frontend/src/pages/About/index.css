@@ -1,0 +1,9 @@
+.main-about-container {
+  padding: var(--padding-desktop);
+}
+
+.main-about-container h1 {
+  font-family: "Roboto";
+  text-transform: uppercase;
+  font-size: 32px;
+}
