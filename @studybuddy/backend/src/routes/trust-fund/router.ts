@@ -10,6 +10,7 @@ import { createSchema, depositSchema, filterSchema, updateSchema } from "./schem
 import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
 import PermissionsService from "@studybuddy/backend/services/permissions";
 import { Types } from "mongoose";
+import TrustFundService from "@studybuddy/backend/services/trust-fund";
 
 const getTrustFund = async (id: Types.ObjectId) => {
   const trustFund = await TrustRepository.getTrustFund(id)
@@ -62,7 +63,37 @@ export default new Hono()
 
       const trustFund = await getTrustFund(trustFundId)
 
-      return c.json(Pagination.createSingleResource({ url: "" }))
+      const paymentLink = await TrustFundService.getPaymentLink(trustFund, payload.amount, user)
+
+      if (!paymentLink)
+        throw new APIError("Failed to create payment link!", { code: StatusCodes.INTERNAL_SERVER_ERROR })
+
+      return c.json(Pagination.createSingleResource({ url: paymentLink }))
+    })
+  .post("/:id/withdraw",
+    JwtMiddleware.verify,
+    async (c) => {
+      const user = c.var.user
+      const trustFundId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+
+      const trustFund = await getTrustFund(trustFundId)
+
+      if (
+        PermissionsService
+          .TrustFund({
+            trustFund,
+            user
+          })
+          .cannot("withdraw", "TrustFund")
+      )
+        throw new APIError("You are not allowed to withdraw from this trust fund!", { code: StatusCodes.FORBIDDEN })
+
+      const success = await TrustFundService.withdrawFromTrustFund(trustFund)
+
+      if (!success)
+        throw new APIError("Failed to withdraw from trust fund!", { code: StatusCodes.INTERNAL_SERVER_ERROR })
+
+      return c.json({ message: "Your funds are on their way to your account." })
     })
   .patch("/:id",
     JwtMiddleware.verify,

@@ -94,7 +94,7 @@ namespace ChannelRepository {
     const { acknowledged } = await Channel.updateOne({ _id: id }, updatePayload)
 
     if (!acknowledged)
-      throw new APIError("Failed to update channel", { code: StatusCodes.INTERNAL_SERVER_ERROR })
+      throw new APIError("Failed to update channel!", { code: StatusCodes.INTERNAL_SERVER_ERROR })
   }
 
   export type DeleteChannelPayload = {
@@ -281,7 +281,7 @@ namespace ChannelRepository {
     }).exec()
   }
 
-  export type UpdateMemberPayload = Omit<IChannelMember, "joinedAt" | "channelId" | "userId">
+  export type UpdateMemberPayload = Partial<Omit<IChannelMember, "joinedAt" | "channelId" | "userId">>
 
   export async function updateMember(id: Types.ObjectId, payload: UpdateMemberPayload) {
     if (payload.role === "CREATOR")

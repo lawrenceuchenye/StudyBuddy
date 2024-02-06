@@ -7,7 +7,11 @@ export interface ITrustFund {
   balance: number
   logoId: Types.ObjectId
   creatorId: Types.ObjectId
-  accountDetailsId: Types.ObjectId
+  accountDetails: {
+    bankCode: string
+    number: string
+    recipientId?: string
+  },
   createdAt: Date
 }
 
@@ -18,7 +22,14 @@ const trustFundSchema = new Schema<ITrustFund>({
   balance: { type: Number, required: true },
   logoId: { type: Schema.Types.ObjectId, ref: "Media", required: true },
   creatorId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  accountDetailsId: { type: Schema.Types.ObjectId, ref: "AccountDetails", required: true },
+  accountDetails: {
+    type: {
+      bankCode: String,
+      number: String,
+      recipientId: { type: String, required: false }
+    },
+    required: true
+  },
   createdAt: { type: Date, required: true },
 })
 

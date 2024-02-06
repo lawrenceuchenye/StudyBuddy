@@ -290,17 +290,15 @@ describe("Channels integration test", async () => {
   })
 
   test("that a member can be promoted by the creator", async () => {
-    const res = await client.channels[":id"].members[":memberId"].$patch({
+    const res = await client.channels[":id"].members[":memberId"].promote.$post({
       param: {
         id: channelId,
         memberId: members[0].data._id.toString()
       },
-      json: {
-        role: "TUTOR"
-      }
-    }, {
-      headers: creator.headers
-    })
+    },
+      {
+        headers: creator.headers
+      })
 
     expect(res.status).to.equal(StatusCodes.OK)
   })
@@ -334,17 +332,15 @@ describe("Channels integration test", async () => {
   })
 
   test("that a promoted member can be demoted by the creator", async () => {
-    const res = await client.channels[":id"].members[":memberId"].$patch({
+    const res = await client.channels[":id"].members[":memberId"].demote.$post({
       param: {
         id: channelId,
         memberId: members[0].data._id.toString()
-      },
-      json: {
-        role: null
       }
-    }, {
-      headers: creator.headers
-    })
+    },
+      {
+        headers: creator.headers
+      })
 
     expect(res.status).to.equal(StatusCodes.OK)
   })

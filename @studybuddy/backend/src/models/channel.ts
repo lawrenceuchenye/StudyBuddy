@@ -22,12 +22,14 @@ export type ChannelMemberRole = "CREATOR" | "TUTOR" | null
 export interface IChannelMember {
   channelId: Types.ObjectId
   role: ChannelMemberRole
+  trustFundId?: Types.ObjectId | null
   joinedAt: Date
 }
 
 const channelMemberSchema = new Schema<IChannelMember>({
   channelId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   role: { type: String, required: false, default: null },
+  trustFundId: { type: Schema.Types.ObjectId, ref: "TrustFund", required: false },
   joinedAt: { type: Date, required: true },
 });
 

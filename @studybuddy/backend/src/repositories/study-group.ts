@@ -81,7 +81,7 @@ namespace StudyGroupRepository {
       .exec()
 
     const total = await query.countDocuments()
-    return Pagination.createPaginatedResource(studyGroups.map(c => c.toJSON()), { ...paginationOptions, total })
+    return Pagination.createPaginatedResource(studyGroups.map(sg => sg.toJSON()), { ...paginationOptions, total })
   }
 
   export type UpdateStudyGroupPayload = Partial<Omit<IStudyGroup, "creatorId" | "createdAt">> & {

@@ -7,6 +7,12 @@ export const updateChannelSchema = z.object({
   subjects: z.array(z.string().min(3)),
 }).partial()
 
+export const updateChannelMemberSchema = z.object({
+  trustFundId: z.string().transform(transformMongoId)
+    .nullable()
+    .default(null),
+})
+
 export const postChannelMessageSchema = z.object({
   content: z.string(),
   mediaIds: z.array(z.string().transform(transformMongoId)),
