@@ -6,6 +6,7 @@ import { IUser } from '../models/user';
 import { IResource } from '../models/resource';
 import { ITrustFund } from '../models/trust-fund';
 import { ITutorProfile } from '../models/tutor-profile';
+import { IPost } from '../models/post';
 
 namespace PermissionsService {
   export const subject = caslAbility
@@ -90,6 +91,18 @@ namespace PermissionsService {
     if (tutorProfile._id.equals(user._id)) {
       can("update", "TutorProfile")
       can("delete", "TutorProfile")
+    }
+  })
+
+  type PostProps = {
+    user: HydratedDocument<IUser>
+    post: HydratedDocument<IPost>
+  }
+
+  export const Post = ({ user, post }: PostProps) => defineAbility(can => {
+    if (user._id.equals(post.authorId)) {
+      can("update", "Post")
+      can("delete", "Post")
     }
   })
 }
