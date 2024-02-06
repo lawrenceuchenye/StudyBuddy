@@ -1,5 +1,5 @@
 import { Types } from "mongoose"
-import { ITutorProfile, TutorProfile } from "../models/tutor"
+import { ITutorProfile, TutorProfile } from "../models/tutor-profile"
 import { APIError } from "../utils/error"
 import { StatusCodes } from "http-status-codes"
 import Pagination from "../utils/pagination"

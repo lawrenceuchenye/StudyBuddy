@@ -1,10 +1,10 @@
 import { defineAbility, subject as caslAbility } from '@casl/ability';
-import { IChannel, IChannelMessage, IChannelMember } from '../models/channel';
+import { IChannel, IChannelMember } from '../models/channel';
 import { HydratedDocument } from 'mongoose';
 import { IStudyGroup, IStudyGroupUser } from '../models/study-group';
 import { IUser } from '../models/user';
 import { IResource } from '../models/resource';
-import { ITutor } from '../models/tutor';
+import { ITutorProfile } from '../models/tutor-profile';
 
 namespace PermissionsManager {
   export const subject = caslAbility
@@ -69,7 +69,7 @@ namespace PermissionsManager {
 
   type TutorProfileProps = {
     user: HydratedDocument<IUser>
-    tutorProfile: HydratedDocument<ITutor>
+    tutorProfile: HydratedDocument<ITutorProfile>
   }
 
   export const TutorProfile = ({ user, tutorProfile }: TutorProfileProps) => defineAbility(can => {
