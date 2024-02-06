@@ -12,5 +12,5 @@ const tutorProfileSchema = new Schema<ITutorProfile>({
   joinedAt: { type: Date, required: true },
 })
 
-export const TutorProfile = model<ITutorProfile>('Tutor', tutorProfileSchema);
+export const TutorProfile = model<ITutorProfile>('TutorProfile', tutorProfileSchema);
 
