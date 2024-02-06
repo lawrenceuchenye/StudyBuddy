@@ -16,9 +16,9 @@
     "backend:build": "pnpm --filter @studybuddy/backend build",
     "build:prod": "pnpm frontend:build",
     "start:prod": "dotenv -- pnpm --filter @studybuddy/backend start",
-    "frontend:dev": "dotenv -- pnpm --filter @studybuddy/frontend dev",
-    "frontend:build": "dotenv -- pnpm --filter @studybuddy/frontend build",
-    "frontend:build:prod": "pnpm frontend:build && cp -r @studybuddy/frontend/dist/* @studybuddy/backend/static",
+    "frontend:dev": "dotenv -- pnpm --filter sb_frontend dev",
+    "frontend:build": "dotenv -- pnpm --filter sb_frontend build",
+    "frontend:build:prod": "pnpm frontend:build && cp -r sb_frontend/dist/* @studybuddy/backend/static",
     "lint": "tsc --build --watch ./@studybuddy/tsconfig.json",
     "postinstall": "pnpm backend:api:build"
   },
