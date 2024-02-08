@@ -37,17 +37,34 @@ const index: FC = () => {
             </div>
           </div>
         </div>
-        <div>
+        <div className="editor-main-container">
 
-          <div>
+          <div className="editor-container">
             <input type="text" placeholder="title" />
-            <ReactQuill theme="snow" value={value} onChange={setValue} />
+            <ReactQuill className="editor" theme="snow" value={value} onChange={setValue} />
           </div>
-          <div>
-            <p>{value}</p>
+          <div className="article-main-container">
+            <div className="article-header">
+              <h1>Article</h1>
+            </div>
+            <div className="article-parts">
+              <p>write a master piece to education minds.</p>
+            </div>
+            <button>PUBLISH</button>
+          </div>
+          <p>{value}</p>
+        </div>
+        <div className="pub-articles-main-container">
+          <div className="article-header">
+            <h1>Published Article</h1>
+          </div>
+          <div className="article-parts">
+            <p>no articles published yet.</p>
           </div>
         </div>
+
       </div>
+
     </div>
   );
 };
