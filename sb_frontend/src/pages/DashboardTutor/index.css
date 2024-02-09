@@ -160,7 +160,7 @@ margin:20px 0px;
 }
 
 .editor-container input{
-  width:96.8%;
+  width:auto;
   padding: 8px 12px;
   outline:none;
   border:1px solid var(--color-grey);
@@ -241,7 +241,7 @@ padding:5px;
 
 .pub-articles-main-container{
  box-shadow:var(--box-shadow-black);
-
+ padding:10px;
 }
 
 @media (max-width: 750px) {
@@ -275,4 +275,23 @@ padding:5px;
     width: 160px;
     height: 80px;
   }
+
+.editor-main-container{
+display:block;
+align-items:center;
+justify-content:center;
+margin:20px 0px;
+}
+
+.editor-container{
+  width:100%;
+}
+
+.editor-container input{
+  width:auto;
+}
+.article-main-container{
+  width:auto;
+  margin-top:20px;
+}
 }
