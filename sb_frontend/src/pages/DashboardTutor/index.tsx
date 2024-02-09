@@ -11,14 +11,21 @@ const index: FC = () => {
   );
   const [value, setValue] = useState("");
   const [width, setWidth] = useState<number | null>(null);
-
+  const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     setWidth(window.innerWidth);
+    if (window.innerWidth < 720) {
+      setIsMobile(true);
+      return;
+    }
   }, [window.innerWidth]);
 
   return (
     <div className="dashboard-main-container">
-      <div className="dnav-container" style={{ width: `${width}px` }}>
+      <div
+        className="dnav-container"
+        style={{ width: `${isMobile ? `${width}px` : "auto"}` }}
+      >
         <DashboardNavbar />
       </div>
       <div
