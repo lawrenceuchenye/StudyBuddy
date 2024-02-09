@@ -17,6 +17,8 @@ export const env = createEnv({
 		MAIL_PORT: z.coerce.number().min(1).max(65535),
 		MAIL_USERNAME: z.string().min(1),
 		MAIL_PASSWORD: z.string().min(1),
+		PAYSTACK_SECRET_KEY: z.string().min(1),
+		PAYSTACK_PUBLIC_KEY: z.string().min(1),
 	},
 	/**
 	 * Makes sure you explicitly access **all** environment variables
@@ -35,5 +37,7 @@ export const env = createEnv({
 		MAIL_PORT: process.env.BACKEND_MAIL_PORT,
 		MAIL_USERNAME: process.env.BACKEND_MAIL_USERNAME,
 		MAIL_PASSWORD: process.env.BACKEND_MAIL_PASSWORD,
+		PAYSTACK_SECRET_KEY: process.env.BACKEND_PAYSTACK_SECRET_KEY,
+		PAYSTACK_PUBLIC_KEY: process.env.BACKEND_PAYSTACK_PUBLIC_KEY,
 	}
 })

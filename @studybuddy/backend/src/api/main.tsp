@@ -86,7 +86,7 @@ model ChannelUpdate {
 }
 
 model ChannelMemberUpdate {
-  role: "TUTOR" | null
+  trustFundId?: string | null
 }
 
 @route("/channels")
@@ -122,7 +122,14 @@ interface ChannelMemberCollection {
   @route("/profile")
   @get getProfile(@path id: string): ChannelMember | Error;
 
-  @patch update(@path id: string, @path memberId: string, ...ChannelMemberUpdate): ChannelMember | PermissionsError | Error;
+  @route("/{memberId}/promote")
+  @post promote(@path id: string, @path memberId: string): ChannelMember | PermissionsError | Error;
+
+  @route("/{memberId}/demote")
+  @post demote(@path id: string, @path memberId: string): ChannelMember | PermissionsError | Error;
+
+  @route("/profile")
+  @patch update(@path id: string, ...ChannelMemberUpdate): ChannelMember | PermissionsError | Error;
 
   @delete remove(@path id: string, @path memberId: string): ChannelMember | PermissionsError | Error;
 }
@@ -234,12 +241,15 @@ model MediaMeta {
   uploadedAt: string;
 }
 
-model Media {}
+model Media {
+  @header contentType: "application/octet-stream";
+  @body _: bytes;
+}
 
 @route("/media")
 @tag("Media")
 interface MediaCollection {
-  @post create(): MediaCreatedResponse | GenericError;
+  @post create(@header contentType: "application/octet-stream", @body media: bytes): MediaCreatedResponse | GenericError;
 
   @get download(@path id: string): Media | GenericError;
 
@@ -261,11 +271,38 @@ model Resource extends ResourceCreate {
 }
 
 @route("/resources")
-@tag("Resources")
+@tag("Resource")
 interface ResourceCollection {
   @post create(...ResourceCreate): SingleResource<Resource> | Error;
   @get read(@path id: string): SingleResource<Resource> | GenericError;
   @get list(): PaginatedResource<Resource> | GenericError;
   @patch update(@path id: string): SingleResource<Resource> | PermissionsError | NotFoundError | Error;
+  @delete delete(@path id: string): GenericResponse<200> | PermissionsError | NotFoundError | Error;
+}
+
+model TrustFundCreate {
+  name: string;
+  shortDescription: string;
+  longDescription: string;
+  balance: int64;
+  logoId: string;
+  accountDetails: {
+    bankCode: string;
+    number: string;
+  };
+}
+
+model TrustFund extends TrustFundCreate {
+  creatorId: string;
+  createdAt: string;
+}
+
+@route("/trust-funds")
+@tag("TrustFund")
+interface TrustFundCollection {
+  @post create(...TrustFundCreate): SingleResource<TrustFund> | Error;
+  @get read(@path id: string): SingleResource<TrustFund> | GenericError;
+  @get list(): PaginatedResource<TrustFund> | GenericError;
+  @patch update(@path id: string): SingleResource<TrustFund> | PermissionsError | NotFoundError | Error;
   @delete delete(@path id: string): GenericResponse<200> | PermissionsError | NotFoundError | Error;
 }

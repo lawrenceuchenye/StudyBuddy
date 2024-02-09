@@ -6,7 +6,8 @@ tags:
   - name: Channels
   - name: StudyGroup
   - name: Media
-  - name: Resources
+  - name: Resource
+  - name: TrustFund
 paths:
   /channels:
     post:
@@ -344,6 +345,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericError'
+    patch:
+      tags:
+        - Channels
+      operationId: ChannelMemberCollection_update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelMember'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelMemberUpdate'
   /channels/{id}/members/{memberId}:
     get:
       tags:
@@ -379,10 +421,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericError'
-    patch:
+    delete:
       tags:
         - Channels
-      operationId: ChannelMemberCollection_update
+      operationId: ChannelMemberCollection_remove
       parameters:
         - name: id
           in: path
@@ -419,16 +461,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericError'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ChannelMemberUpdate'
-    delete:
+  /channels/{id}/members/{memberId}/demote:
+    post:
       tags:
         - Channels
-      operationId: ChannelMemberCollection_remove
+      operationId: ChannelMemberCollection_demote
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChannelMember'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /channels/{id}/members/{memberId}/promote:
+    post:
+      tags:
+        - Channels
+      operationId: ChannelMemberCollection_promote
       parameters:
         - name: id
           in: path
@@ -659,6 +737,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
   /media/{id}:
     get:
       tags:
@@ -674,9 +759,10 @@ paths:
         '200':
           description: The request has succeeded.
           content:
-            application/json:
+            application/octet-stream:
               schema:
-                $ref: '#/components/schemas/Media'
+                type: string
+                format: binary
         '500':
           description: Server error
           content:
@@ -716,7 +802,7 @@ paths:
   /resources:
     post:
       tags:
-        - Resources
+        - Resource
       operationId: ResourceCollection_create
       parameters: []
       responses:
@@ -751,7 +837,7 @@ paths:
               $ref: '#/components/schemas/ResourceCreate'
     get:
       tags:
-        - Resources
+        - Resource
       operationId: ResourceCollection_list
       parameters: []
       responses:
@@ -790,7 +876,7 @@ paths:
   /resources/{id}:
     get:
       tags:
-        - Resources
+        - Resource
       operationId: ResourceCollection_read
       parameters:
         - name: id
@@ -818,7 +904,7 @@ paths:
                 $ref: '#/components/schemas/GenericError'
     patch:
       tags:
-        - Resources
+        - Resource
       operationId: ResourceCollection_update
       parameters:
         - name: id
@@ -864,7 +950,7 @@ paths:
                 $ref: '#/components/schemas/GenericError'
     delete:
       tags:
-        - Resources
+        - Resource
       operationId: ResourceCollection_delete
       parameters:
         - name: id
@@ -1493,6 +1579,201 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericError'
+  /trust-funds:
+    post:
+      tags:
+        - TrustFund
+      operationId: TrustFundCollection_create
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrustFund'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrustFundCreate'
+    get:
+      tags:
+        - TrustFund
+      operationId: TrustFundCollection_list
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TrustFund'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        format: int64
+                      perPage:
+                        type: integer
+                        format: int64
+                    required:
+                      - page
+                      - perPage
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /trust-funds/{id}:
+    get:
+      tags:
+        - TrustFund
+      operationId: TrustFundCollection_read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrustFund'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    patch:
+      tags:
+        - TrustFund
+      operationId: TrustFundCollection_update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrustFund'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    delete:
+      tags:
+        - TrustFund
+      operationId: TrustFundCollection_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
 security:
   - BearerAuth: []
 components:
@@ -1568,10 +1849,8 @@ components:
     ChannelMemberUpdate:
       type: object
       properties:
-        role:
+        trustFundId:
           type: string
-          enum:
-            - TUTOR
           nullable: true
     ChannelMessage:
       type: object
@@ -1627,8 +1906,6 @@ components:
         message:
           type: string
         error: {}
-    Media:
-      type: object
     MediaCreatedResponse:
       type: object
       required:
@@ -1795,6 +2072,49 @@ components:
           type: array
           items:
             type: string
+    TrustFund:
+      type: object
+      required:
+        - creatorId
+        - createdAt
+      properties:
+        creatorId:
+          type: string
+        createdAt:
+          type: string
+      allOf:
+        - $ref: '#/components/schemas/TrustFundCreate'
+    TrustFundCreate:
+      type: object
+      required:
+        - name
+        - shortDescription
+        - longDescription
+        - balance
+        - logoId
+        - accountDetails
+      properties:
+        name:
+          type: string
+        shortDescription:
+          type: string
+        longDescription:
+          type: string
+        balance:
+          type: integer
+          format: int64
+        logoId:
+          type: string
+        accountDetails:
+          type: object
+          properties:
+            bankCode:
+              type: string
+            number:
+              type: string
+          required:
+            - bankCode
+            - number
     ZodError:
       type: object
       required:

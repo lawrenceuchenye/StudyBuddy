@@ -5,7 +5,11 @@ import { zValidator } from '@hono/zod-validator'
 import Pagination from "@studybuddy/backend/utils/pagination";
 import { transformMongoId } from "@studybuddy/backend/utils/validator";
 import JwtMiddleware from "@studybuddy/backend/middleware/jwt";
-import { getMember, joinChannel, leaveChannel, promoteChannelMember, removeUserFromChannel } from "./controller";
+import { getMember, joinChannel, updateChannelMember, leaveChannel, demoteChannelMember, promoteChannelMember, removeUserFromChannel } from "./controller";
+import { updateChannelMemberSchema } from "./schema";
+import TrustFundRepository from "@studybuddy/backend/repositories/trust-fund";
+import { APIError } from "@studybuddy/backend/utils/error";
+import { StatusCodes } from "http-status-codes";
 
 export default new Hono()
   .get("/:id/members", async (c) => {
@@ -48,21 +52,47 @@ export default new Hono()
 
     return c.json({ message: "Fetched member successfully", data: member.toJSON() })
   })
-  .patch("/:id/members/:memberId",
+  .post("/:id/members/:memberId/promote",
     JwtMiddleware.verify,
-    zValidator("json", z.object({
-      role: z.enum(["TUTOR"]).nullable()
-    })),
     async (c) => {
       const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
       const memberId = z.string().transform(transformMongoId).parse(c.req.param("memberId"))
-      const { role } = c.req.valid("json")
 
+      const promoter = c.var.user
+
+      await promoteChannelMember(channelId, memberId, promoter)
+
+      return c.json({ message: "User promoted successfully!" })
+    })
+  .post("/:id/members/:memberId/demote",
+    JwtMiddleware.verify,
+    async (c) => {
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
+      const memberId = z.string().transform(transformMongoId).parse(c.req.param("memberId"))
+
+      const demoter = c.var.user
+
+      await demoteChannelMember(channelId, memberId, demoter)
+
+      return c.json({ message: "User demoted successfully!" })
+    })
+  .patch("/:id/members/profile",
+    JwtMiddleware.verify,
+    zValidator("json", updateChannelMemberSchema),
+    async (c) => {
+      const channelId = z.string().transform(transformMongoId).parse(c.req.param("id"))
       const user = c.var.user
+      const payload = c.req.valid("json")
 
-      await promoteChannelMember(channelId, memberId, role, user)
+      if (payload.trustFundId) {
+        const trustFund = await TrustFundRepository.getTrustFund(payload.trustFundId)
+        if (!trustFund)
+          throw new APIError("Trust fund not found!", { code: StatusCodes.NOT_FOUND })
+      }
 
-      return c.json({ message: "Updated user successfully!" })
+      await updateChannelMember(channelId, user._id, payload)
+
+      return c.json({ message: "Updated profile successfully!" })
     })
   .post("/:id/members/join",
     JwtMiddleware.verify,

@@ -29,7 +29,7 @@ export default new Hono()
       stream.onAbort(() => {
         logger.info("Aborted streaming of media:", media._id)
       })
-      await stream.write(Buffer.from(media.data, 'base64'))
+      await stream.write(media.data)
     })
   })
   .get("/:id/meta", async (c) => {
