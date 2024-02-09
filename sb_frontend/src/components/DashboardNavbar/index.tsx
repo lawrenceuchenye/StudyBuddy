@@ -5,8 +5,7 @@ import { NavLink } from "react-router-dom";
 
 const index: FC = () => {
   const [isMobile, setIsMobile] = useState(false);
-  const [width, setWidth] = useState<number | null>(null);
-
+  const [width, setWidth] = useState<number>(0);
 
   const isDashboardNavActive = useStudyBudStore(
     (state) => state.isDashboardNavActive,
@@ -21,13 +20,13 @@ const index: FC = () => {
       setIsMobile(true);
       return;
     }
-
+    console.log(width);
     setIsMobile(false);
   }, [window.innerWidth]);
 
   if (isMobile) {
     return (
-      <div className="mb-nav-container" style={{ width: `${width}px` }}>
+      <div className="mb-nav-container" style={{ width: `${width - 30}px` }}>
         <NavLink
           to="/dashboard"
           style={{ color: "var(--color-white)", textDecoration: "none" }}
@@ -38,29 +37,47 @@ const index: FC = () => {
             <h1>Profile</h1>
           </div>
         </NavLink>
+        <NavLink
+          to="/dashboard/goals"
+          style={{ color: "var(--color-white)", textDecoration: "none" }}
+        >
+          <div className="mb-link" onClick={(e) => e.stopPropagation()}>
+            <i className="fa-solid fa-bullseye"></i>
 
-        <div className="mb-link" onClick={(e) => e.stopPropagation()}>
-          <i className="fa-solid fa-bullseye"></i>
+            <h1>Goals</h1>
+          </div>
+        </NavLink>
+        <NavLink
+          to="/dashboard/goals"
+          style={{ color: "var(--color-white)", textDecoration: "none" }}
+        >
+          <div className="mb-link" onClick={(e) => e.stopPropagation()}>
+            <i className="fa-solid fa-users"></i>
 
-          <h1>Goals</h1>
-        </div>
-        <div className="mb-link" onClick={(e) => e.stopPropagation()}>
-          <i className="fa-solid fa-users"></i>
+            <h1>Match</h1>
+          </div>
+        </NavLink>
+        <NavLink
+          to="/dashboard/goals"
+          style={{ color: "var(--color-white)", textDecoration: "none" }}
+        >
+          <div className="mb-link" onClick={(e) => e.stopPropagation()}>
+            <i className="fa-solid fa-chalkboard-teacher"></i>
 
-          <h1>Match</h1>
-        </div>
-        <div className="mb-link" onClick={(e) => e.stopPropagation()}>
-          <i className="fa-solid fa-chalkboard-teacher"></i>
-
-          <h1>Tutor</h1>
-        </div>
-        {/*<div className="alink">
+            <h1>Tutor</h1>
+          </div>
+        </NavLink>
+        <NavLink
+          to="/dashboard/goals"
+          style={{ color: "var(--color-white)", textDecoration: "none" }}
+        >
           <div className="mb-link" onClick={(e) => e.stopPropagation()}>
             <i className="fa-solid fa-share"></i>
 
             <h1>Share</h1>
           </div>
-        </div>*/}
+        </NavLink>
+        <div className="mb-link"></div>
       </div>
     );
   }

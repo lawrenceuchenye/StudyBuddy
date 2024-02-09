@@ -2,20 +2,24 @@ import "./index.css";
 import DashboardNavbar from "../../components/DashboardNavbar/";
 import { FC, useState } from "react";
 import { useStudyBudStore } from "../../store/";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const index: FC = () => {
   const isDashboardNavActive = useStudyBudStore(
     (state) => state.isDashboardNavActive,
   );
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
+  const [width, setWidth] = useState<number | null>(null);
 
-
+  useEffect(() => {
+    setWidth(window.innerWidth);
+    setIsMobile(false);
+  }, [window.innerWidth]);
 
   return (
     <div className="dashboard-main-container">
-      <div className="dnav-container">
+      <div className="dnav-container" style={{ width: `${width}px` }}>
         <DashboardNavbar />
       </div>
       <div
@@ -38,10 +42,14 @@ const index: FC = () => {
           </div>
         </div>
         <div className="editor-main-container">
-
           <div className="editor-container">
             <input type="text" placeholder="title" />
-            <ReactQuill className="editor" theme="snow" value={value} onChange={setValue} />
+            <ReactQuill
+              className="editor"
+              theme="snow"
+              value={value}
+              onChange={setValue}
+            />
           </div>
           <div className="article-main-container">
             <div className="article-header">
@@ -62,9 +70,7 @@ const index: FC = () => {
             <p>no articles published yet.</p>
           </div>
         </div>
-
       </div>
-
     </div>
   );
 };
