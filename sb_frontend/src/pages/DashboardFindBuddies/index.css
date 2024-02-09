@@ -234,6 +234,25 @@
 }
 
 @media (max-width: 750px) {
+  .groups {
+    display: block;
+  }
+
+  .groups .results-container:nth-child(1) {
+    width: auto;
+    margin: 0px;
+  }
+
+  .groups .results-container:nth-child(2) {
+    width: auto;
+    margin-top: 10px;
+  }
+
+
+  .search-field-container {
+    flex-direction: column;
+  }
+
   .dashboard-main-container {
     display: block;
   }

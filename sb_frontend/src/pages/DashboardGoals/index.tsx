@@ -42,13 +42,15 @@ const index: FC = () => {
     },
   ])[0];
 
+  const [width, setWidth] = useState<number | null>(null);
+
   useEffect(() => {
-    console.log(isDashboardNavActive);
-  }, []);
+    setWidth(window.innerWidth);
+  }, [window.innerWidth]);
 
   return (
     <div className="dashboard-main-container">
-      <div className="dnav-container">
+      <div className="dnav-container" style={{ width: `${width}px` }}>
         <DashboardNavbar />
       </div>
       <div

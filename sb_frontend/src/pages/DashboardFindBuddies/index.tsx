@@ -1,16 +1,20 @@
 import "./index.css";
 import DashboardNavbar from "../../components/DashboardNavbar/";
-import { FC } from "react";
+import { FC, useState, useEffect } from "react";
 import { useStudyBudStore } from "../../store/";
 
 const index: FC = () => {
   const isDashboardNavActive = useStudyBudStore(
     (state) => state.isDashboardNavActive,
   );
+  const [width, setWidth] = useState<number>(0);
+  useEffect(() => {
+    setWidth(window.innerWidth);
+  }, [window.innerWidth]);
 
   return (
     <div className="dashboard-main-container">
-      <div className="dnav-container">
+      <div className="dnav-container" style={{ width: `${width}px` }}>
         <DashboardNavbar />
       </div>
       <div

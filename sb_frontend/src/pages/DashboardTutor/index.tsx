@@ -1,6 +1,6 @@
 import "./index.css";
 import DashboardNavbar from "../../components/DashboardNavbar/";
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { useStudyBudStore } from "../../store/";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -14,7 +14,6 @@ const index: FC = () => {
 
   useEffect(() => {
     setWidth(window.innerWidth);
-    setIsMobile(false);
   }, [window.innerWidth]);
 
   return (
