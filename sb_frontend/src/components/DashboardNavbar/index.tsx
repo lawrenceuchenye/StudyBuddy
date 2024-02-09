@@ -48,7 +48,7 @@ const index: FC = () => {
           </div>
         </NavLink>
         <NavLink
-          to="/dashboard/goals"
+          to="/dashboard/find-match-buddies"
           style={{ color: "var(--color-white)", textDecoration: "none" }}
         >
           <div className="mb-link" onClick={(e) => e.stopPropagation()}>
@@ -58,7 +58,7 @@ const index: FC = () => {
           </div>
         </NavLink>
         <NavLink
-          to="/dashboard/goals"
+          to="/dashboard/tutor"
           style={{ color: "var(--color-white)", textDecoration: "none" }}
         >
           <div className="mb-link" onClick={(e) => e.stopPropagation()}>
