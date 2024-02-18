@@ -148,6 +148,99 @@
   min-width: 65%;
 }
 
+.overlay {
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.3);
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.groups-container {
+  background: var(--color-white);
+  width: 80%;
+  height: 400px;
+  padding: 10px;
+  border-radius: 15px;
+}
+
+.groups-header {
+  background: var(--color-orange);
+  padding: 10px 8px;
+  border-radius: 15px 15px 8px 8px;
+  color: var(--color-white);
+  font-family: "Roboto";
+}
+
+.groups {
+  background: var(--color-light-grey);
+  height: 82%;
+  width: 100%;
+  border-radius: 8px 8px 15px 15px;
+  padding: 5px 0px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+}
+
+.group-item {
+  background: var(--color-white);
+  height: max-content;
+  width: auto;
+  border-radius: 4px;
+  margin: 8px 5px;
+  padding: 12px 8px;
+}
+
+.group-item h1 {
+  font-family: "Roboto";
+  margin-bottom: 10px;
+}
+
+.group-item div {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  width: 100%;
+}
+
+.group-item div p {
+  font-family: "Open Sans";
+  font-size: 15px;
+  text-transform: uppercase;
+}
+
+.group-item p i {
+  font-size: 8px;
+  transform: translateY(-3px);
+}
+
+.group-item button {
+  width: 100%;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 3px;
+  margin-top: 10px;
+  font-family: "Roboto";
+  color: var(--color-white);
+  background: var(--color-orange);
+  cursor: pointer;
+}
+
+.otagi {
+  color: var(--color-green);
+}
+
+.ttagi {
+  color: var(--color-grey);
+  margin-left: 20px;
+}
+
 @media (max-width: 750px) {
   .dashboard-main-container {
     display: block;

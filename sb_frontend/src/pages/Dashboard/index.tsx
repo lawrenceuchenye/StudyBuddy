@@ -10,6 +10,40 @@ import { Chart as ChartJS } from "chart.js/auto";
 
 ChartJS.register(CategoryScale);
 
+const Group: FC = ({ title, online_m, total_m }) => {
+  return (
+    <div className="group-item">
+      <h1>{title}</h1>
+      <div>
+        <p>
+          <i className="fa fa-dot-circle otagi"></i> {online_m} Online members
+        </p>
+        <p>
+          <i className="fa fa-dot-circle ttagi"></i> {total_m} Members
+        </p>
+      </div>
+      <button>Join Now</button>
+    </div>
+  );
+};
+
+const Lesson: FC = ({ title, online_m, total_m }) => {
+  return (
+    <div className="group-item">
+      <h1>{title}</h1>
+      <div>
+        <p>
+          <i className="fa fa-dot-circle otagi"></i> {online_m} Online Students
+        </p>
+        <p>
+          <i className="fa fa-dot-circle ttagi"></i> {total_m} Students
+        </p>
+      </div>
+      <button>Join Now</button>
+    </div>
+  );
+};
+
 const index: FC = () => {
   const isDashboardNavActive = useStudyBudStore(
     (state) => state.isDashboardNavActive,
@@ -26,6 +60,10 @@ const index: FC = () => {
     ],
   })[0];
 
+  const [overlayActive, setOverlayActive] = useState<boolean>(false);
+  const [sgActive, setStudyGroupActive] = useState<boolean>(false);
+  const [lgActive, setLessonsGroupActive] = useState<boolean>(false);
+
   const tasks = useState([
     {
       title: "Study Calc 204",
@@ -40,6 +78,21 @@ const index: FC = () => {
   useEffect(() => {
     console.log(isDashboardNavActive);
   }, []);
+
+  const CardFunc = (type) => {
+    setOverlayActive(!overlayActive);
+    if (type == "sg") {
+      setStudyGroupActive(true);
+    } else {
+      setStudyGroupActive(false);
+    }
+
+    if (type == "lg") {
+      setLessonsGroupActive(true);
+    } else {
+      setLessonsGroupActive(false);
+    }
+  };
 
   return (
     <div className="dashboard-main-container">
@@ -66,7 +119,7 @@ const index: FC = () => {
           </div>
         </div>
         <div className="dcards-container">
-          <div className="dcard-container">
+          <div onClick={() => CardFunc("sg")} className="dcard-container">
             <h1>Study Groups</h1>
             <p>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
@@ -78,7 +131,7 @@ const index: FC = () => {
               </p>
             </div>
           </div>
-          <div className="dcard-container">
+          <div onClick={() => CardFunc("lg")} className="dcard-container">
             <h1>Lessons</h1>
             <p>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
@@ -90,7 +143,7 @@ const index: FC = () => {
               </p>
             </div>
           </div>
-          <div className="dcard-container">
+          <div onClick={() => CardFunc()} className="dcard-container">
             <h1>contribute</h1>
             <p>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
@@ -108,6 +161,47 @@ const index: FC = () => {
         </div>
         <TaskManager Tasks={tasks} />
       </div>
+      {overlayActive && (
+        <div className="overlay" onClick={() => setOverlayActive(false)}>
+          {sgActive && (
+            <div
+              className="groups-container"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="groups-header">
+                <h1>Study groups</h1>
+              </div>
+              <div className="groups">
+                <Group title={"Calculus Nerds"} online_m={3} total_m={20} />
+                <Group title={"Botany Buddies"} online_m={25} total_m={530} />
+                <Group title={"Algebrats "} online_m={8} total_m={200} />
+              </div>
+            </div>
+          )}
+          {lgActive && (
+            <div
+              className="groups-container"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                className="groups-header"
+                style={{ background: "var(--color-green)" }}
+              >
+                <h1>Lessons </h1>
+              </div>
+              <div className="groups">
+                <Lesson
+                  title={"Integeral Calculus 101"}
+                  online_m={4}
+                  total_m={200}
+                />
+                <Lesson title={"BioPhysic"} online_m={30} total_m={320} />
+                <Lesson title={"Algebra II "} online_m={12} total_m={120} />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
