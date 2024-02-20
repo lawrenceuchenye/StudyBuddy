@@ -7,7 +7,7 @@ import { Data } from "./data.tsx";
 import { Line } from "react-chartjs-2";
 import { CategoryScale } from "chart.js";
 import { Chart as ChartJS } from "chart.js/auto";
-
+import { NavLink } from "react-router-dom";
 ChartJS.register(CategoryScale);
 
 const Group: FC = ({ title, online_m, total_m }) => {
@@ -49,20 +49,58 @@ const index: FC = () => {
     (state) => state.isDashboardNavActive,
   );
 
-  const chartData = useState({
-    labels: Data.map((data) => data.year),
+  const CGPADATA = useStudyBudStore((state) => state.CGPAData);
+  const _addGPA = useStudyBudStore((state) => state.addGPA);
+  const _removeGPA = useStudyBudStore((state) => state.removeGPA);
+
+  const [chartData, setChartData] = useState({
+    labels: CGPADATA.map((data) => data.session),
     datasets: [
       {
         label: "CGPA",
-        data: Data.map((data) => data.gpa),
+        data: CGPADATA.map((data) => data.gpa),
         tension: 0.2,
       },
     ],
-  })[0];
+  });
 
   const [overlayActive, setOverlayActive] = useState<boolean>(false);
   const [sgActive, setStudyGroupActive] = useState<boolean>(false);
   const [lgActive, setLessonsGroupActive] = useState<boolean>(false);
+  const [session, setSession] = useState<string>("");
+  const [gpa, setGPA] = useState<number>(0);
+  console.log(_addGPA);
+
+  const addGPA = () => {
+    _addGPA({ id: Math.random(), session: session, gpa: gpa });
+
+    setSession("");
+    setGPA(0);
+    setChartData({
+      labels: CGPADATA.map((data) => data.session),
+      datasets: [
+        {
+          label: "CGPA",
+          data: CGPADATA.map((data) => data.gpa),
+          tension: 0.2,
+        },
+      ],
+    });
+  };
+
+  const removeGPA = (id) => {
+    _removeGPA(id);
+    setChartData({
+      labels: CGPADATA.map((data) => data.session),
+      datasets: [
+        {
+          label: "CGPA",
+          data: CGPADATA.map((data) => data.gpa),
+          tension: 0.2,
+        },
+      ],
+    });
+  };
 
   const tasks = useState([
     {
@@ -73,11 +111,15 @@ const index: FC = () => {
       title: "Study Stats 240",
       time: "2:40pm",
     },
-  ])[0];
+  ]);
 
-  useEffect(() => {
-    console.log(isDashboardNavActive);
-  }, []);
+  useEffect(() => {}, [chartData]);
+
+  const Reset = () => {
+    setOverlayActive(false);
+    setStudyGroupActive(false);
+    setLessonsGroupActive(false);
+  };
 
   const CardFunc = (type) => {
     setOverlayActive(!overlayActive);
@@ -114,7 +156,7 @@ const index: FC = () => {
               <h2>dave jmaes</h2>
               <h3>Massachusetts Institute of Technology(MIT)</h3>
               <h4>77 Massachusetts Ave</h4>
-              <p>3rd year - Mech. Eng.</p>
+              <p>3rd session - Mech. Eng.</p>
             </div>
           </div>
         </div>
@@ -143,13 +185,21 @@ const index: FC = () => {
               </p>
             </div>
           </div>
-          <div onClick={() => CardFunc()} className="dcard-container">
-            <h1>contribute</h1>
-            <p>
-              Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
-              sint cillum sint consectetur cupidatat.
-            </p>
-          </div>
+          <NavLink
+            to="/dashboard/tutor"
+            style={{ textDecoration: "none", cursor: "pointer" }}
+          >
+            <div
+              className="dcard-container"
+              style={{ background: "var(--color-red)" }}
+            >
+              <h1>contribute</h1>
+              <p>
+                Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
+                sint cillum sint consectetur cupidatat.
+              </p>
+            </div>
+          </NavLink>
         </div>
 
         <div
@@ -158,11 +208,14 @@ const index: FC = () => {
           }
         >
           <Line data={chartData} />
+          <button className="cgpa-btn" onClick={() => setOverlayActive(true)}>
+            Edit <i className="fas fa-edit"></i>
+          </button>
         </div>
         <TaskManager Tasks={tasks} />
       </div>
       {overlayActive && (
-        <div className="overlay" onClick={() => setOverlayActive(false)}>
+        <div className="overlay" onClick={() => Reset()}>
           {sgActive && (
             <div
               className="groups-container"
@@ -200,6 +253,53 @@ const index: FC = () => {
               </div>
             </div>
           )}
+
+          <div className="cgpa-section">
+            <div className="cgpa-header">
+              <h1>CGPA Records</h1>
+            </div>
+            <div className="record-holder" onClick={(e) => e.stopPropagation()}>
+              <div className="gpa-container" style={{ marginBottom: "40px" }}>
+                <p>
+                  <h4>Session</h4>
+                  <input
+                    type="string"
+                    value={session}
+                    onChange={(e) => setSession(e.target.value)}
+                    placeholder="Session"
+                  />
+                  <h4>GPA</h4>
+                  <input
+                    type="number"
+                    value={gpa}
+                    onChange={(e) => setGPA(e.target.value)}
+                    placeholder="GPA"
+                  />
+                  <i
+                    onClick={() => addGPA()}
+                    className="fa fa-plus"
+                    style={{ color: "var(--color-green)" }}
+                  ></i>
+                </p>
+              </div>
+              <div className="gpas-container">
+                {CGPADATA.map((data) => {
+                  return (
+                    <div className="gpa-container">
+                      <p>
+                        <h4>Session</h4> {data.session}
+                        <h4>GPA</h4> {data.gpa}
+                        <i
+                          onClick={() => removeGPA(data.id)}
+                          className="fa fa-times-circle"
+                        ></i>
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

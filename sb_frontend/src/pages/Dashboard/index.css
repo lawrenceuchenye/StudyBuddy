@@ -117,6 +117,25 @@
   align-items: center;
 }
 
+.cgpa-btn {
+  width: max-content;
+  padding: 10px 12px;
+  border-radius: 3px;
+  border: none;
+  outline: none;
+  color: var(--color-white);
+  box-shadow: var(--box-shadow-red);
+  background: var(--color-red);
+  font-family: "Roboto";
+  position: absolute;
+  right: 20px;
+  bottom: 100px;
+}
+
+.cgpa-btn i {
+  margin-left: 8px;
+}
+
 .dcard-container:nth-child(2) {
   min-height: 150px;
   background: var(--color-white);
@@ -142,10 +161,69 @@
 
 .chart-container {
   min-width: 100%;
+  position: relative;
 }
 
 .chart-container-a {
   min-width: 65%;
+  position: relative;
+}
+
+.cgpa-section {
+  width: 500px;
+  background: var(--color-white);
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.cgpa-header {
+  width: auto;
+  padding: 8px;
+  background: var(--color-blue);
+  border-radius: 5px 5px 3px 3px;
+  font-family: "Roboto";
+  color: var(--color-white);
+}
+
+.gpa-container {
+  align-items: center;
+  font-family: "Roboto";
+  box-shadow: var(--box-shadow-black);
+  margin: 10px;
+  border-radius: 3px;
+  padding: 10px;
+}
+
+.gpa-container p {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gpa-container p h4 {
+  text-transform: uppercase;
+  margin-right: 2px;
+}
+
+.gpa-container i {
+  color: var(--color-red);
+}
+
+.gpa-container input {
+  width: 26%;
+  padding: 8px 2px;
+  background: var(--color-light-grey);
+  border: none;
+  border-radius: 2px;
+  text-indent: 5px;
+  outline: none;
+  margin-left: 3px;
+}
+
+.gpas-container {
+  max-height: 400px;
+  overflow-y: scroll;
 }
 
 .overlay {
@@ -271,5 +349,9 @@
   .userprofile-img-container {
     width: 160px;
     height: 80px;
+  }
+
+  .cgpa {
+    width: 300px;
   }
 }

@@ -61,7 +61,7 @@ const index: FC = () => {
             <p>No results found.</p>
           </div>
         </div>
-        <div className="groups">
+        <div className="groups-">
           <div className="results-container">
             <div className="results-header">
               <h1>Friends</h1>
