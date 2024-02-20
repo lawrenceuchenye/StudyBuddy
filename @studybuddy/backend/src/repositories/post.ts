@@ -106,7 +106,11 @@ namespace PostRepository {
   type UpdatePostPayload = Partial<Omit<IPost, "createdAt" | "updatedAt">>
 
   export const updatePost = async (id: Types.ObjectId, payload: UpdatePostPayload) => {
-    const { acknowledged } = await Post.updateOne({ _id: id }, payload)
+    const { acknowledged } = await Post.updateOne({ _id: id }, {
+      ...payload,
+      updatedAt: new Date()
+    })
+
     if (!acknowledged)
       throw new APIError("Failed to update post!", { code: StatusCodes.INTERNAL_SERVER_ERROR })
   }

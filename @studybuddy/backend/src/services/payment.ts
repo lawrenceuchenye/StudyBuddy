@@ -14,6 +14,11 @@ namespace PaymentService {
   }
 
   export const getPaymentLink = async ({ user, amount, metadata }: GetPaymentLinkProps) => {
+    const tx = await TransactionRepository.createTransaction({
+      amount,
+      creatorId: user._id
+    })
+
     const res = await paystack.transaction.initialize({
       email: user.personalInformation?.email ?? "",
       amount: String(amount * 100),
@@ -23,12 +28,6 @@ namespace PaymentService {
     if (res.data) {
       const paymentLink = res.data.authorization_url
 
-      await TransactionRepository.createTransaction({
-        reference: res.data.reference,
-        amount,
-        metadata,
-        creatorId: user._id
-      })
 
       return paymentLink
     }
