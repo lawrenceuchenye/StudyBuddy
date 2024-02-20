@@ -12,7 +12,7 @@ const paystackEventSchema = z.object({
   reference: z.string()
 })
 
-type PaystackEvent = z.infer<typeof paystackEventSchema>
+export type PaystackEvent = z.infer<typeof paystackEventSchema>
 
 namespace PaystackMiddleware {
   export const verify: MiddlewareHandler<{

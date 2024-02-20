@@ -34,4 +34,3 @@ const trustFundSchema = new Schema<ITrustFund>({
 })
 
 export const TrustFund = model<ITrustFund>('TrustFund', trustFundSchema);
-

@@ -8,6 +8,8 @@ tags:
   - name: Media
   - name: Resource
   - name: TrustFund
+  - name: Tutor
+  - name: Post
 paths:
   /channels:
     post:
@@ -793,6 +795,213 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /posts:
+    post:
+      tags:
+        - Post
+      operationId: PostCollection_create
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Post'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCreate'
+    get:
+      tags:
+        - Post
+      operationId: PostCollection_list
+      parameters:
+        - $ref: '#/components/parameters/ListPostsFilters.page'
+        - $ref: '#/components/parameters/ListPostsFilters.perPage'
+        - $ref: '#/components/parameters/ListPostsFilters.name'
+        - $ref: '#/components/parameters/ListPostsFilters.title'
+        - $ref: '#/components/parameters/ListPostsFilters.tags'
+        - $ref: '#/components/parameters/ListPostsFilters.content'
+        - $ref: '#/components/parameters/ListPostsFilters.authorId'
+        - $ref: '#/components/parameters/ListPostsFilters.isPublished'
+        - $ref: '#/components/parameters/ListPostsFilters.createdBefore'
+        - $ref: '#/components/parameters/ListPostsFilters.createdAfter'
+        - $ref: '#/components/parameters/ListPostsFilters.publishedBefore'
+        - $ref: '#/components/parameters/ListPostsFilters.publishedAfter'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        format: int64
+                      perPage:
+                        type: integer
+                        format: int64
+                    required:
+                      - page
+                      - perPage
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /posts/{id}:
+    get:
+      tags:
+        - Post
+      operationId: PostCollection_read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Post'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    patch:
+      tags:
+        - Post
+      operationId: PostCollection_update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostUpdate'
+    delete:
+      tags:
+        - Post
+      operationId: PostCollection_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
         '500':
           description: Server error
           content:
@@ -1676,6 +1885,12 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/TrustFund'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
         '500':
           description: Server error
           content:
@@ -1700,10 +1915,10 @@ paths:
               schema:
                 type: object
                 required:
-                  - data
+                  - message
                 properties:
-                  data:
-                    $ref: '#/components/schemas/TrustFund'
+                  message:
+                    type: string
         '400':
           description: The server could not understand the request due to invalid syntax.
           content:
@@ -1728,6 +1943,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrustFundUpdate'
     delete:
       tags:
         - TrustFund
@@ -1774,9 +1995,400 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GenericError'
+  /trust-funds/{id}/deposit:
+    post:
+      tags:
+        - TrustFund
+      operationId: TrustFundCollection_deposit
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrustFundPayment'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: integer
+                  format: int64
+              required:
+                - amount
+  /trust-funds/{id}/withdraw:
+    post:
+      tags:
+        - TrustFund
+      operationId: TrustFundCollection_withdraw
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TrustFundPayment'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /tutors:
+    post:
+      tags:
+        - Tutor
+      operationId: TutorCollection_create
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TutorProfile'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TutorProfileCreate'
+    get:
+      tags:
+        - Tutor
+      operationId: TutorCollection_list
+      parameters:
+        - $ref: '#/components/parameters/ListTutorsFilters.page'
+        - $ref: '#/components/parameters/ListTutorsFilters.perPage'
+        - $ref: '#/components/parameters/ListTutorsFilters.name'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - meta
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TutorProfile'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        format: int64
+                      perPage:
+                        type: integer
+                        format: int64
+                    required:
+                      - page
+                      - perPage
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+  /tutors/{id}:
+    get:
+      tags:
+        - Tutor
+      operationId: TutorCollection_read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TutorProfile'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+    patch:
+      tags:
+        - Tutor
+      operationId: TutorCollection_update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TutorProfileUpdate'
+    delete:
+      tags:
+        - Tutor
+      operationId: TutorCollection_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '403':
+          description: Access is forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsError'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
 security:
   - BearerAuth: []
 components:
+  parameters:
+    ListPostsFilters.authorId:
+      name: authorId
+      in: query
+      required: false
+      schema:
+        type: string
+    ListPostsFilters.content:
+      name: content
+      in: query
+      required: false
+      schema:
+        type: string
+    ListPostsFilters.createdAfter:
+      name: createdAfter
+      in: query
+      required: false
+      schema:
+        type: string
+    ListPostsFilters.createdBefore:
+      name: createdBefore
+      in: query
+      required: false
+      schema:
+        type: string
+    ListPostsFilters.isPublished:
+      name: isPublished
+      in: query
+      required: false
+      schema:
+        type: boolean
+    ListPostsFilters.name:
+      name: name
+      in: query
+      required: false
+      schema:
+        type: string
+    ListPostsFilters.page:
+      name: page
+      in: query
+      required: true
+      schema:
+        type: integer
+        format: int64
+    ListPostsFilters.perPage:
+      name: perPage
+      in: query
+      required: true
+      schema:
+        type: integer
+        format: int64
+    ListPostsFilters.publishedAfter:
+      name: publishedAfter
+      in: query
+      required: false
+      schema:
+        type: string
+    ListPostsFilters.publishedBefore:
+      name: publishedBefore
+      in: query
+      required: false
+      schema:
+        type: string
+    ListPostsFilters.tags:
+      name: tags
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+      style: form
+      explode: true
+    ListPostsFilters.title:
+      name: title
+      in: query
+      required: false
+      schema:
+        type: string
+    ListTutorsFilters.name:
+      name: name
+      in: query
+      required: false
+      schema:
+        type: string
+    ListTutorsFilters.page:
+      name: page
+      in: query
+      required: true
+      schema:
+        type: integer
+        format: int64
+    ListTutorsFilters.perPage:
+      name: perPage
+      in: query
+      required: true
+      schema:
+        type: integer
+        format: int64
   schemas:
     BadRequestError:
       type: object
@@ -1944,6 +2556,42 @@ components:
       properties:
         error:
           type: string
+    Post:
+      type: object
+      required:
+        - joinedAt
+      properties:
+        joinedAt:
+          type: string
+      allOf:
+        - $ref: '#/components/schemas/PostCreate'
+    PostCreate:
+      type: object
+      required:
+        - title
+        - tags
+        - content
+      properties:
+        title:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        content:
+          type: string
+    PostUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        content:
+          type: string
+      description: The template for adding optional properties.
     Resource:
       type: object
       required:
@@ -2115,6 +2763,63 @@ components:
           required:
             - bankCode
             - number
+    TrustFundPayment:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+    TrustFundUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        shortDescription:
+          type: string
+        longDescription:
+          type: string
+        balance:
+          type: integer
+          format: int64
+        logoId:
+          type: string
+        accountDetails:
+          type: object
+          properties:
+            bankCode:
+              type: string
+            number:
+              type: string
+      description: The template for adding optional properties.
+    TutorProfile:
+      type: object
+      required:
+        - joinedAt
+      properties:
+        joinedAt:
+          type: string
+      allOf:
+        - $ref: '#/components/schemas/TutorProfileCreate'
+    TutorProfileCreate:
+      type: object
+      required:
+        - name
+        - trustFundId
+      properties:
+        name:
+          type: string
+        trustFundId:
+          type: string
+    TutorProfileUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        trustFundId:
+          type: string
+      description: The template for adding optional properties.
     ZodError:
       type: object
       required:
