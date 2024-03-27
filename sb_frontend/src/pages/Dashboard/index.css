@@ -95,6 +95,14 @@
   font-family: "Roboto";
   color: var(--color-white);
   text-transform: uppercase;
+  width: 100%;
+  position: relative;
+}
+
+.dcard-container h1 i {
+  right: 10px;
+  position: absolute;
+  margin-left: 100%;
 }
 
 .dcard-container p {
@@ -235,6 +243,50 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.task-form-container {
+  width: 320px;
+  height: 100px;
+  background: var(--color-white);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.task-form-container input {
+  background: var(--color-light-grey);
+  border-radius: 3px;
+  outline: none;
+  border: none;
+  padding: 10px 5px;
+}
+
+.task-form-container .ic {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.task-form-container input[type="text"] {
+  width: 100%;
+  margin: 0px 10px;
+}
+
+.task-form-container input[type="time"] {
+  width: 20%;
+}
+
+.task-form-container .div-btn {
+  width: 50%;
+  padding: 10px 6px;
+  background: var(--color-teal);
+  color: var(--color-white);
+  border-radius: 3px;
+  font-family: "Open Sans";
+  font-weight: 800;
+  margin: 15px auto;
+  text-align: center;
+
 }
 
 .groups-container {

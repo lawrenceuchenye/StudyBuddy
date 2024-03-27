@@ -13,7 +13,9 @@ ChartJS.register(CategoryScale);
 const Group: FC = ({ title, online_m, total_m }) => {
   return (
     <div className="group-item">
-      <h1>{title}</h1>
+      <h1>
+        {title}
+      </h1>
       <div>
         <p>
           <i className="fa fa-dot-circle otagi"></i> {online_m} Online members
@@ -52,6 +54,15 @@ const index: FC = () => {
   const CGPADATA = useStudyBudStore((state) => state.CGPAData);
   const _addGPA = useStudyBudStore((state) => state.addGPA);
   const _removeGPA = useStudyBudStore((state) => state.removeGPA);
+  const overlayActive = useStudyBudStore((state) => state.overlayActive);
+  const setOverlayActive = useStudyBudStore((state) => state.setOverlayActive);
+  const isAddTaskFormOpen = useStudyBudStore(
+    (state) => state.isAddTaskFormOpen,
+  );
+  const setIsAddTaskFormOpen = useStudyBudStore(
+
+    (state) => state.setIsAddTaskFormOpen,
+  );
 
   const [chartData, setChartData] = useState({
     labels: CGPADATA.map((data) => data.session),
@@ -63,13 +74,15 @@ const index: FC = () => {
       },
     ],
   });
+  const addTask = useStudyBudStore((state) => state.addTask);
 
-  const [overlayActive, setOverlayActive] = useState<boolean>(false);
   const [sgActive, setStudyGroupActive] = useState<boolean>(false);
   const [lgActive, setLessonsGroupActive] = useState<boolean>(false);
+  const [gpTable, setGPTable] = useState<boolean>(false);
+  const [taskTitle, setTaskTitle] = useState<string>("");
+  const [taskTime, setTaskTime] = useState<string>("");
   const [session, setSession] = useState<string>("");
   const [gpa, setGPA] = useState<number>(0);
-  console.log(_addGPA);
 
   const addGPA = () => {
     _addGPA({ id: Math.random(), session: session, gpa: gpa });
@@ -102,23 +115,14 @@ const index: FC = () => {
     });
   };
 
-  const tasks = useState([
-    {
-      title: "Study Calc 204",
-      time: "3:40pm",
-    },
-    {
-      title: "Study Stats 240",
-      time: "2:40pm",
-    },
-  ]);
-
   useEffect(() => {}, [chartData]);
 
   const Reset = () => {
     setOverlayActive(false);
     setStudyGroupActive(false);
     setLessonsGroupActive(false);
+    setGPTable(false);
+    setIsAddTaskFormOpen(false);
   };
 
   const CardFunc = (type) => {
@@ -133,6 +137,12 @@ const index: FC = () => {
       setLessonsGroupActive(true);
     } else {
       setLessonsGroupActive(false);
+    }
+
+    if (type == "gp") {
+      setGPTable(true);
+    } else {
+      setGPTable(false);
     }
   };
 
@@ -162,7 +172,13 @@ const index: FC = () => {
         </div>
         <div className="dcards-container">
           <div onClick={() => CardFunc("sg")} className="dcard-container">
-            <h1>Study Groups</h1>
+            <h1>
+              Study Groups{" "}
+              <i
+                className="fa-solid fa-book-open-reader"
+                style={{ marginLeft: "12px" }}
+              ></i>
+            </h1>
             <p>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
               sint cillum sint consectetur cupidatat.
@@ -174,7 +190,13 @@ const index: FC = () => {
             </div>
           </div>
           <div onClick={() => CardFunc("lg")} className="dcard-container">
-            <h1>Lessons</h1>
+            <h1>
+              Lessons{" "}
+              <i
+                className="fa-solid fa-graduation-cap"
+                style={{ marginLeft: "12px" }}
+              ></i>
+            </h1>
             <p>
               Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
               sint cillum sint consectetur cupidatat.
@@ -193,7 +215,13 @@ const index: FC = () => {
               className="dcard-container"
               style={{ background: "var(--color-red)" }}
             >
-              <h1>contribute</h1>
+              <h1>
+                contribute{" "}
+                <i
+                  className="fa-solid fa-fire"
+                  style={{ marginLeft: "12px" }}
+                ></i>
+              </h1>
               <p>
                 Lorem ipsum dolor sit amet, qui minim labore adipisicing minim
                 sint cillum sint consectetur cupidatat.
@@ -208,11 +236,11 @@ const index: FC = () => {
           }
         >
           <Line data={chartData} />
-          <button className="cgpa-btn" onClick={() => setOverlayActive(true)}>
+          <button className="cgpa-btn" onClick={() => CardFunc("gp")}>
             Edit <i className="fas fa-edit"></i>
           </button>
         </div>
-        <TaskManager Tasks={tasks} />
+        <TaskManager />
       </div>
       {overlayActive && (
         <div className="overlay" onClick={() => Reset()}>
@@ -254,52 +282,92 @@ const index: FC = () => {
             </div>
           )}
 
-          <div className="cgpa-section">
-            <div className="cgpa-header">
-              <h1>CGPA Records</h1>
+          {gpTable && (
+            <div className="cgpa-section">
+              <div className="cgpa-header">
+                <h1>CGPA Records</h1>
+              </div>
+              <div
+                className="record-holder"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="gpa-container" style={{ marginBottom: "40px" }}>
+                  <p>
+                    <h4>Session</h4>
+                    <input
+                      type="string"
+                      value={session}
+                      onChange={(e) => setSession(e.target.value)}
+                      placeholder="Session"
+                    />
+                    <h4>GPA</h4>
+                    <input
+                      type="number"
+                      value={gpa}
+                      onChange={(e) => setGPA(e.target.value)}
+                      placeholder="GPA"
+                    />
+                    <i
+                      onClick={() => addGPA()}
+                      className="fa fa-plus"
+                      style={{ color: "var(--color-green)" }}
+                    ></i>
+                  </p>
+                </div>
+                <div className="gpas-container">
+                  {CGPADATA.map((data) => {
+                    return (
+                      <div className="gpa-container">
+                        <p>
+                          <h4>Session</h4> {data.session}
+                          <h4>GPA</h4> {data.gpa}
+                          <i
+                            onClick={() => removeGPA(data.id)}
+                            className="fa fa-times-circle"
+                          ></i>
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
-            <div className="record-holder" onClick={(e) => e.stopPropagation()}>
-              <div className="gpa-container" style={{ marginBottom: "40px" }}>
-                <p>
-                  <h4>Session</h4>
+          )}
+          {isAddTaskFormOpen && (
+            <div>
+              <div
+                className="task-form-container"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="ic">
                   <input
                     type="string"
-                    value={session}
-                    onChange={(e) => setSession(e.target.value)}
-                    placeholder="Session"
+                    placeholder="Task title"
+                    onChange={(e) => setTaskTitle(e.target.value)}
                   />
-                  <h4>GPA</h4>
                   <input
-                    type="number"
-                    value={gpa}
-                    onChange={(e) => setGPA(e.target.value)}
-                    placeholder="GPA"
+                    type="time"
+                    onChange={(e) => setTaskTime(e.target.value)}
                   />
-                  <i
-                    onClick={() => addGPA()}
-                    className="fa fa-plus"
-                    style={{ color: "var(--color-green)" }}
-                  ></i>
-                </p>
+                </div>
+                <div
+                  className="div-btn"
+                  onClick={() => {
+                    addTask({
+                      title: taskTitle,
+                      time: taskTime,
+                      id: Math.random(),
+                      status: false,
+                    });
+                    Reset();
+                  }}
+                >
+                  ADD TASK
+                </div>
               </div>
-              <div className="gpas-container">
-                {CGPADATA.map((data) => {
-                  return (
-                    <div className="gpa-container">
-                      <p>
-                        <h4>Session</h4> {data.session}
-                        <h4>GPA</h4> {data.gpa}
-                        <i
-                          onClick={() => removeGPA(data.id)}
-                          className="fa fa-times-circle"
-                        ></i>
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
+              <h1>Let's start</h1>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>

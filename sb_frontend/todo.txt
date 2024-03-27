@@ -1,0 +1,9 @@
+==== 27 Mar. 2024 ====
+-- add flair icond to the cards title -- DONE!!!
+-- finish taskmanager functionality -- DONE!!!
+-- work on navbar in dashboard -- DONE!!! 
+
+==== 28 Mar. 2024 ====
+-- add/search for courses tab on home page
+-- add functionality/more features to the goals page
+-- finish up the about us page 

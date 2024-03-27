@@ -4,6 +4,7 @@ import { FC, useState, useEffect } from "react";
 import { useStudyBudStore } from "../../store/";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import UserProfile from "../../components/UserProfile/";
 
 const index: FC = () => {
   const isDashboardNavActive = useStudyBudStore(
@@ -35,18 +36,12 @@ const index: FC = () => {
             : "main-user-info-container"
         }
       >
-        <div className="user-info-card">
-          <h1>Welcome back,Dave!!</h1>
-          <div className="userprofile-card">
-            <div className="userprofile-img-container"></div>
-            <div className="userprofile-info-container">
-              <h2>dave jmaes</h2>
-              <h3>Massachusetts Institute of Technology(MIT)</h3>
-              <h4>77 Massachusetts Ave</h4>
-              <p>3rd year - Mech. Eng.</p>
-            </div>
-          </div>
-        </div>
+        <UserProfile
+          username={"DAVE JMAES"}
+          uni_name={"MASSACHUSETTS INSTITUTE OF TECHNOLOGY(MIT)"}
+          uni_address={"77 MASSACHUSETTS AVE"}
+          level={"3RD YEAR - MECH. ENG."}
+        />
         <div className="editor-main-container">
           <div className="editor-container">
             <input type="text" placeholder="title" />
@@ -62,7 +57,7 @@ const index: FC = () => {
               <h1>Article</h1>
             </div>
             <div className="article-parts">
-              <p>write a master piece to education minds.</p>
+              <p>write a master piece to educate minds.</p>
             </div>
             <button>PUBLISH</button>
           </div>

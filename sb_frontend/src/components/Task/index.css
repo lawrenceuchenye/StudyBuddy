@@ -38,10 +38,10 @@
   opacity: 1;
 }
 
-.icons i:nth-child(2) {
+.icons i:nth-child(1) {
   color: var(--color-red);
 }
 
-.icons i:nth-child(3) {
+.icons i:nth-child(2) {
   color: var(--color-green);
 }
