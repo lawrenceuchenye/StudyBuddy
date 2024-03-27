@@ -1,10 +1,18 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 type CGPADataPoint = {
   id: number;
   session: number;
   gpa: number;
   last_gpa?: number;
+};
+
+type Task = {
+  id: number;
+  title: string;
+  time: string;
+  status: boolean;
 };
 
 type StudyBudStoreProp = {
@@ -14,13 +22,33 @@ type StudyBudStoreProp = {
   setIsTapped: (boolVal: boolean) => void;
   toggleIsDashboardNavActive: () => void;
   CGPAData: CGPADataPoint[];
+  Tasks: Task[];
+  addTask: (taskObj: Task) => void;
+  removeTask: (taskId: number) => void;
   addGPA: (GPA: CGPADataPoint) => void;
   removeGPA: (id: number) => void;
+  overlayActive: boolean;
+  setOverlayActive: (bool_state: boolean) => void;
+  isAddTaskFormOpen: boolean;
+  setIsAddTaskFormOpen: (boolVal: boolean) => void;
+  activeDashboardPage: () => string;
+  setActiveDashboardPage: (pageName: string) => void;
 };
 
 export const useStudyBudStore = create<StudyBudStoreProp>((set) => ({
   isTapped: false,
   isDashboardNavActive: false,
+  activeDashboardPage: () => {
+    if (localStorage) {
+      return localStorage.getItem("activeDashboardPage");
+    }
+    return "Profile";
+  },
+  setActiveDashboardPage: (pageName) => {
+    if (localStorage) {
+      localStorage.setItem("activeDashboardPage", pageName);
+    }
+  },
   toggleIsTapped: () => {
     set((state) => ({
       isTapped: !state.isTapped,
@@ -61,9 +89,28 @@ export const useStudyBudStore = create<StudyBudStoreProp>((set) => ({
       last_gpa: 3,
     },
   ],
+  removeTask: (taskId) => {
+    set((state) => ({
+      Tasks: state.Tasks.filter((task) => task.id != taskId),
+    }));
+  },
+  addTask: (taskObj) => {
+    set((state) => ({ Tasks: [...state.Tasks, taskObj] }));
+  },
+
+  Tasks: [
+    {
+      title: "Study Calc 204",
+      time: "3:40pm",
+      id: 203,
+    },
+    {
+      title: "Study Stats 240",
+      time: "2:40pm",
+      id: 120,
+    },
+  ],
   addGPA: (GPA) => {
-    console.log("Hi");
-    alert("calleed");
     set((state) => ({
       CGPAData: [...state.CGPAData, GPA],
     }));
@@ -72,5 +119,13 @@ export const useStudyBudStore = create<StudyBudStoreProp>((set) => ({
     set((state) => ({
       CGPAData: state.CGPAData.filter((data) => data.id != id),
     }));
+  },
+  isAddTaskFormOpen: false,
+  setIsAddTaskFormOpen: (boolVal) => {
+    set((state) => ({ isAddTaskFormOpen: boolVal }));
+  },
+  overlayActive: false,
+  setOverlayActive: (bool_state) => {
+    set((state) => ({ overlayActive: bool_state }));
   },
 }));
